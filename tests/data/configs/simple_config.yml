@@ -1,0 +1,5 @@
+---
+device:
+  url: "/dev/ttyUSB0"
+mqtt:
+  broker: "localhost"
