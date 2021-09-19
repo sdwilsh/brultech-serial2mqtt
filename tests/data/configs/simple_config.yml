@@ -1,5 +1,7 @@
 ---
 device:
+  channels:
+    - number: 1
   url: "/dev/ttyUSB0"
 mqtt:
   broker: "localhost"

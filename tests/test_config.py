@@ -8,12 +8,6 @@ from brultech_serial2mqtt.const import CONFIG_PATH
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "configs")
 
-import logging
-
-logger = logging.getLogger("brultech_serial2mqtt")
-logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler())
-
 
 class TestSimpleConfig(unittest.TestCase):
     def setUp(self) -> None:
@@ -32,6 +26,9 @@ class TestSimpleConfig(unittest.TestCase):
         config = load_config(self.root.name)
 
         self.assertEqual(config.device.baud, 115200)
+        self.assertEqual(len(config.device.channels), 1)
+        self.assertEqual(config.device.channels[1].name, "channel_1")
+        self.assertEqual(config.device.channels[1].number, 1)
         self.assertEqual(config.device.url, "/dev/ttyUSB0")
 
         self.assertEqual(config.mqtt.broker, "localhost")
