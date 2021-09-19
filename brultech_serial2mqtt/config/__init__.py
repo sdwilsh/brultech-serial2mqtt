@@ -4,7 +4,7 @@ import sys
 from typing import Any
 
 import yaml
-from voluptuous import All, Required, Schema
+from voluptuous import Required, Schema
 
 from brultech_serial2mqtt.const import CONFIG_PATH, SECRETS_PATH
 
@@ -14,7 +14,7 @@ from .config_mqtt import MQTTConfig
 logger = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = Schema(
-    All({Required("device"): DeviceConfig.schema, Required("mqtt"): MQTTConfig.schema})
+    {Required("device"): DeviceConfig.schema, Required("mqtt"): MQTTConfig.schema}
 )
 
 

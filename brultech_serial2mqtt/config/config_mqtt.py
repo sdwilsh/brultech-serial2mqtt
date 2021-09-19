@@ -1,22 +1,20 @@
 import typing
 
-from voluptuous import All, Any, Optional, Required, Schema
+from voluptuous import Any, Optional, Required, Schema
 
 SCHEMA = Schema(
-    All(
-        {
-            Required("broker"): str,
-            Optional("client_id", default="brultech-serial2mqtt"): Any(str, None),
-            Optional("home_assistant", default={}): {
-                Optional("enable", default=True): bool,
-                Optional("discovery_prefix", default="homeassistant"): str,
-            },
-            Optional("password", default=None): Any(str, None),
-            Optional("port", default=1883): int,
-            Optional("topic_prefix", default="brultech-serial2mqtt"): Any(str, None),
-            Optional("username", default=None): Any(str, None),
+    {
+        Required("broker"): str,
+        Optional("client_id", default="brultech-serial2mqtt"): Any(str, None),
+        Optional("home_assistant", default={}): {
+            Optional("enable", default=True): bool,
+            Optional("discovery_prefix", default="homeassistant"): str,
         },
-    )
+        Optional("password", default=None): Any(str, None),
+        Optional("port", default=1883): int,
+        Optional("topic_prefix", default="brultech-serial2mqtt"): Any(str, None),
+        Optional("username", default=None): Any(str, None),
+    },
 )
 
 

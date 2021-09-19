@@ -1,12 +1,10 @@
-from voluptuous import All, Optional, Required, Schema
+from voluptuous import Optional, Required, Schema
 
 SCHEMA = Schema(
-    All(
-        {
-            Optional("baud", default=115200): int,
-            Required("url"): str,
-        },
-    )
+    {
+        Optional("baud", default=115200): int,
+        Required("url"): str,
+    },
 )
 
 
