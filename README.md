@@ -1,7 +1,7 @@
 ![Lint](https://github.com/sdwilsh/brultest-serial2mqtt/workflows/Lint/badge.svg)
 ![Test](https://github.com/sdwilsh/brultest-serial2mqtt/workflows/Test/badge.svg)
 
-# What is aiobrultech-serial?
+# What is brultech-serial2mqtt?
 
 This library talks to devices from [Brultech Research](https://www.brultech.com/)
 over their serial port, using
