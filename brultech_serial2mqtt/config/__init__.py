@@ -1,12 +1,15 @@
+import logging
 import os
 import sys
-import logging
 from typing import Any
+
 import yaml
 from voluptuous import All, Required, Schema
+
+from brultech_serial2mqtt.const import CONFIG_PATH, SECRETS_PATH
+
 from .config_device import DeviceConfig
 from .config_mqtt import MQTTConfig
-from brultech_serial2mqtt.const import CONFIG_PATH, SECRETS_PATH
 
 logger = logging.getLogger(__name__)
 

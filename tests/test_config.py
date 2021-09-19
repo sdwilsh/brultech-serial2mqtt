@@ -2,8 +2,9 @@ import os
 import shutil
 import tempfile
 import unittest
-from brultech_serial2mqtt.const import CONFIG_PATH
+
 from brultech_serial2mqtt.config import load_config
+from brultech_serial2mqtt.const import CONFIG_PATH
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "configs")
 

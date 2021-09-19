@@ -1,6 +1,5 @@
 from voluptuous import All, Optional, Required, Schema
 
-
 SCHEMA = Schema(
     All(
         {

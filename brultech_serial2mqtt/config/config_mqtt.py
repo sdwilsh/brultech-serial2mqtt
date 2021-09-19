@@ -1,6 +1,6 @@
 import typing
-from voluptuous import All, Any, Optional, Required, Schema
 
+from voluptuous import All, Any, Optional, Required, Schema
 
 SCHEMA = Schema(
     All(
