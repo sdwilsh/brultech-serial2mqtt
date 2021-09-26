@@ -11,6 +11,7 @@ SCHEMA = Schema(
                 Schema(
                     {
                         Optional("name"): All(str, Length(min=1)),
+                        Optional("net_metered", default=False): bool,
                         Required("number"): All(int, Range(min=1, max=32)),
                     }
                 )
@@ -26,11 +27,16 @@ class ChannelConfig:
         self._name = (
             channel["name"] if "name" in channel else f"channel_{channel['number']}"
         )
+        self._net_metered = channel["net_metered"]
         self._number = channel["number"]
 
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def net_metered(self) -> bool:
+        return self._net_metered
 
     @property
     def number(self) -> int:
