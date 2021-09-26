@@ -1,4 +1,4 @@
-from typing import Iterator, Optional
+from typing import Iterator
 
 from voluptuous import All
 from voluptuous import Optional as OptionalField
@@ -21,7 +21,7 @@ SCHEMA = Schema(
                 )
             ]
         ),
-        OptionalField("name"): All(str, Length(min=1)),
+        RequiredField("name"): All(str, Length(min=1)),
         RequiredField("url"): str,
     },
 )
@@ -71,7 +71,7 @@ class DeviceConfig:
     def __init__(self, device: dict):
         self._baud = device["baud"]
         self._channels = ChannelsConfig(device["channels"])
-        self._name: Optional[str] = device.get("name")
+        self._name: str = device["name"]
         self._url = device["url"]
 
     @property
@@ -85,7 +85,7 @@ class DeviceConfig:
         return self._channels
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str:
         return self._name
 
     @property
