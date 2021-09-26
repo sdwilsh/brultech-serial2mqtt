@@ -30,6 +30,7 @@ class TestSimpleConfig(unittest.TestCase):
         self.assertEqual(config.device.channels[1].name, "channel_1")
         self.assertFalse(config.device.channels[1].net_metered)
         self.assertEqual(config.device.channels[1].number, 1)
+        self.assertIsNone(config.device.name)
         self.assertEqual(config.device.url, "/dev/ttyUSB0")
 
         self.assertEqual(config.mqtt.broker, "localhost")

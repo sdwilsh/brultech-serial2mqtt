@@ -1,23 +1,28 @@
-from typing import Iterator
+from typing import Iterator, Optional
 
-from voluptuous import All, Optional, Range, Required, Schema
+from voluptuous import All
+from voluptuous import Optional as OptionalField
+from voluptuous import Range
+from voluptuous import Required as RequiredField
+from voluptuous import Schema
 from voluptuous.validators import Length
 
 SCHEMA = Schema(
     {
-        Optional("baud", default=115200): int,
-        Required("channels"): All(
+        OptionalField("baud", default=115200): int,
+        RequiredField("channels"): All(
             [
                 Schema(
                     {
-                        Optional("name"): All(str, Length(min=1)),
-                        Optional("net_metered", default=False): bool,
-                        Required("number"): All(int, Range(min=1, max=32)),
+                        OptionalField("name"): All(str, Length(min=1)),
+                        OptionalField("net_metered", default=False): bool,
+                        RequiredField("number"): All(int, Range(min=1, max=32)),
                     }
                 )
             ]
         ),
-        Required("url"): str,
+        OptionalField("name"): All(str, Length(min=1)),
+        RequiredField("url"): str,
     },
 )
 
@@ -66,6 +71,7 @@ class DeviceConfig:
     def __init__(self, device: dict):
         self._baud = device["baud"]
         self._channels = ChannelsConfig(device["channels"])
+        self._name: Optional[str] = device.get("name")
         self._url = device["url"]
 
     @property
@@ -77,6 +83,10 @@ class DeviceConfig:
     def channels(self) -> ChannelsConfig:
         """Return the monitored channel configurations."""
         return self._channels
+
+    @property
+    def name(self) -> Optional[str]:
+        return self._name
 
     @property
     def url(self) -> str:
