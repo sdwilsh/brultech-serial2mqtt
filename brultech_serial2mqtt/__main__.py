@@ -8,7 +8,7 @@ logger = logging.getLogger("brultech_serial2mqtt")
 if __name__ == "__main__":
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(
-        logging.Formatter("'%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     )
     logger.addHandler(stream_handler)
 
