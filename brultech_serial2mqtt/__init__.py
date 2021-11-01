@@ -44,16 +44,21 @@ class BrultechSerial2MQTT:
                     await self._handle_packet(packet, mqtt_client)
 
     async def _setup_gem(self, connection: DeviceConnection) -> None:
+        logger.info("Setting up GEM device...")
+        logger.debug("Synchronizing GEM clock with local device")
         await connection.synchronize_time()
+        logger.debug("Setting the correct packet format on the GEM device")
         if self._config.device.device_com == DeviceCOM.COM1:
             await connection.set_packet_format(DevicePacketFormatType.BIN48_NET_TIME)
         else:
             await connection.set_secondary_packet_format(
                 DevicePacketFormatType.BIN48_NET_TIME
             )
+        logger.debug("Setting the packet send interval on the GEM device")
         await connection.set_packet_send_interval(
             self._config.device.packet_send_interval_seconds
         )
+        logger.info("Setup of GEM device complete!")
 
     async def _publish_home_assistant_discovery_config(
         self, mqtt_client: MQTTClient
