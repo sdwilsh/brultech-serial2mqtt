@@ -54,11 +54,11 @@ class Channel(DeviceSensorMixin):
             ],
         }
         if self._channel_config.net_metered:
+            pws = self._last_packet.polarized_watt_seconds
+            assert pws is not None
             state.update(
                 {
-                    "net_watt_seconds": self._last_packet.polarized_watt_seconds[
-                        self._channel_config.number
-                    ],
+                    "net_watt_seconds": pws[self._channel_config.number],
                 }
             )
         return {self._channel_config.name: state}
