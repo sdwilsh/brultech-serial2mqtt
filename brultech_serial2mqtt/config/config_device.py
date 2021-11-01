@@ -29,6 +29,10 @@ SCHEMA = Schema(
             ),
         ),
         RequiredField("name"): All(str, Length(min=1)),
+        OptionalField(
+            "packet_send_interval_seconds",
+            default=5,
+        ): All(int, Range(min=5, max=256)),
         RequiredField("url"): str,
     },
 )
@@ -88,6 +92,7 @@ class DeviceConfig:
             DeviceCOM.COM1 if device["device_com"] == "COM1" else DeviceCOM.COM2
         )
         self._name: str = device["name"]
+        self._packet_send_interval_seconds = device["packet_send_interval_seconds"]
         self._url = device["url"]
 
     @property
@@ -108,6 +113,10 @@ class DeviceConfig:
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def packet_send_interval_seconds(self) -> int:
+        return self._packet_send_interval_seconds
 
     @property
     def url(self) -> str:
