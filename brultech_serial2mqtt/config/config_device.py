@@ -1,6 +1,7 @@
+from enum import Enum, unique
 from typing import Iterator
 
-from voluptuous import All
+from voluptuous import All, Match
 from voluptuous import Optional as OptionalField
 from voluptuous import Range
 from voluptuous import Required as RequiredField
@@ -20,6 +21,12 @@ SCHEMA = Schema(
                     }
                 )
             ]
+        ),
+        RequiredField("device_com"): All(
+            str,
+            Match(
+                r"^(COM1|COM2)$",
+            ),
         ),
         RequiredField("name"): All(str, Length(min=1)),
         RequiredField("url"): str,
@@ -65,12 +72,21 @@ class ChannelsConfig:
         return iter(self._channels.values())
 
 
+@unique
+class DeviceCOM(Enum):
+    COM1 = "COM1"
+    COM2 = "COM2"
+
+
 class DeviceConfig:
     schema = SCHEMA
 
     def __init__(self, device: dict):
         self._baud = device["baud"]
         self._channels = ChannelsConfig(device["channels"])
+        self._device_com = (
+            DeviceCOM.COM1 if device["device_com"] == "COM1" else DeviceCOM.COM2
+        )
         self._name: str = device["name"]
         self._url = device["url"]
 
@@ -83,6 +99,11 @@ class DeviceConfig:
     def channels(self) -> ChannelsConfig:
         """Return the monitored channel configurations."""
         return self._channels
+
+    @property
+    def device_com(self) -> DeviceCOM:
+        """Return either COM1"""
+        return self._device_com
 
     @property
     def name(self) -> str:

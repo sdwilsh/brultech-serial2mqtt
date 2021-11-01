@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from brultech_serial2mqtt.config import load_config
+from brultech_serial2mqtt.config.config_device import DeviceCOM
 from brultech_serial2mqtt.const import CONFIG_PATH
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "configs")
@@ -30,6 +31,7 @@ class TestSimpleConfig(unittest.TestCase):
         self.assertEqual(config.device.channels[1].name, "channel_1")
         self.assertFalse(config.device.channels[1].net_metered)
         self.assertEqual(config.device.channels[1].number, 1)
+        self.assertEqual(config.device.device_com, DeviceCOM.COM1)
         self.assertEqual(config.device.name, "gem")
         self.assertEqual(config.device.url, "/dev/ttyUSB0")
 

@@ -2,6 +2,7 @@
 device:
   channels:
     - number: 1
+  device_com: "COM1"
   name: "gem"
   url: "/dev/ttyUSB0"
 mqtt:
