@@ -1,5 +1,5 @@
-![Lint](https://github.com/sdwilsh/brultest-serial2mqtt/workflows/Lint/badge.svg)
-![Test](https://github.com/sdwilsh/brultest-serial2mqtt/workflows/Test/badge.svg)
+![Lint](https://github.com/sdwilsh/brultech-serial2mqtt/workflows/Lint/badge.svg)
+![Test](https://github.com/sdwilsh/brultech-serial2mqtt/workflows/Test/badge.svg)
 
 # What is brultech-serial2mqtt?
 
