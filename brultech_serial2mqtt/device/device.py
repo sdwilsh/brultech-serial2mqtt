@@ -1,11 +1,11 @@
 import abc
-from copy import deepcopy
 from typing import List
 
 from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config.config_mqtt import MQTTConfig
 from brultech_serial2mqtt.const import HOME_ASSISTANT_DOMAIN
+from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 
 
 class DeviceSensorMixin:
@@ -21,7 +21,9 @@ class DeviceSensorMixin:
     def _get_state_topic(self, packet: Packet) -> str:
         return f"{self._mqtt_config.topic_prefix}/{self._get_unique_id_from_packet(packet)}/state"
 
-    async def home_assistant_discovery_config(self, packet: Packet) -> List[dict]:
+    def home_assistant_discovery_config(
+        self, packet: Packet
+    ) -> List[HomeAssistantDiscoveryConfig]:
         """The sensor(s) for Home Assistant MQTT Discovery."""
         common = {
             "device": {
@@ -37,8 +39,8 @@ class DeviceSensorMixin:
         }
         configs = []
         for config in self._sensor_specific_home_assistant_discovery_config():
-            sensor_config = deepcopy(common)
-            sensor_config.update(config)
+            config.apply_common_config(common)
+            configs.append(config)
         return configs
 
     @abc.abstractmethod
@@ -46,5 +48,7 @@ class DeviceSensorMixin:
         pass
 
     @abc.abstractmethod
-    def _sensor_specific_home_assistant_discovery_config(self) -> List[dict]:
+    def _sensor_specific_home_assistant_discovery_config(
+        self,
+    ) -> List[HomeAssistantDiscoveryConfig]:
         pass
