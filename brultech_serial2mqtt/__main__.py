@@ -1,6 +1,10 @@
 import asyncio
+import logging
 
 from brultech_serial2mqtt import BrultechSerial2MQTT
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler())
 
 if __name__ == "__main__":
     bs2m = BrultechSerial2MQTT()

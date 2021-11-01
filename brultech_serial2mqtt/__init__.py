@@ -23,6 +23,8 @@ class BrultechSerial2MQTT:
         self._first_packet: asyncio.Future[DevicePacket] = asyncio.Future()
         self._last_packet: Optional[DevicePacket] = None
 
+        logger.setLevel(self._config.logging.level.value)
+
     async def start(self) -> None:
         """Starts listening to the serial connection and publishes packets to MQTT"""
         async with DeviceConnection(

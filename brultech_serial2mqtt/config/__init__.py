@@ -4,28 +4,38 @@ import sys
 from typing import Any
 
 import yaml
-from voluptuous import Required, Schema
+from voluptuous import Optional, Required, Schema
 
 from brultech_serial2mqtt.const import CONFIG_PATH, SECRETS_PATH
 
 from .config_device import DeviceConfig
+from .config_logging import LoggingConfig
 from .config_mqtt import MQTTConfig
 
 logger = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = Schema(
-    {Required("device"): DeviceConfig.schema, Required("mqtt"): MQTTConfig.schema}
+    {
+        Required("device"): DeviceConfig.schema,
+        Optional("logging", default={}): LoggingConfig.schema,
+        Required("mqtt"): MQTTConfig.schema,
+    }
 )
 
 
 class Config:
-    def __init__(self, config):
+    def __init__(self, config: dict):
         self._device = DeviceConfig(config["device"])
+        self._logging = LoggingConfig(config["logging"])
         self._mqtt = MQTTConfig(config["mqtt"])
 
     @property
     def device(self) -> DeviceConfig:
         return self._device
+
+    @property
+    def logging(self) -> LoggingConfig:
+        return self._logging
 
     @property
     def mqtt(self) -> MQTTConfig:
