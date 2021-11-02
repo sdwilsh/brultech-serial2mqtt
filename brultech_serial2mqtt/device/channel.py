@@ -11,7 +11,7 @@ from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 
 class Channel(DeviceSensorMixin):
     def __init__(self, config: Config, channel_num: int, previous_packet: Packet):
-        super().__init__(config.mqtt)
+        super().__init__(config.device.name, config.mqtt)
         self._channel_config = config.device.channels[channel_num]
         self._last_packet = previous_packet
         self._mqtt_config = config.mqtt

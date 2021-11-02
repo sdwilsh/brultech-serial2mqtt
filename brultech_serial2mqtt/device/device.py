@@ -9,7 +9,8 @@ from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 
 
 class DeviceSensorMixin:
-    def __init__(self, mqtt_config: MQTTConfig):
+    def __init__(self, device_name: str, mqtt_config: MQTTConfig):
+        self._device_name = device_name
         self._mqtt_config = mqtt_config
 
     def _get_unique_id_from_packet(self, packet: Packet) -> str:
@@ -33,6 +34,7 @@ class DeviceSensorMixin:
                 ],
                 "manufacturer": "Brultech Research Inc.",
                 "model": "GreenEye Monitor",
+                "name": self._device_name,
             },
             "last_reset_topic": self._get_last_reset_topic(packet),
             "state_topic": self._get_state_topic(packet),
