@@ -1,4 +1,5 @@
-from typing import Any, Dict, List
+import asyncio
+from typing import Any, Coroutine, Dict, List
 
 from siobrultech_protocols.gem.packets import Packet
 
@@ -15,6 +16,9 @@ class Channel(DeviceSensorMixin):
         self._mqtt_config = config.mqtt
         self._unique_id = f"{previous_packet.serial_number}_{config.device.channels[channel_num].name}"
         self._name = f"{config.device.name}_{config.device.channels[channel_num].name}"
+
+    async def handle_new_packet(self, packet: Packet) -> None:
+        self._last_packet = packet
 
     @property
     def state_data(self) -> Dict[str, Any]:
@@ -76,6 +80,13 @@ class ChannelsManager:
             for c_conf in config.device.channels
         ]
         self._previous_packet = previous_packet
+
+    async def handle_new_packet(self, packet: Packet) -> None:
+        updates: List[Coroutine[None, None, None]] = []
+        for c in self.channels:
+            updates.append(c.handle_new_packet(packet))
+        await asyncio.gather(*updates)
+        self._previous_packet = packet
 
     @property
     def state_data(self) -> Dict[str, Dict[str, Any]]:

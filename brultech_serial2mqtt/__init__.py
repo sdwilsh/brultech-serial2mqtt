@@ -123,8 +123,11 @@ class BrultechSerial2MQTT:
             self._last_packet = packet
             return
 
+        cm = ChannelsManager(self._config, packet)
+        await cm.handle_new_packet(packet)
+
         try:
-            await self._publish_packet(packet, mqtt_client)
+            await self._publish_packet(packet, mqtt_client, cm)
         except Exception as exc:
             logger.exception(
                 "Exception caught while attempting to publish a packet!",
@@ -133,10 +136,13 @@ class BrultechSerial2MQTT:
         self._last_packet = packet
 
     async def _publish_packet(
-        self, packet: DevicePacket, mqtt_client: MQTTClient
+        self,
+        packet: DevicePacket,
+        mqtt_client: MQTTClient,
+        channels_manager: ChannelsManager,
     ) -> None:
         state: Dict[str, Any] = {}
-        state.update(ChannelsManager(self._config, packet).state_data)
+        state.update(channels_manager.state_data)
         json_state = json.dumps(state, indent=2)
         topic = get_device_state_topic(packet, self._config.mqtt)
         await mqtt_client.publish(

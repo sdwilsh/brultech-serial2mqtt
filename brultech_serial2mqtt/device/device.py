@@ -39,6 +39,10 @@ class DeviceSensorMixin:
             configs.append(config)
         return configs
 
+    @abc.abstractmethod
+    async def handle_new_packet(self, packet: Packet) -> None:
+        pass
+
     @property
     @abc.abstractmethod
     def state_data(self) -> Dict[str, Any]:
