@@ -19,10 +19,6 @@ class HomeAssistantDiscoveryConfig:
         return self._component
 
     @property
-    def object_id(self) -> str:
-        return self._object_id
-
-    @property
     def config(self) -> Dict[str, Any]:
         return self._config
 
@@ -30,6 +26,10 @@ class HomeAssistantDiscoveryConfig:
     def json_config(self) -> str:
         """Returns pretty-printed JSON to send via MQTT."""
         return json.dumps(self.config, indent=2)
+
+    @property
+    def object_id(self) -> str:
+        return self._object_id
 
     def apply_common_config(self, common_config: Dict[str, Any]):
         """
@@ -39,3 +39,6 @@ class HomeAssistantDiscoveryConfig:
         new_config = deepcopy(common_config)
         new_config.update(self._config)
         self._config = new_config
+
+    def get_discovery_topic(self, prefix: str) -> str:
+        return f"{prefix}/{self.component}/{self.object_id}/config"
