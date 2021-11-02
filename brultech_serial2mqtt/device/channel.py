@@ -64,9 +64,9 @@ class Channel(DeviceSensorMixin):
                     "unique_id": self._unique_id,
                     "unit_of_measurement": "Wh",
                     "value_template": (
-                        f"{{{{ value_json.channel_{self._channel_config.number}.net_watt_seconds / 60 }}}}"
+                        f"{{{{ (value_json.channel_{self._channel_config.number}.net_watt_seconds / 60) | round }}}}"
                         if self._channel_config.net_metered
-                        else f"{{{{ value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 60 }}}}"
+                        else f"{{{{ (value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 60) | round }}}}"
                     ),
                 },
             ),
