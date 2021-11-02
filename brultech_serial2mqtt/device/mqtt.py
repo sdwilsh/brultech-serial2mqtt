@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy
 from typing import Any, Dict
 
@@ -24,6 +25,11 @@ class HomeAssistantDiscoveryConfig:
     @property
     def config(self) -> Dict[str, Any]:
         return self._config
+
+    @property
+    def json_config(self) -> str:
+        """Returns pretty-printed JSON to send via MQTT."""
+        return json.dumps(self.config, indent=2)
 
     def apply_common_config(self, common_config: Dict[str, Any]):
         """
