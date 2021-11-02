@@ -15,9 +15,7 @@ class Channel(DeviceSensorMixin):
         self._channel_config = config.device.channels[channel_num]
         self._last_packet = previous_packet
         self._mqtt_config = config.mqtt
-        self._unique_id = (
-            f"{config.device.name}_{config.device.channels[channel_num].name}"
-        )
+        self._unique_id = f"{previous_packet.serial_number}_{config.device.channels[channel_num].name}"
 
     async def handle_packet(self, new_packet: Packet, mqtt_client: MQTTClient) -> None:
         await asyncio.gather(self._handle_packet_for_energy(new_packet, mqtt_client))
