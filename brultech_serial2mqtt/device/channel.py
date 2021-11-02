@@ -19,32 +19,7 @@ class Channel(DeviceSensorMixin):
         self._name = f"{config.device.name}_{config.device.channels[channel_num].name}"
 
     async def handle_packet(self, new_packet: Packet, mqtt_client: MQTTClient) -> None:
-        await asyncio.gather(self._handle_packet_for_energy(new_packet, mqtt_client))
         self._last_packet = new_packet
-
-    async def _handle_packet_for_energy(
-        self, new_packet: Packet, mqtt_client: MQTTClient
-    ) -> None:
-        reset_time = None
-        # Absolute watt-seconds always goes up!  However, polarized watt-seconds does
-        # not.  Ideally, we'd send a serial command `RSTC` with the channel number to
-        # reset both when we detect this regardless of net metering.  This is rare, so
-        # it is left as a future improvement. See:
-        # https://www.brultech.com/community/viewtopic.php?f=29&t=599&p=2566
-        if (
-            not self._channel_config.net_metered
-            and self._last_packet.absolute_watt_seconds
-            > new_packet.absolute_watt_seconds
-        ):
-            reset_time = self._last_packet.absolute_watt_seconds
-
-        if reset_time is not None:
-            await mqtt_client.publish(
-                self._get_last_reset_topic(new_packet),
-                payload={self._last_packet.time_stamp.isoformat()},
-                qos=1,
-                retain=True,
-            )
 
     @property
     def state_data(self) -> Dict[str, Any]:
@@ -74,7 +49,6 @@ class Channel(DeviceSensorMixin):
                 object_id=self._unique_id,
                 config={
                     "device_class": "energy",
-                    "last_reset_value_template": f"as_timestamp(value_json)",
                     "name": f"{self._name}",
                     "qos": 1,
                     "state_class": (
@@ -92,9 +66,6 @@ class Channel(DeviceSensorMixin):
                 },
             ),
         ]
-
-    def _get_last_reset_topic(self, packet: Packet) -> str:
-        return f"{super()._get_last_reset_topic(packet)}/{self._channel_config.name}"
 
 
 class ChannelsManager:
