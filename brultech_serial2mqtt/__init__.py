@@ -55,6 +55,8 @@ class BrultechSerial2MQTT:
                 password=self._config.mqtt.password,
                 client_id=self._config.mqtt.client_id,
             ) as mqtt_client:
+                self._publish_home_assistant_discovery_config(mqtt_client)
+
                 async for packet in device_connection.packets():
                     await self._handle_packet(packet, mqtt_client)
 
@@ -75,9 +77,7 @@ class BrultechSerial2MQTT:
         )
         logger.info("Setup of GEM device complete!")
 
-    async def _publish_home_assistant_discovery_config(
-        self, mqtt_client: MQTTClient
-    ) -> None:
+    def _publish_home_assistant_discovery_config(self, mqtt_client: MQTTClient) -> None:
         if not self._config.mqtt.home_assistant.enable:
             logger.info(
                 "Home Assistant dicovery configuration is disabled.  Not publishing configuration."
