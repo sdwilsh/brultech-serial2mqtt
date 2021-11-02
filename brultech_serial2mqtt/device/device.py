@@ -16,9 +16,6 @@ class DeviceSensorMixin:
     def _get_unique_id_from_packet(self, packet: Packet) -> str:
         return f"gem_{packet.device_id}"
 
-    def _get_last_reset_topic(self, packet: Packet) -> str:
-        return f"{self._mqtt_config.topic_prefix}/{self._get_unique_id_from_packet(packet)}/last_reset"
-
     def _get_state_topic(self, packet: Packet) -> str:
         return f"{self._mqtt_config.topic_prefix}/{self._get_unique_id_from_packet(packet)}/state"
 
@@ -36,7 +33,6 @@ class DeviceSensorMixin:
                 "model": "GreenEye Monitor",
                 "name": self._device_name,
             },
-            "last_reset_topic": self._get_last_reset_topic(packet),
             "state_topic": self._get_state_topic(packet),
         }
         configs = []
