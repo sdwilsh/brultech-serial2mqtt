@@ -14,7 +14,9 @@ class Channel(DeviceSensorMixin):
         self._channel_config = config.device.channels[channel_num]
         self._last_packet = previous_packet
         self._mqtt_config = config.mqtt
-        self._unique_id = f"gem_{previous_packet.serial_number}_channel_{channel_num}"
+        self._unique_id_base = (
+            f"gem_{previous_packet.serial_number}_channel_{channel_num}"
+        )
         self._name = f"{config.device.name}_{config.device.channels[channel_num].name}"
 
     async def handle_new_packet(self, packet: Packet) -> None:
@@ -52,30 +54,28 @@ class Channel(DeviceSensorMixin):
             # Future improvements: Power
             HomeAssistantDiscoveryConfig(
                 component="sensor",
-                object_id=self._unique_id,
                 config={
                     "device_class": "current",
-                    "name": f"{self._name}",
+                    "name": f"{self._name} Current",
                     "qos": 1,
                     "state_class": "measurement",
-                    "unique_id": f"{self._unique_id}_current",
+                    "unique_id": f"{self._unique_id_base}_current",
                     "unit_of_measurement": "A",
                     "value_template": f"{{{{ value_json.channel_{self._channel_config.number}.current }}}}",
                 },
             ),
             HomeAssistantDiscoveryConfig(
                 component="sensor",
-                object_id=self._unique_id,
                 config={
                     "device_class": "energy",
-                    "name": f"{self._name}",
+                    "name": f"{self._name} Energy",
                     "qos": 1,
                     "state_class": (
                         "total"
                         if self._channel_config.net_metered
                         else "total_increasing"
                     ),
-                    "unique_id": f"{self._unique_id}_energy",
+                    "unique_id": f"{self._unique_id_base}_energy",
                     "unit_of_measurement": "Wh",
                     "value_template": (
                         f"{{{{ (value_json.channel_{self._channel_config.number}.net_watt_seconds / 60) | round }}}}"

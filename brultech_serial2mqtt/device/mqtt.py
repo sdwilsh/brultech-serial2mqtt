@@ -9,9 +9,10 @@ class HomeAssistantDiscoveryConfig:
     https://www.home-assistant.io/docs/mqtt/discovery/
     """
 
-    def __init__(self, component: str, object_id: str, config: Dict[str, Any]) -> None:
+    def __init__(self, component: str, config: Dict[str, Any]) -> None:
+        assert "unique_id" in config
         self._component = component
-        self._object_id = object_id
+        self._object_id = config["unique_id"]
         self._config = config
 
     @property
