@@ -24,7 +24,8 @@ class Channel(DeviceSensorMixin):
     def state_data(self) -> Dict[str, Any]:
         # Channel numbers are 1-based, but list index is 0-based
         channel_index = self._channel_config.number - 1
-        state = {}
+        assert self._last_packet.currents is not None
+        state = {"current": self._last_packet.currents[channel_index]}
         if self._channel_config.net_metered:
             polarized_watt_seconds = self._last_packet.polarized_watt_seconds
             assert polarized_watt_seconds is not None
@@ -48,7 +49,20 @@ class Channel(DeviceSensorMixin):
         self,
     ) -> List[HomeAssistantDiscoveryConfig]:
         return [
-            # Future improvements: Current, Power
+            # Future improvements: Power
+            HomeAssistantDiscoveryConfig(
+                component="sensor",
+                object_id=self._unique_id,
+                config={
+                    "device_class": "current",
+                    "name": f"{self._name}",
+                    "qos": 1,
+                    "state_class": "measurement",
+                    "unique_id": f"{self._unique_id}_current",
+                    "unit_of_measurement": "A",
+                    "value_template": f"{{{{ value_json.channel_{self._channel_config.number}.current }}}}",
+                },
+            ),
             HomeAssistantDiscoveryConfig(
                 component="sensor",
                 object_id=self._unique_id,
@@ -61,7 +75,7 @@ class Channel(DeviceSensorMixin):
                         if self._channel_config.net_metered
                         else "total_increasing"
                     ),
-                    "unique_id": self._unique_id,
+                    "unique_id": f"{self._unique_id}_energy",
                     "unit_of_measurement": "Wh",
                     "value_template": (
                         f"{{{{ (value_json.channel_{self._channel_config.number}.net_watt_seconds / 60) | round }}}}"
