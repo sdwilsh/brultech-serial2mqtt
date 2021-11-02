@@ -29,8 +29,8 @@ class DeviceSensorMixin:
         common = {
             "device": {
                 "identifiers": [
-                    (HOME_ASSISTANT_DOMAIN, f"serial-{packet.serial_number}"),
-                    (HOME_ASSISTANT_DOMAIN, f"device_id-{packet.device_id}"),
+                    ",".join((HOME_ASSISTANT_DOMAIN, f"serial-{packet.serial_number}")),
+                    ",".join((HOME_ASSISTANT_DOMAIN, f"device_id-{packet.device_id}")),
                 ],
                 "manufacturer": "Brultech Research Inc.",
                 "model": "GreenEye Monitor",
