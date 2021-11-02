@@ -94,12 +94,13 @@ class BrultechSerial2MQTT:
             ).home_assistant_discovery_config()
             try:
                 for config in configs:
+                    topic = f"{self._config.mqtt.home_assistant.discovery_prefix}/{config.component}/{config.object_id}/config"
                     await mqtt_client.publish(
-                        topic=f"{self._config.mqtt.home_assistant.discovery_prefix}/{config.component}/{config.object_id}/config",
+                        topic=topic,
                         payload=config.json_config,
                     )
                     logger.info(
-                        f"Published Home Assistant dicovery configuration for a {config.component} identified by {config.object_id}"
+                        f"Published Home Assistant dicovery configuration for a {config.component} identified by {config.object_id} to {topic}"
                     )
                     logger.debug(
                         f"Configuration for {config.component} identified by {config.object_id}:\n{pprint.pformat(config.config)}"
