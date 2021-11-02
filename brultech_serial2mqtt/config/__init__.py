@@ -1,11 +1,13 @@
 import logging
 import os
 import sys
-from typing import Any
+from typing import Any, Dict
 
 import yaml
 from voluptuous import Optional, Required, Schema
+from yaml.nodes import Node
 
+from brultech_serial2mqtt.config.typing import EmptyConfigDict
 from brultech_serial2mqtt.const import CONFIG_PATH, SECRETS_PATH
 
 from .config_device import DeviceConfig
@@ -17,14 +19,14 @@ logger = logging.getLogger(__name__)
 CONFIG_SCHEMA = Schema(
     {
         Required("device"): DeviceConfig.schema,
-        Optional("logging", default={}): LoggingConfig.schema,
+        Optional("logging", default=EmptyConfigDict): LoggingConfig.schema,
         Required("mqtt"): MQTTConfig.schema,
     }
 )
 
 
 class Config:
-    def __init__(self, config: dict):
+    def __init__(self, config: Dict[str, Any]):
         self._device = DeviceConfig(config["device"])
         self._logging = LoggingConfig(config["logging"])
         self._mqtt = MQTTConfig(config["mqtt"])
@@ -57,7 +59,7 @@ def load_config(root: str = "/") -> Config:
     """Return contents of config.yml."""
     secrets = load_secrets(root)
 
-    def secret_yaml(_, node):
+    def secret_yaml(_: Any, node: Node):
         if secrets is None:
             raise ValueError(
                 "!secret found in config.yml, but no secrets.yml exists. "
@@ -75,7 +77,7 @@ def load_config(root: str = "/") -> Config:
         with open(config_path, "r") as config_file:
             raw_config = yaml.load(config_file, Loader=yaml.SafeLoader)
             logger.debug(f"loaded config {raw_config}.  Validating...")
-            valid_config = CONFIG_SCHEMA(raw_config)
+            valid_config: Dict[str, Any] = CONFIG_SCHEMA(raw_config)
             return Config(valid_config)
     except FileNotFoundError:
         print(f"Unable to find configuration.  Please create it in {config_path}")

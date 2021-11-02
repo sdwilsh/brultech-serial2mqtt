@@ -1,5 +1,5 @@
 import abc
-from typing import List
+from typing import Any, Dict, List
 
 from siobrultech_protocols.gem.packets import Packet
 
@@ -38,15 +38,17 @@ class DeviceSensorMixin:
             "state_topic": self._get_state_topic(packet),
         }
         configs = []
-        for config in self._sensor_specific_home_assistant_discovery_config():
+        for config in self._sensor_specific_home_assistant_discovery_config:
             config.apply_common_config(common)
             configs.append(config)
         return configs
 
+    @property
     @abc.abstractmethod
-    def state_data(self) -> dict:
+    def state_data(self) -> Dict[str, Any]:
         pass
 
+    @property
     @abc.abstractmethod
     def _sensor_specific_home_assistant_discovery_config(
         self,

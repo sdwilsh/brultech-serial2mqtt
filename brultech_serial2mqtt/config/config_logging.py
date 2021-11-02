@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import logging
 from enum import Enum, unique
-from typing import Dict
+from typing import Any, Dict
 
 from voluptuous import All, Invalid, Length, Optional, Schema
+
+from brultech_serial2mqtt.config.typing import EmptyConfigDict
 
 
 @unique
@@ -35,7 +37,9 @@ class LogLevel(Enum):
 SCHEMA = Schema(
     {
         Optional("level", default="info"): LogLevel.fromValue,
-        Optional("logs", default={}): {All(str, Length(min=1)): LogLevel.fromValue},
+        Optional("logs", default=EmptyConfigDict): {
+            All(str, Length(min=1)): LogLevel.fromValue
+        },
     },
 )
 
@@ -45,7 +49,7 @@ class LoggingConfig:
 
     schema = SCHEMA
 
-    def __init__(self, logging_config: dict):
+    def __init__(self, logging_config: Dict[str, Any]):
         self._level = logging_config["level"]
         self._logs = logging_config["logs"]
 
