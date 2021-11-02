@@ -1,10 +1,9 @@
-import asyncio
 from typing import Any, Dict, List
 
-from asyncio_mqtt import Client as MQTTClient
 from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config import Config
+from brultech_serial2mqtt.config.config_device import ChannelConfig
 from brultech_serial2mqtt.device.device import DeviceSensorMixin
 from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 
@@ -18,8 +17,9 @@ class Channel(DeviceSensorMixin):
         self._unique_id = f"{previous_packet.serial_number}_{config.device.channels[channel_num].name}"
         self._name = f"{config.device.name}_{config.device.channels[channel_num].name}"
 
-    async def handle_packet(self, new_packet: Packet, mqtt_client: MQTTClient) -> None:
-        self._last_packet = new_packet
+    @property
+    def config(self) -> ChannelConfig:
+        return self._channel_config
 
     @property
     def state_data(self) -> Dict[str, Any]:
@@ -59,9 +59,9 @@ class Channel(DeviceSensorMixin):
                     "unique_id": self._unique_id,
                     "unit_of_measurement": "Ws",
                     "value_template": (
-                        f"value_json.{self._channel_config.name}.net_watt_seconds"
+                        f"value_json.channel_{self._channel_config.number}.net_watt_seconds"
                         if self._channel_config.net_metered
-                        else f"value_json.{self._channel_config.name}.absolute_watt_seconds"
+                        else f"value_json.channel_{self._channel_config.number}.absolute_watt_seconds"
                     ),
                 },
             ),
@@ -76,6 +76,14 @@ class ChannelsManager:
         ]
         self._previous_packet = previous_packet
 
+    @property
+    def state_data(self) -> Dict[str, Dict[str, Any]]:
+        states = {}
+        for c in self.channels:
+            states[f"channel_{c.config.number}"] = c.state_data
+        return states
+
+    @property
     def home_assistant_discovery_config(
         self,
     ) -> List[HomeAssistantDiscoveryConfig]:

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import pprint
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from aiobrultech_serial import Connection as DeviceConnection
 from asyncio_mqtt import Client as MQTTClient
@@ -14,6 +15,7 @@ from brultech_serial2mqtt.config import load_config
 from brultech_serial2mqtt.config.config_device import DeviceCOM
 from brultech_serial2mqtt.config.config_logging import LoggingConfig
 from brultech_serial2mqtt.device.channel import ChannelsManager
+from brultech_serial2mqtt.device.device import get_device_state_topic
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +93,7 @@ class BrultechSerial2MQTT:
             packet = await self._first_packet
             configs = ChannelsManager(
                 self._config, packet
-            ).home_assistant_discovery_config()
+            ).home_assistant_discovery_config
             try:
                 for config in configs:
                     topic = f"{self._config.mqtt.home_assistant.discovery_prefix}/{config.component}/{config.object_id}/config"
@@ -133,4 +135,13 @@ class BrultechSerial2MQTT:
     async def _publish_packet(
         self, packet: DevicePacket, mqtt_client: MQTTClient
     ) -> None:
-        pass
+        state: Dict[str, Any] = {}
+        state.update(ChannelsManager(self._config, packet).state_data)
+        json_state = json.dumps(state, indent=2)
+        topic = get_device_state_topic(packet, self._config.mqtt)
+        await mqtt_client.publish(
+            topic=topic,
+            payload=json_state,
+            qos=1,
+        )
+        logger.debug(f"Published packet date to {topic}:\n{pprint.pformat(state)}")

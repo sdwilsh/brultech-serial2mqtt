@@ -8,16 +8,14 @@ from brultech_serial2mqtt.const import HOME_ASSISTANT_DOMAIN
 from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 
 
+def get_device_state_topic(packet: Packet, mqtt_config: MQTTConfig) -> str:
+    return f"{mqtt_config.topic_prefix}/gem_{packet.serial_number}/state"
+
+
 class DeviceSensorMixin:
     def __init__(self, device_name: str, mqtt_config: MQTTConfig):
         self._device_name = device_name
         self._mqtt_config = mqtt_config
-
-    def _get_unique_id_from_packet(self, packet: Packet) -> str:
-        return f"gem_{packet.device_id}"
-
-    def _get_state_topic(self, packet: Packet) -> str:
-        return f"{self._mqtt_config.topic_prefix}/{self._get_unique_id_from_packet(packet)}/state"
 
     def home_assistant_discovery_config(
         self, packet: Packet
@@ -33,7 +31,7 @@ class DeviceSensorMixin:
                 "model": "GreenEye Monitor",
                 "name": self._device_name,
             },
-            "state_topic": self._get_state_topic(packet),
+            "state_topic": get_device_state_topic(packet, self._mqtt_config),
         }
         configs = []
         for config in self._sensor_specific_home_assistant_discovery_config:
