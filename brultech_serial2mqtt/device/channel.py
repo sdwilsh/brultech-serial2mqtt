@@ -3,7 +3,6 @@ from typing import Any, Dict, List
 from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config import Config
-from brultech_serial2mqtt.config.config_device import ChannelConfig
 from brultech_serial2mqtt.device.device import DeviceSensorMixin
 from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 
@@ -16,10 +15,6 @@ class Channel(DeviceSensorMixin):
         self._mqtt_config = config.mqtt
         self._unique_id = f"{previous_packet.serial_number}_{config.device.channels[channel_num].name}"
         self._name = f"{config.device.name}_{config.device.channels[channel_num].name}"
-
-    @property
-    def config(self) -> ChannelConfig:
-        return self._channel_config
 
     @property
     def state_data(self) -> Dict[str, Any]:
@@ -36,7 +31,7 @@ class Channel(DeviceSensorMixin):
                     "net_watt_seconds": pws[self._channel_config.number],
                 }
             )
-        return {self._channel_config.name: state}
+        return {f"channel_{self._channel_config.number}": state}
 
     @property
     def _sensor_specific_home_assistant_discovery_config(
@@ -80,7 +75,7 @@ class ChannelsManager:
     def state_data(self) -> Dict[str, Dict[str, Any]]:
         states = {}
         for c in self.channels:
-            states[f"channel_{c.config.number}"] = c.state_data
+            states.update(c.state_data)
         return states
 
     @property
