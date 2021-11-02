@@ -83,3 +83,8 @@ class TestLoggingConfig(unittest.TestCase):
         self._setLoggingConfig({"level": "notareallevel"})
         with self.assertRaises(MultipleInvalid):
             load_config(self.root.name)
+
+    def test_additional_logging(self):
+        self._setLoggingConfig({"logs": {"siobrultech_protocols": "info"}})
+        config = load_config(self.root.name).logging
+        self.assertDictEqual(config.logs, {"siobrultech_protocols": LogLevel.INFO})

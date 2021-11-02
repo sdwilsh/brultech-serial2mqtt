@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import logging
 from enum import Enum, unique
+from typing import Dict
 
-from voluptuous import Invalid, Optional, Schema
+from voluptuous import All, Invalid, Length, Optional, Schema
 
 
 @unique
@@ -34,6 +35,7 @@ class LogLevel(Enum):
 SCHEMA = Schema(
     {
         Optional("level", default="info"): LogLevel.fromValue,
+        Optional("logs", default={}): {All(str, Length(min=1)): LogLevel.fromValue},
     },
 )
 
@@ -45,8 +47,14 @@ class LoggingConfig:
 
     def __init__(self, logging_config: dict):
         self._level = logging_config["level"]
+        self._logs = logging_config["logs"]
 
     @property
     def level(self) -> LogLevel:
         """Return the configured log level."""
         return self._level
+
+    @property
+    def logs(self) -> Dict[str, LogLevel]:
+        """Return the configured log level for specific libraries."""
+        return self._logs

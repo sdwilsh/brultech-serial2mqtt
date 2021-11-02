@@ -12,6 +12,7 @@ from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFo
 
 from brultech_serial2mqtt.config import load_config
 from brultech_serial2mqtt.config.config_device import DeviceCOM
+from brultech_serial2mqtt.config.config_logging import LoggingConfig
 from brultech_serial2mqtt.device.channel import ChannelsManager
 
 logger = logging.getLogger(__name__)
@@ -23,7 +24,21 @@ class BrultechSerial2MQTT:
         self._first_packet: asyncio.Future[DevicePacket] = asyncio.Future()
         self._last_packet: Optional[DevicePacket] = None
 
-        logger.setLevel(self._config.logging.level.value)
+        BrultechSerial2MQTT.setup_logging(self._config.logging)
+
+    @classmethod
+    def setup_logging(cls, config: LoggingConfig) -> None:
+        """Sets up logging based on the specified logging."""
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(
+            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        )
+        logger.addHandler(stream_handler)
+        logger.setLevel(config.level.value)
+        for logger_name, level in config.logs.items():
+            l = logging.getLogger(logger_name)
+            l.addHandler(stream_handler)
+            l.setLevel(level.value)
 
     async def start(self) -> None:
         """Starts listening to the serial connection and publishes packets to MQTT"""
