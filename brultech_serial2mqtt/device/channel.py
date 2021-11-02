@@ -26,27 +26,24 @@ class Channel(DeviceSensorMixin):
     def state_data(self) -> Dict[str, Any]:
         # Channel numbers are 1-based, but list index is 0-based
         channel_index = self._channel_config.number - 1
-        state = {}
+        state: Dict[str, Any] = {
+            "absolute_watt_seconds": self._last_packet.absolute_watt_seconds[
+                channel_index
+            ],
+        }
 
         if self._last_packet.currents is not None:
             state.update({"current": self._last_packet.currents[channel_index]})
 
-        if self._channel_config.net_metered:
-            polarized_watt_seconds = self._last_packet.polarized_watt_seconds
-            assert polarized_watt_seconds is not None
+        if self._last_packet.polarized_watt_seconds is not None:
             state.update(
                 {
-                    "net_watt_seconds": polarized_watt_seconds[channel_index],
-                }
-            )
-        else:
-            state.update(
-                {
-                    "absolute_watt_seconds": self._last_packet.absolute_watt_seconds[
+                    "net_watt_seconds": self._last_packet.polarized_watt_seconds[
                         channel_index
                     ],
                 }
             )
+
         return {f"channel_{self._channel_config.number}": state}
 
     @property
