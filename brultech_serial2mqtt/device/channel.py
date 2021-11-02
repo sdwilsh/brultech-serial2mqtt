@@ -26,8 +26,11 @@ class Channel(DeviceSensorMixin):
     def state_data(self) -> Dict[str, Any]:
         # Channel numbers are 1-based, but list index is 0-based
         channel_index = self._channel_config.number - 1
-        assert self._last_packet.currents is not None
-        state = {"current": self._last_packet.currents[channel_index]}
+        state = {}
+
+        if self._last_packet.currents is not None:
+            state.update({"current": self._last_packet.currents[channel_index]})
+
         if self._channel_config.net_metered:
             polarized_watt_seconds = self._last_packet.polarized_watt_seconds
             assert polarized_watt_seconds is not None
@@ -50,20 +53,8 @@ class Channel(DeviceSensorMixin):
     def _sensor_specific_home_assistant_discovery_config(
         self,
     ) -> List[HomeAssistantDiscoveryConfig]:
-        return [
-            # Future improvements: Power
-            HomeAssistantDiscoveryConfig(
-                component="sensor",
-                config={
-                    "device_class": "current",
-                    "name": f"{self._name} Current",
-                    "qos": 1,
-                    "state_class": "measurement",
-                    "unique_id": f"{self._unique_id_base}_current",
-                    "unit_of_measurement": "A",
-                    "value_template": f"{{{{ value_json.channel_{self._channel_config.number}.current }}}}",
-                },
-            ),
+        # Future improvements: Power
+        entities = [
             HomeAssistantDiscoveryConfig(
                 component="sensor",
                 config={
@@ -85,6 +76,22 @@ class Channel(DeviceSensorMixin):
                 },
             ),
         ]
+        if self._last_packet.currents is not None:
+            entities.append(
+                HomeAssistantDiscoveryConfig(
+                    component="sensor",
+                    config={
+                        "device_class": "current",
+                        "name": f"{self._name} Current",
+                        "qos": 1,
+                        "state_class": "measurement",
+                        "unique_id": f"{self._unique_id_base}_current",
+                        "unit_of_measurement": "A",
+                        "value_template": f"{{{{ value_json.channel_{self._channel_config.number}.current }}}}",
+                    },
+                ),
+            )
+        return entities
 
 
 class ChannelsManager:
