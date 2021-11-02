@@ -1,5 +1,5 @@
 from enum import Enum, unique
-from typing import Iterator
+from typing import Any, Dict, Iterator, List
 
 from voluptuous import All, Match
 from voluptuous import Optional as OptionalField
@@ -39,12 +39,14 @@ SCHEMA = Schema(
 
 
 class ChannelConfig:
-    def __init__(self, channel: dict):
+    def __init__(self, channel_config: Dict[str, Any]):
         self._name = (
-            channel["name"] if "name" in channel else f"channel_{channel['number']}"
+            channel_config["name"]
+            if "name" in channel_config
+            else f"channel_{channel_config['number']}"
         )
-        self._net_metered = channel["net_metered"]
-        self._number = channel["number"]
+        self._net_metered = channel_config["net_metered"]
+        self._number = channel_config["number"]
 
     @property
     def name(self) -> str:
@@ -60,9 +62,9 @@ class ChannelConfig:
 
 
 class ChannelsConfig:
-    def __init__(self, channels: dict):
+    def __init__(self, channels_config: List[Dict[str, Any]]):
         self._channels: dict[int, ChannelConfig] = {
-            c["number"]: ChannelConfig(c) for c in channels
+            c["number"]: ChannelConfig(c) for c in channels_config
         }
 
     def __getitem__(self, key: int) -> ChannelConfig:
@@ -85,15 +87,17 @@ class DeviceCOM(Enum):
 class DeviceConfig:
     schema = SCHEMA
 
-    def __init__(self, device: dict):
-        self._baud = device["baud"]
-        self._channels = ChannelsConfig(device["channels"])
+    def __init__(self, device_config: Dict[str, Any]):
+        self._baud = device_config["baud"]
+        self._channels = ChannelsConfig(device_config["channels"])
         self._device_com = (
-            DeviceCOM.COM1 if device["device_com"] == "COM1" else DeviceCOM.COM2
+            DeviceCOM.COM1 if device_config["device_com"] == "COM1" else DeviceCOM.COM2
         )
-        self._name: str = device["name"]
-        self._packet_send_interval_seconds = device["packet_send_interval_seconds"]
-        self._url = device["url"]
+        self._name: str = device_config["name"]
+        self._packet_send_interval_seconds = device_config[
+            "packet_send_interval_seconds"
+        ]
+        self._url = device_config["url"]
 
     @property
     def baud(self) -> int:

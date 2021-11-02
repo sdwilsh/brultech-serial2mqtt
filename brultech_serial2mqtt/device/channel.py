@@ -1,5 +1,5 @@
 import asyncio
-from typing import List
+from typing import Any, Dict, List
 
 from asyncio_mqtt import Client as MQTTClient
 from siobrultech_protocols.gem.packets import Packet
@@ -48,7 +48,7 @@ class Channel(DeviceSensorMixin):
             )
 
     @property
-    def state_data(self) -> dict:
+    def state_data(self) -> Dict[str, Any]:
         state = {
             "absolute_watt_seconds": self._last_packet.absolute_watt_seconds[
                 self._channel_config.number
@@ -64,6 +64,7 @@ class Channel(DeviceSensorMixin):
             )
         return {self._channel_config.name: state}
 
+    @property
     def _sensor_specific_home_assistant_discovery_config(
         self,
     ) -> List[HomeAssistantDiscoveryConfig]:

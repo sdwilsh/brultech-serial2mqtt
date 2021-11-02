@@ -1,4 +1,5 @@
 from copy import deepcopy
+from typing import Any, Dict
 
 
 class HomeAssistantDiscoveryConfig:
@@ -7,7 +8,7 @@ class HomeAssistantDiscoveryConfig:
     https://www.home-assistant.io/docs/mqtt/discovery/
     """
 
-    def __init__(self, component: str, object_id: str, config: dict) -> None:
+    def __init__(self, component: str, object_id: str, config: Dict[str, Any]) -> None:
         self._component = component
         self._object_id = object_id
         self._config = config
@@ -21,10 +22,10 @@ class HomeAssistantDiscoveryConfig:
         return self._object_id
 
     @property
-    def config(self) -> dict:
+    def config(self) -> Dict[str, Any]:
         return self._config
 
-    def apply_common_config(self, common_config: dict):
+    def apply_common_config(self, common_config: Dict[str, Any]):
         """
         Applies the given common configuration, allowing the current
         configuration to override any part of it.

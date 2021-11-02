@@ -3,6 +3,7 @@ import os
 import shutil
 import tempfile
 import unittest
+from typing import Dict, Union
 
 import yaml
 
@@ -26,7 +27,9 @@ class TestLoggingSetup(unittest.TestCase):
         self.root.cleanup()
         self._resetLogger(logging.getLogger("brultech_serial2mqtt"))
 
-    def _setLoggingConfig(self, logging_config: dict) -> None:
+    def _setLoggingConfig(
+        self, logging_config: Dict[str, Union[str, Dict[str, str]]]
+    ) -> None:
         path = os.path.join(self.root.name, CONFIG_PATH)
         with open(path, "r") as config_file:
             config = yaml.load(config_file, Loader=yaml.SafeLoader)

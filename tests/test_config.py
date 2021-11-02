@@ -2,6 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
+from typing import Dict, Union
 
 import yaml
 from voluptuous.error import MultipleInvalid
@@ -65,7 +66,9 @@ class TestLoggingConfig(unittest.TestCase):
     def tearDown(self) -> None:
         self.root.cleanup()
 
-    def _setLoggingConfig(self, logging_config: dict) -> None:
+    def _setLoggingConfig(
+        self, logging_config: Dict[str, Union[str, Dict[str, str]]]
+    ) -> None:
         path = os.path.join(self.root.name, CONFIG_PATH)
         with open(path, "r") as config_file:
             config = yaml.load(config_file, Loader=yaml.SafeLoader)
