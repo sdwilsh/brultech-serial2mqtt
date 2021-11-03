@@ -152,4 +152,4 @@ class BrultechSerial2MQTT:
             payload=json_state,
             qos=1,
         )
-        logger.debug(f"Published packet date to {topic}:\n{pprint.pformat(state)}")
+        logger.debug(f"Published packet data to {topic}:\n{pprint.pformat(state)}")
