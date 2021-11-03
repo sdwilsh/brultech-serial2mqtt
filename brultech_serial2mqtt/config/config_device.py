@@ -51,7 +51,7 @@ SCHEMA = Schema(
         RequiredField("name"): All(str, Length(min=1)),
         OptionalField(
             "packet_send_interval_seconds",
-            default=5,
+            default=8,
         ): All(int, Range(min=5, max=256)),
         RequiredField("url"): str,
     },
