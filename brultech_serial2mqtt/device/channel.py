@@ -17,7 +17,7 @@ class Channel(DeviceSensorMixin):
         self._unique_id_base = (
             f"gem_{previous_packet.serial_number}_channel_{channel_num}"
         )
-        self._name = f"{config.device.name}_{config.device.channels[channel_num].name}"
+        self._name = f"{config.device.name} {config.device.channels[channel_num].name}"
 
     async def handle_new_packet(self, packet: Packet) -> None:
         self._last_packet = packet
