@@ -104,15 +104,15 @@ class Channel(DeviceSensorMixin):
 
 class ChannelsManager:
     def __init__(self, config: Config, previous_packet: Packet):
-        self.channels = [
+        self._channels = {
             Channel(config, c_conf.number, previous_packet)
             for c_conf in config.device.channels
-        ]
+        }
         self._previous_packet = previous_packet
 
     async def handle_new_packet(self, packet: Packet) -> None:
         updates: List[Coroutine[None, None, None]] = []
-        for c in self.channels:
+        for c in self._channels:
             updates.append(c.handle_new_packet(packet))
         await asyncio.gather(*updates)
         self._previous_packet = packet
@@ -120,7 +120,7 @@ class ChannelsManager:
     @property
     def state_data(self) -> Dict[str, Dict[str, Any]]:
         states = {}
-        for c in self.channels:
+        for c in self._channels:
             states.update(c.state_data)
         return states
 
@@ -130,6 +130,6 @@ class ChannelsManager:
     ) -> List[HomeAssistantDiscoveryConfig]:
         """The sensor(s) for Home Assistant MQTT Discovery."""
         configs = []
-        for c in self.channels:
+        for c in self._channels:
             configs.extend(c.home_assistant_discovery_config(self._previous_packet))
         return configs
