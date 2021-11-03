@@ -38,7 +38,7 @@ class TestSimpleConfig(unittest.TestCase):
         self.assertEqual(config.device.channels[1].number, 1)
         self.assertEqual(config.device.device_com, DeviceCOM.COM1)
         self.assertEqual(config.device.name, "gem")
-        self.assertEqual(config.device.packet_send_interval_seconds, 5)
+        self.assertEqual(config.device.packet_send_interval_seconds, 8)
         self.assertEqual(config.device.url, "/dev/ttyUSB0")
 
         self.assertEqual(config.logging.level, LogLevel.INFO)
