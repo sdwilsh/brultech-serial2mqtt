@@ -127,19 +127,55 @@ class Channel(DeviceSensorMixin):
         return entities
 
 
+class AggregatedEnergyChannel(DeviceSensorMixin):
+    def __init__(
+        self,
+        config: Config,
+        name: str,
+        unique_id: str,
+        value_template: str,
+        reference_packet: Packet,
+    ):
+        super().__init__(config.device.name, config.mqtt)
+        self._name = f"{config.device.name} {name}"
+        self._unique_id = f"gem_{reference_packet.serial_number}_{unique_id}"
+        self._value_template = value_template
+
+    async def handle_new_packet(self, packet: Packet) -> None:
+        pass
+
+    @property
+    def state_data(self) -> Dict[str, Any]:
+        raise Exception("not implemented; should use real channel data to compute!")
+
+    @property
+    def _sensor_specific_home_assistant_discovery_config(
+        self,
+    ) -> List[HomeAssistantDiscoveryConfig]:
+        return [
+            HomeAssistantDiscoveryConfig(
+                component="sensor",
+                config={
+                    "device_class": "energy",
+                    "name": f"{self._name}",
+                    "qos": 1,
+                    "state_class": "total_increasing",
+                    "unique_id": f"{self._unique_id}",
+                    "unit_of_measurement": "Wh",
+                    "value_template": f"{self._value_template}",
+                },
+            ),
+        ]
+
+
 class ChannelsManager:
     def __init__(self, config: Config, previous_packet: Packet):
         self._channels = {
             Channel(config, c_conf.number, previous_packet)
             for c_conf in config.device.channels
         }
-        self._channels_by_type: Dict[ChannelType, Set[Channel]] = {}
-        for t in ChannelType:
-            self._channels_by_type[t] = set()
-        for c in self._channels:
-            self._channels_by_type[c.config.type].add(c)
-
         self._previous_packet = previous_packet
+        self._aggregate_channels = self._get_aggregate_channels(config)
 
     async def handle_new_packet(self, packet: Packet) -> None:
         updates: List[Coroutine[None, None, None]] = []
@@ -164,43 +200,53 @@ class ChannelsManager:
         for c in self._channels:
             configs.extend(c.home_assistant_discovery_config(self._previous_packet))
 
+        for c in self._aggregate_channels:
+            configs.extend(c.home_assistant_discovery_config(self._previous_packet))
+
+        return configs
+
+    def _get_aggregate_channels(self, config: Config) -> Set[AggregatedEnergyChannel]:
+        channels_by_type: Dict[ChannelType, Set[Channel]] = {}
+        for t in ChannelType:
+            channels_by_type[t] = set()
+        for c in self._channels:
+            channels_by_type[c.config.type].add(c)
+
+        main_absolute = " + ".join(
+            [
+                f"value_json.channel_{c.config.number}.absolute_watt_seconds"
+                for c in channels_by_type[ChannelType.MAIN]
+            ]
+        )
+        main_polarized = " + ".join(
+            [
+                f"value_json.channel_{c.config.number}.polarized_watt_seconds"
+                for c in channels_by_type[ChannelType.MAIN]
+            ]
+        )
+        solar_downstream_polarized = " + ".join(
+            [
+                f"value_json.channel_{c.config.number}.polarized_watt_seconds"
+                for c in channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]
+            ]
+        )
+
+        channels = set()
         if (
-            len(self._channels_by_type[ChannelType.MAIN]) > 0
-            and len(self._channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
+            len(channels_by_type[ChannelType.MAIN]) > 0
+            and len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
+            and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) == 0
         ):
             # Total consumption of main power looks like this:
             # main_absolute + solar_polarized - main_polarized
-            main_absolute = " + ".join(
-                [
-                    f"value_json.channel_{c.config.number}.absolute_watt_seconds"
-                    for c in self._channels_by_type[ChannelType.MAIN]
-                ]
-            )
-            main_polarized = " + ".join(
-                [
-                    f"value_json.channel_{c.config.number}.polarized_watt_seconds"
-                    for c in self._channels_by_type[ChannelType.MAIN]
-                ]
-            )
-            solar_downstream_polarized = " + ".join(
-                [
-                    f"value_json.channel_{c.config.number}.polarized_watt_seconds"
-                    for c in self._channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]
-                ]
-            )
-            configs.append(
-                HomeAssistantDiscoveryConfig(
-                    component="sensor",
-                    config={
-                        "device_class": "energy",
-                        "name": f"Main Consumed Energy",
-                        "qos": 1,
-                        "state_class": "total_increasing",
-                        "unique_id": f"main_consumed_energy",
-                        "unit_of_measurement": "Wh",
-                        "value_template": f"{{{{ ((({main_absolute}) + ({solar_downstream_polarized}) - ({main_polarized})) / 60) | round }}}}",
-                    },
-                ),
+            channels.add(
+                AggregatedEnergyChannel(
+                    config=config,
+                    name="Consumed Energy",
+                    unique_id="consumed_energy",
+                    value_template=f"{{{{ ((({main_absolute}) + ({solar_downstream_polarized}) - ({main_polarized})) / 60) | round }}}}",
+                    reference_packet=self._previous_packet,
+                )
             )
 
-        return configs
+        return channels
