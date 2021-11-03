@@ -1,9 +1,10 @@
 import asyncio
-from typing import Any, Coroutine, Dict, List
+from typing import Any, Coroutine, Dict, List, Set
 
 from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config import Config
+from brultech_serial2mqtt.config.config_device import ChannelConfig, ChannelType
 from brultech_serial2mqtt.device.device import DeviceSensorMixin
 from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 
@@ -21,6 +22,10 @@ class Channel(DeviceSensorMixin):
 
     async def handle_new_packet(self, packet: Packet) -> None:
         self._last_packet = packet
+
+    @property
+    def config(self) -> ChannelConfig:
+        return self._channel_config
 
     @property
     def state_data(self) -> Dict[str, Any]:
@@ -128,6 +133,12 @@ class ChannelsManager:
             Channel(config, c_conf.number, previous_packet)
             for c_conf in config.device.channels
         }
+        self._channels_by_type: Dict[ChannelType, Set[Channel]] = {}
+        for t in ChannelType:
+            self._channels_by_type[t] = {}  # type: ignore
+        for c in self._channels:
+            self._channels_by_type[c.config.type].add(c)
+
         self._previous_packet = previous_packet
 
     async def handle_new_packet(self, packet: Packet) -> None:
@@ -152,4 +163,44 @@ class ChannelsManager:
         configs = []
         for c in self._channels:
             configs.extend(c.home_assistant_discovery_config(self._previous_packet))
+
+        if (
+            len(self._channels_by_type[ChannelType.MAIN]) > 0
+            and len(self._channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
+        ):
+            # Total consumption of main power looks like this:
+            # main_absolute + solar_polarized - main_polarized
+            main_absolute = " + ".join(
+                [
+                    f"value_json.channel_{c.config.number}.absolute_watt_seconds"
+                    for c in self._channels_by_type[ChannelType.MAIN]
+                ]
+            )
+            main_polarized = " + ".join(
+                [
+                    f"value_json.channel_{c.config.number}.polarized_watt_seconds"
+                    for c in self._channels_by_type[ChannelType.MAIN]
+                ]
+            )
+            solar_downstream_polarized = " + ".join(
+                [
+                    f"value_json.channel_{c.config.number}.polarized_watt_seconds"
+                    for c in self._channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]
+                ]
+            )
+            configs.append(
+                HomeAssistantDiscoveryConfig(
+                    component="sensor",
+                    config={
+                        "device_class": "energy",
+                        "name": f"Main Consumed Energy",
+                        "qos": 1,
+                        "state_class": "total_increasing",
+                        "unique_id": f"main_consumed_energy",
+                        "unit_of_measurement": "Wh",
+                        "value_template": f"{{{{ ((({main_absolute}) + ({solar_downstream_polarized}) - ({main_polarized})) / 60) | round }}}}",
+                    },
+                ),
+            )
+
         return configs
