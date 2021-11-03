@@ -56,7 +56,7 @@ class Channel(DeviceSensorMixin):
                 component="sensor",
                 config={
                     "device_class": "energy",
-                    "name": f"{self._name} Energy",
+                    "name": f"{self._name} Absolute Energy",
                     "qos": 1,
                     "state_class": "total_increasing",
                     "unique_id": f"{self._unique_id_base}_absolute_energy",
@@ -73,7 +73,7 @@ class Channel(DeviceSensorMixin):
                     component="sensor",
                     config={
                         "device_class": "energy",
-                        "name": f"{self._name} Energy",
+                        "name": f"{self._name} Polarized Energy",
                         "qos": 1,
                         "state_class": "total_increasing",
                         "unique_id": f"{self._unique_id_base}_polarized_energy",
