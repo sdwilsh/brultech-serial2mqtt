@@ -70,7 +70,7 @@ class Channel(DeviceSensorMixin):
                         "unique_id": f"{self._unique_id_base}_absolute_energy",
                         "unit_of_measurement": "Wh",
                         "value_template": (
-                            f"{{{{ (value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 60) | round }}}}"
+                            f"{{{{ (value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 3600) | round }}}}"
                         ),
                     },
                 ),
@@ -86,7 +86,7 @@ class Channel(DeviceSensorMixin):
                         "unique_id": f"{self._unique_id_base}_polarized_energy",
                         "unit_of_measurement": "Wh",
                         "value_template": (
-                            f"{{{{ (value_json.channel_{self._channel_config.number}.polarized_watt_seconds / 60) | round }}}}"
+                            f"{{{{ (value_json.channel_{self._channel_config.number}.polarized_watt_seconds / 3600) | round }}}}"
                         ),
                     },
                 ),
@@ -103,7 +103,7 @@ class Channel(DeviceSensorMixin):
                         "unique_id": f"{self._unique_id_base}_energy",
                         "unit_of_measurement": "Wh",
                         "value_template": (
-                            f"{{{{ (value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 60) | round }}}}"
+                            f"{{{{ (value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 3600) | round }}}}"
                         ),
                     },
                 ),
@@ -250,7 +250,7 @@ class ChannelsManager:
                     config=config,
                     name="Consumed Energy",
                     unique_id="consumed_energy",
-                    value_template=f"{{{{ ((({main_absolute}) + ({solar_downstream_polarized}) - ({main_polarized})) / 60) | round }}}}",
+                    value_template=f"{{{{ ((({main_absolute}) + ({solar_downstream_polarized}) - ({main_polarized})) / 3600) | round }}}}",
                     reference_packet=self._previous_packet,
                 )
             )
