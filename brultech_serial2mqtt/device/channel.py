@@ -38,7 +38,7 @@ class Channel(DeviceSensorMixin):
         if self._last_packet.polarized_watt_seconds is not None:
             state.update(
                 {
-                    "net_watt_seconds": self._last_packet.polarized_watt_seconds[
+                    "polarized_watt_seconds": self._last_packet.polarized_watt_seconds[
                         channel_index
                     ],
                 }
@@ -58,21 +58,32 @@ class Channel(DeviceSensorMixin):
                     "device_class": "energy",
                     "name": f"{self._name} Energy",
                     "qos": 1,
-                    "state_class": (
-                        "total"
-                        if self._channel_config.net_metered
-                        else "total_increasing"
-                    ),
-                    "unique_id": f"{self._unique_id_base}_energy",
+                    "state_class": "total_increasing",
+                    "unique_id": f"{self._unique_id_base}_absolute_energy",
                     "unit_of_measurement": "Wh",
                     "value_template": (
-                        f"{{{{ (value_json.channel_{self._channel_config.number}.net_watt_seconds / 60) | round }}}}"
-                        if self._channel_config.net_metered
-                        else f"{{{{ (value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 60) | round }}}}"
+                        f"{{{{ (value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 60) | round }}}}"
                     ),
                 },
             ),
         ]
+        if self._channel_config.net_metered:
+            entities.append(
+                HomeAssistantDiscoveryConfig(
+                    component="sensor",
+                    config={
+                        "device_class": "energy",
+                        "name": f"{self._name} Energy",
+                        "qos": 1,
+                        "state_class": "total_increasing",
+                        "unique_id": f"{self._unique_id_base}_polarized_energy",
+                        "unit_of_measurement": "Wh",
+                        "value_template": (
+                            f"{{{{ (value_json.channel_{self._channel_config.number}.polarized_watt_seconds / 60) | round }}}}"
+                        ),
+                    },
+                )
+            )
         if self._last_packet.currents is not None:
             entities.append(
                 HomeAssistantDiscoveryConfig(
