@@ -135,7 +135,7 @@ class ChannelsManager:
         }
         self._channels_by_type: Dict[ChannelType, Set[Channel]] = {}
         for t in ChannelType:
-            self._channels_by_type[t] = {}  # type: ignore
+            self._channels_by_type[t] = set()
         for c in self._channels:
             self._channels_by_type[c.config.type].add(c)
 
