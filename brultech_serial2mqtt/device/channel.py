@@ -35,7 +35,8 @@ class Channel(DeviceSensorMixin):
         if self._last_packet.currents is not None:
             state.update({"current": self._last_packet.currents[channel_index]})
 
-        if self._last_packet.polarized_watt_seconds is not None:
+        if self._channel_config.polarized:
+            assert self._last_packet.polarized_watt_seconds is not None
             state.update(
                 {
                     "polarized_watt_seconds": self._last_packet.polarized_watt_seconds[
