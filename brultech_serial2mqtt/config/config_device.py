@@ -1,12 +1,32 @@
+from __future__ import annotations
+
 from enum import Enum, unique
 from typing import Any, Dict, Iterator, List
 
-from voluptuous import All, Match
+from voluptuous import All, Invalid, Match
 from voluptuous import Optional as OptionalField
 from voluptuous import Range
 from voluptuous import Required as RequiredField
 from voluptuous import Schema
 from voluptuous.validators import Length
+
+
+@unique
+class ChannelType(Enum):
+    NORMAL = 1
+    MAIN = 2
+    SOLAR_DOWNSTREAM_MAIN = 3
+    SOLAR_UPSTREAM_MAIN = 4
+
+    @classmethod
+    def fromValue(cls, value: str) -> ChannelType:
+        for t in cls:
+            if value.upper() == t.name:
+                return t
+        raise Invalid(
+            f"Must be a valid channel type ({', '.join([t.name for t in cls])})"
+        )
+
 
 SCHEMA = Schema(
     {
@@ -16,7 +36,7 @@ SCHEMA = Schema(
                 Schema(
                     {
                         OptionalField("name"): All(str, Length(min=1)),
-                        OptionalField("net_metered", default=False): bool,
+                        OptionalField("type", default="normal"): ChannelType.fromValue,
                         RequiredField("number"): All(int, Range(min=1, max=32)),
                     }
                 )
@@ -39,32 +59,39 @@ SCHEMA = Schema(
 
 
 class ChannelConfig:
-    def __init__(self, channel_config: Dict[str, Any]):
+    def __init__(self, channel_config: Dict[str, Any], polarized: bool):
         self._name = (
             channel_config["name"]
             if "name" in channel_config
             else f"channel_{channel_config['number']}"
         )
-        self._net_metered = channel_config["net_metered"]
         self._number = channel_config["number"]
+        self._polarized = polarized
+        self._type = channel_config["type"]
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def net_metered(self) -> bool:
-        return self._net_metered
-
-    @property
     def number(self) -> int:
         return self._number
+
+    @property
+    def polarized(self) -> bool:
+        return self._polarized
+
+    @property
+    def type(self) -> ChannelType:
+        return self._type
 
 
 class ChannelsConfig:
     def __init__(self, channels_config: List[Dict[str, Any]]):
+        polarized_channels = ChannelsConfig._get_polarized_channels(channels_config)
         self._channels: dict[int, ChannelConfig] = {
-            c["number"]: ChannelConfig(c) for c in channels_config
+            c["number"]: ChannelConfig(c, c["number"] in polarized_channels)
+            for c in channels_config
         }
 
     def __getitem__(self, key: int) -> ChannelConfig:
@@ -76,6 +103,28 @@ class ChannelsConfig:
 
     def __iter__(self) -> Iterator[ChannelConfig]:
         return iter(self._channels.values())
+
+    @staticmethod
+    def _get_polarized_channels(channels_config: List[Dict[str, Any]]) -> List[int]:
+        polarized_channels = []
+
+        # Any MAIN should be polarized if there is a solar channel downstream of it.
+        include_main = False
+        if ChannelType.SOLAR_DOWNSTREAM_MAIN in [c["type"] for c in channels_config]:
+            include_main = True
+
+        for c in channels_config:
+            if include_main and c["type"] == ChannelType.MAIN:
+                polarized_channels.append(c)
+
+            # Any solar channel should be polarized.
+            if (
+                c["type"] == ChannelType.SOLAR_DOWNSTREAM_MAIN
+                or c["type"] == ChannelType.SOLAR_UPSTREAM_MAIN
+            ):
+                polarized_channels.append(c)
+
+        return polarized_channels
 
 
 @unique

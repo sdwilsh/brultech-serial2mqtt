@@ -8,7 +8,7 @@ import yaml
 from voluptuous.error import MultipleInvalid
 
 from brultech_serial2mqtt.config import load_config
-from brultech_serial2mqtt.config.config_device import DeviceCOM
+from brultech_serial2mqtt.config.config_device import ChannelType, DeviceCOM
 from brultech_serial2mqtt.config.config_logging import LogLevel
 from brultech_serial2mqtt.const import CONFIG_PATH
 
@@ -34,7 +34,7 @@ class TestSimpleConfig(unittest.TestCase):
         self.assertEqual(config.device.baud, 115200)
         self.assertEqual(len(config.device.channels), 1)
         self.assertEqual(config.device.channels[1].name, "channel_1")
-        self.assertFalse(config.device.channels[1].net_metered)
+        self.assertEqual(config.device.channels[1].type, ChannelType.NORMAL)
         self.assertEqual(config.device.channels[1].number, 1)
         self.assertEqual(config.device.device_com, DeviceCOM.COM1)
         self.assertEqual(config.device.name, "gem")

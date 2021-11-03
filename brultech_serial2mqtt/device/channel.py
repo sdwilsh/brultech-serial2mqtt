@@ -67,7 +67,7 @@ class Channel(DeviceSensorMixin):
                 },
             ),
         ]
-        if self._channel_config.net_metered:
+        if self._channel_config.polarized:
             entities.append(
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
