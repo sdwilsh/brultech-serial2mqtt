@@ -55,44 +55,44 @@ class Channel(DeviceSensorMixin):
     @property
     def _sensor_specific_home_assistant_discovery_config(
         self,
-    ) -> List[HomeAssistantDiscoveryConfig]:
+    ) -> Set[HomeAssistantDiscoveryConfig]:
         # Future improvements: Power
-        entities = []
+        entities = set()
         if self._channel_config.polarized:
-            entities.extend(
-                [
-                    HomeAssistantDiscoveryConfig(
-                        component="sensor",
-                        config={
-                            "device_class": "energy",
-                            "name": f"{self._name} Absolute Energy",
-                            "qos": 1,
-                            "state_class": "total_increasing",
-                            "unique_id": f"{self._unique_id_base}_absolute_energy",
-                            "unit_of_measurement": "Wh",
-                            "value_template": (
-                                f"{{{{ (value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 60) | round }}}}"
-                            ),
-                        },
-                    ),
-                    HomeAssistantDiscoveryConfig(
-                        component="sensor",
-                        config={
-                            "device_class": "energy",
-                            "name": f"{self._name} Polarized Energy",
-                            "qos": 1,
-                            "state_class": "total_increasing",
-                            "unique_id": f"{self._unique_id_base}_polarized_energy",
-                            "unit_of_measurement": "Wh",
-                            "value_template": (
-                                f"{{{{ (value_json.channel_{self._channel_config.number}.polarized_watt_seconds / 60) | round }}}}"
-                            ),
-                        },
-                    ),
-                ]
+            entities.add(
+                HomeAssistantDiscoveryConfig(
+                    component="sensor",
+                    config={
+                        "device_class": "energy",
+                        "name": f"{self._name} Absolute Energy",
+                        "qos": 1,
+                        "state_class": "total_increasing",
+                        "unique_id": f"{self._unique_id_base}_absolute_energy",
+                        "unit_of_measurement": "Wh",
+                        "value_template": (
+                            f"{{{{ (value_json.channel_{self._channel_config.number}.absolute_watt_seconds / 60) | round }}}}"
+                        ),
+                    },
+                ),
+            )
+            entities.add(
+                HomeAssistantDiscoveryConfig(
+                    component="sensor",
+                    config={
+                        "device_class": "energy",
+                        "name": f"{self._name} Polarized Energy",
+                        "qos": 1,
+                        "state_class": "total_increasing",
+                        "unique_id": f"{self._unique_id_base}_polarized_energy",
+                        "unit_of_measurement": "Wh",
+                        "value_template": (
+                            f"{{{{ (value_json.channel_{self._channel_config.number}.polarized_watt_seconds / 60) | round }}}}"
+                        ),
+                    },
+                ),
             )
         else:
-            entities.append(
+            entities.add(
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
@@ -110,7 +110,7 @@ class Channel(DeviceSensorMixin):
             )
 
         if self._last_packet.currents is not None:
-            entities.append(
+            entities.add(
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
@@ -151,8 +151,8 @@ class AggregatedEnergyChannel(DeviceSensorMixin):
     @property
     def _sensor_specific_home_assistant_discovery_config(
         self,
-    ) -> List[HomeAssistantDiscoveryConfig]:
-        return [
+    ) -> Set[HomeAssistantDiscoveryConfig]:
+        return {
             HomeAssistantDiscoveryConfig(
                 component="sensor",
                 config={
@@ -165,7 +165,7 @@ class AggregatedEnergyChannel(DeviceSensorMixin):
                     "value_template": f"{self._value_template}",
                 },
             ),
-        ]
+        }
 
 
 class ChannelsManager:
@@ -194,14 +194,20 @@ class ChannelsManager:
     @property
     def home_assistant_discovery_config(
         self,
-    ) -> List[HomeAssistantDiscoveryConfig]:
+    ) -> Set[HomeAssistantDiscoveryConfig]:
         """The sensor(s) for Home Assistant MQTT Discovery."""
-        configs = []
-        for c in self._channels:
-            configs.extend(c.home_assistant_discovery_config(self._previous_packet))
+        configs = set()
+        for channel in self._channels:
+            for config in channel.home_assistant_discovery_config(
+                self._previous_packet
+            ):
+                configs.add(config)
 
-        for c in self._aggregate_channels:
-            configs.extend(c.home_assistant_discovery_config(self._previous_packet))
+        for channel in self._aggregate_channels:
+            for config in channel.home_assistant_discovery_config(
+                self._previous_packet
+            ):
+                configs.add(config)
 
         return configs
 

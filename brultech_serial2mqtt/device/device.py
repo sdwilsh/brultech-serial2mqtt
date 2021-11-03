@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Dict, List
+from typing import Any, Dict, Set
 
 from siobrultech_protocols.gem.packets import Packet
 
@@ -19,7 +19,7 @@ class DeviceSensorMixin:
 
     def home_assistant_discovery_config(
         self, packet: Packet
-    ) -> List[HomeAssistantDiscoveryConfig]:
+    ) -> Set[HomeAssistantDiscoveryConfig]:
         """The sensor(s) for Home Assistant MQTT Discovery."""
         common = {
             "device": {
@@ -33,10 +33,10 @@ class DeviceSensorMixin:
             },
             "state_topic": get_device_state_topic(packet, self._mqtt_config),
         }
-        configs = []
+        configs = set()
         for config in self._sensor_specific_home_assistant_discovery_config:
             config.apply_common_config(common)
-            configs.append(config)
+            configs.add(config)
         return configs
 
     @abc.abstractmethod
@@ -52,5 +52,5 @@ class DeviceSensorMixin:
     @abc.abstractmethod
     def _sensor_specific_home_assistant_discovery_config(
         self,
-    ) -> List[HomeAssistantDiscoveryConfig]:
+    ) -> Set[HomeAssistantDiscoveryConfig]:
         pass
