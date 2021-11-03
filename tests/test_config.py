@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from typing import Dict, Union
+from typing import Any, Dict, List, Union
 
 import yaml
 from voluptuous.error import MultipleInvalid
@@ -51,6 +51,44 @@ class TestSimpleConfig(unittest.TestCase):
 
         self.assertTrue(config.mqtt.home_assistant.enable)
         self.assertEqual(config.mqtt.home_assistant.discovery_prefix, "homeassistant")
+
+
+class TestChannelConfig(unittest.TestCase):
+    def setUp(self) -> None:
+        self.root = tempfile.TemporaryDirectory(prefix=__class__.__name__)
+        config_dir = os.path.join(self.root.name, os.path.dirname(CONFIG_PATH))
+        os.mkdir(config_dir)
+        shutil.copyfile(
+            os.path.join(DATA_DIR, "simple_config.yml"),
+            os.path.join(self.root.name, CONFIG_PATH),
+        )
+
+    def tearDown(self) -> None:
+        self.root.cleanup()
+
+    def _setChannelConfig(self, channels_config: List[Dict[str, Any]]) -> None:
+        path = os.path.join(self.root.name, CONFIG_PATH)
+        with open(path, "r") as config_file:
+            config = yaml.load(config_file, Loader=yaml.SafeLoader)
+        config["device"]["channels"] = channels_config
+        with open(path, "w") as config_file:
+            yaml.dump(config, config_file)
+
+    def test_polarized_main(self):
+        self._setChannelConfig(
+            [
+                {"number": 1, "type": "main"},
+                {"number": 2, "type": "solar_downstream_main"},
+            ]
+        )
+        config = load_config(self.root.name).device.channels
+        self.assertTrue(config[1].polarized)
+        self.assertTrue(config[2].polarized)
+
+    def test_unpolarized_main(self):
+        self._setChannelConfig([{"number": 1, "type": "main"}])
+        config = load_config(self.root.name).device.channels
+        self.assertFalse(config[1].polarized)
 
 
 class TestLoggingConfig(unittest.TestCase):

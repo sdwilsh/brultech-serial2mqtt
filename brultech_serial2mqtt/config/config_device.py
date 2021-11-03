@@ -115,14 +115,14 @@ class ChannelsConfig:
 
         for c in channels_config:
             if include_main and c["type"] == ChannelType.MAIN:
-                polarized_channels.append(c)
+                polarized_channels.append(c["number"])
 
             # Any solar channel should be polarized.
             if (
                 c["type"] == ChannelType.SOLAR_DOWNSTREAM_MAIN
                 or c["type"] == ChannelType.SOLAR_UPSTREAM_MAIN
             ):
-                polarized_channels.append(c)
+                polarized_channels.append(c["number"])
 
         return polarized_channels
 
