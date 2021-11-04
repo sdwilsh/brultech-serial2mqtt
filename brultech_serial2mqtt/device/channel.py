@@ -5,11 +5,11 @@ from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config import Config
 from brultech_serial2mqtt.config.config_device import ChannelConfig, ChannelType
-from brultech_serial2mqtt.device.device import DeviceSensorMixin
 from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
+from brultech_serial2mqtt.device.sensor import SensorMixin
 
 
-class Channel(DeviceSensorMixin):
+class Channel(SensorMixin):
     def __init__(self, config: Config, channel_num: int, previous_packet: Packet):
         super().__init__(config.device.name, config.mqtt)
         self._channel_config = config.device.channels[channel_num]
@@ -127,7 +127,7 @@ class Channel(DeviceSensorMixin):
         return entities
 
 
-class AggregatedEnergyChannel(DeviceSensorMixin):
+class AggregatedEnergyChannel(SensorMixin):
     def __init__(
         self,
         config: Config,
