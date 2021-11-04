@@ -5,8 +5,10 @@ from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config.config_mqtt import MQTTConfig
 from brultech_serial2mqtt.const import HOME_ASSISTANT_DOMAIN
-from brultech_serial2mqtt.device.device import get_device_state_topic
-from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
+from brultech_serial2mqtt.device.mqtt import (
+    HomeAssistantDiscoveryConfig,
+    get_device_state_topic,
+)
 
 
 class SensorMixin:

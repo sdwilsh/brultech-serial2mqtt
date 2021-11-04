@@ -14,8 +14,8 @@ from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFo
 from brultech_serial2mqtt.config import load_config
 from brultech_serial2mqtt.config.config_device import DeviceCOM
 from brultech_serial2mqtt.config.config_logging import LoggingConfig
-from brultech_serial2mqtt.device.channel import ChannelsManager
-from brultech_serial2mqtt.device.device import get_device_state_topic
+from brultech_serial2mqtt.device import DeviceManager
+from brultech_serial2mqtt.device.mqtt import get_device_state_topic
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +91,7 @@ class BrultechSerial2MQTT:
                 "Waiting for first packet to publish Home Assistant dicovery configuration..."
             )
             packet = await self._first_packet
-            configs = ChannelsManager(
+            configs = DeviceManager(
                 self._config, packet
             ).home_assistant_discovery_config
             try:
@@ -125,7 +125,7 @@ class BrultechSerial2MQTT:
             self._last_packet = packet
             return
 
-        cm = ChannelsManager(self._config, packet)
+        cm = DeviceManager(self._config, packet)
         await cm.handle_new_packet(packet)
 
         try:
@@ -141,10 +141,10 @@ class BrultechSerial2MQTT:
         self,
         packet: DevicePacket,
         mqtt_client: MQTTClient,
-        channels_manager: ChannelsManager,
+        device_manager: DeviceManager,
     ) -> None:
         state: Dict[str, Any] = {}
-        state.update(channels_manager.state_data)
+        state.update(device_manager.state_data)
         json_state = json.dumps(state, indent=2)
         topic = get_device_state_topic(packet, self._config.mqtt)
         await mqtt_client.publish(
