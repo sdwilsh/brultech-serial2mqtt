@@ -46,3 +46,24 @@ class TestDiscovery(unittest.TestCase):
             home_assistant_config = {"platform": "mqtt"}
             home_assistant_config.update(discovery_config.config)
             DISCOVERY_SCHEMA(home_assistant_config)
+
+    def test_main_with_downstream_solar_config(self):
+        local_config = self._get_config(
+            {
+                "device": {
+                    "channels": [
+                        {"number": 1, "type": "main"},
+                        {"number": 2, "type": "solar_downstream_main"},
+                    ],
+                    "device_com": "COM1",
+                    "name": "gem",
+                    "url": "/dev/ttyUSB0",
+                },
+                "mqtt": {"broker": "localhost"},
+            }
+        )
+        m = DeviceManager(local_config, self.packet)
+        for discovery_config in m.home_assistant_discovery_config:
+            home_assistant_config = {"platform": "mqtt"}
+            home_assistant_config.update(discovery_config.config)
+            DISCOVERY_SCHEMA(home_assistant_config)
