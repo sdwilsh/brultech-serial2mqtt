@@ -250,15 +250,45 @@ class ChannelsManager:
         channels = set()
 
         # Solar Production
-        channels.add(
-            AggregatedEnergyChannel(
-                config=config,
-                name="Solar Production",
-                unique_id="solar_production_energy",
-                value_template=f"{{{{ ((({solar_downstream_polarized}) + ({solar_upstream_polarized})) / 3600) | round }}}}",
-                reference_packet=self._previous_packet,
+        if (
+            len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
+            and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) > 0
+        ):
+            channels.add(
+                AggregatedEnergyChannel(
+                    config=config,
+                    name="Solar Production",
+                    unique_id="solar_production_energy",
+                    value_template=f"{{{{ ((({solar_downstream_polarized}) + ({solar_upstream_polarized})) / 3600) | round }}}}",
+                    reference_packet=self._previous_packet,
+                )
             )
-        )
+        elif (
+            len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) == 0
+            and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) > 0
+        ):
+            channels.add(
+                AggregatedEnergyChannel(
+                    config=config,
+                    name="Solar Production",
+                    unique_id="solar_production_energy",
+                    value_template=f"{{{{ (({solar_upstream_polarized}) / 3600) | round }}}}",
+                    reference_packet=self._previous_packet,
+                )
+            )
+        elif (
+            len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
+            and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) == 0
+        ):
+            channels.add(
+                AggregatedEnergyChannel(
+                    config=config,
+                    name="Solar Production",
+                    unique_id="solar_production_energy",
+                    value_template=f"{{{{ (({solar_downstream_polarized}) / 3600) | round }}}}",
+                    reference_packet=self._previous_packet,
+                )
+            )
 
         if (
             len(channels_by_type[ChannelType.MAIN]) > 0
