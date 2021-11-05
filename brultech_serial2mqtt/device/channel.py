@@ -254,5 +254,16 @@ class ChannelsManager:
                     reference_packet=self._previous_packet,
                 )
             )
+            # Return to grid looks like this:
+            # main_absolute - main_polarized
+            channels.add(
+                AggregatedEnergyChannel(
+                    config=config,
+                    name="Return to Grid",
+                    unique_id="grid_returned_energy",
+                    value_template=f"{{{{ ((({main_absolute}) - ({main_polarized})) / 3600) | round }}}}",
+                    reference_packet=self._previous_packet,
+                )
+            )
 
         return channels
