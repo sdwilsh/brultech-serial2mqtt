@@ -63,6 +63,7 @@ class Channel(SensorMixin):
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
+                        "enabled": self.config.enabled_in_home_assistant,
                         "device_class": "energy",
                         "name": f"{self._name} Absolute Energy",
                         "qos": 1,
@@ -79,6 +80,7 @@ class Channel(SensorMixin):
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
+                        "enabled": self.config.enabled_in_home_assistant,
                         "device_class": "energy",
                         "name": f"{self._name} Polarized Energy",
                         "qos": 1,
@@ -96,6 +98,7 @@ class Channel(SensorMixin):
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
+                        "enabled": self.config.enabled_in_home_assistant,
                         "device_class": "energy",
                         "name": f"{self._name} Energy",
                         "qos": 1,
@@ -114,6 +117,7 @@ class Channel(SensorMixin):
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
+                        "enabled": self.config.enabled_in_home_assistant,
                         "device_class": "current",
                         "name": f"{self._name} Current",
                         "qos": 1,
@@ -236,8 +240,26 @@ class ChannelsManager:
                 for c in channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]
             ]
         )
+        solar_upstream_polarized = " + ".join(
+            [
+                f"value_json.channel_{c.config.number}.polarized_watt_seconds"
+                for c in channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]
+            ]
+        )
 
         channels = set()
+
+        # Solar Production
+        channels.add(
+            AggregatedEnergyChannel(
+                config=config,
+                name="Solar Production",
+                unique_id="solar_production_energy",
+                value_template=f"{{{{ ((({solar_downstream_polarized}) + ({solar_upstream_polarized})) / 3600) | round }}}}",
+                reference_packet=self._previous_packet,
+            )
+        )
+
         if (
             len(channels_by_type[ChannelType.MAIN]) > 0
             and len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
@@ -254,14 +276,13 @@ class ChannelsManager:
                     reference_packet=self._previous_packet,
                 )
             )
-            # Return to grid looks like this:
-            # main_absolute - main_polarized
+            # Return to grid should just be main_polarized.
             channels.add(
                 AggregatedEnergyChannel(
                     config=config,
                     name="Return to Grid",
                     unique_id="grid_returned_energy",
-                    value_template=f"{{{{ ((({main_absolute}) - ({main_polarized})) / 3600) | round }}}}",
+                    value_template=f"{{{{ (({main_polarized}) / 3600) | round }}}}",
                     reference_packet=self._previous_packet,
                 )
             )

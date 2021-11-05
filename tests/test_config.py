@@ -33,9 +33,10 @@ class TestSimpleConfig(unittest.TestCase):
 
         self.assertEqual(config.device.baud, 115200)
         self.assertEqual(len(config.device.channels), 1)
+        self.assertTrue(config.device.channels[1].enabled_in_home_assistant)
         self.assertEqual(config.device.channels[1].name, "channel_1")
-        self.assertEqual(config.device.channels[1].type, ChannelType.NORMAL)
         self.assertEqual(config.device.channels[1].number, 1)
+        self.assertEqual(config.device.channels[1].type, ChannelType.NORMAL)
         self.assertEqual(config.device.device_com, DeviceCOM.COM1)
         self.assertEqual(config.device.name, "gem")
         self.assertEqual(config.device.packet_send_interval_seconds, 8)
@@ -82,12 +83,15 @@ class TestChannelConfig(unittest.TestCase):
             ]
         )
         config = load_config(self.root.name).device.channels
+        self.assertFalse(config[1].enabled_in_home_assistant)
         self.assertTrue(config[1].polarized)
+        self.assertFalse(config[2].enabled_in_home_assistant)
         self.assertTrue(config[2].polarized)
 
     def test_unpolarized_main(self):
         self._setChannelConfig([{"number": 1, "type": "main"}])
         config = load_config(self.root.name).device.channels
+        self.assertFalse(config[1].enabled_in_home_assistant)
         self.assertFalse(config[1].polarized)
 
 

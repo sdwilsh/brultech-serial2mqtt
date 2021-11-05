@@ -35,9 +35,10 @@ SCHEMA = Schema(
             [
                 Schema(
                     {
+                        OptionalField("enabled_in_home_assistant"): All(bool, None),
                         OptionalField("name"): All(str, Length(min=1)),
-                        OptionalField("type", default="normal"): ChannelType.fromValue,
                         RequiredField("number"): All(int, Range(min=1, max=32)),
+                        OptionalField("type", default="normal"): ChannelType.fromValue,
                     }
                 )
             ]
@@ -68,6 +69,17 @@ class ChannelConfig:
         self._number = channel_config["number"]
         self._polarized = polarized
         self._type = channel_config["type"]
+        self._enabled_in_home_assistant = (
+            channel_config["enabled_in_home_assistant"]
+            if "enabled_in_home_assistant" in channel_config
+            and channel_config["enabled_in_home_assistant"]
+            else self._type == ChannelType.NORMAL
+        )
+
+    @property
+    def enabled_in_home_assistant(self) -> bool:
+        """Indicates if this should be enabled by default in Home Assistant"""
+        return self._enabled_in_home_assistant
 
     @property
     def name(self) -> str:
