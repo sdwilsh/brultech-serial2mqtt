@@ -1,5 +1,6 @@
 import asyncio
-from typing import Any, Coroutine, Dict, List, Set
+from enum import Enum, unique
+from typing import Any, Coroutine, Dict, List, Literal, Set, Tuple
 
 from siobrultech_protocols.gem.packets import Packet
 
@@ -131,19 +132,25 @@ class Channel(SensorMixin):
         return entities
 
 
+@unique
+class ChannelValueType(Enum):
+    ABSOLUTE = "absolute"
+    POLARIZED = "polarized"
+
+
 class AggregatedEnergyChannel(SensorMixin):
     def __init__(
         self,
         config: Config,
         name: str,
         unique_id: str,
-        value_template: str,
+        channel_combination: List[Tuple[Literal["+", "-"], Set[int], ChannelValueType]],
         reference_packet: Packet,
     ):
         super().__init__(config.device.name, config.mqtt)
         self._name = f"{config.device.name} {name}"
         self._unique_id = f"gem_{reference_packet.serial_number}_{unique_id}"
-        self._value_template = value_template
+        self._channel_combination = channel_combination
 
     async def handle_new_packet(self, packet: Packet) -> None:
         pass
@@ -166,10 +173,20 @@ class AggregatedEnergyChannel(SensorMixin):
                     "state_class": "total_increasing",
                     "unique_id": f"{self._unique_id}",
                     "unit_of_measurement": "Wh",
-                    "value_template": f"{self._value_template}",
+                    "value_template": f"{self._energy_value_template}",
                 },
             ),
         }
+
+    @property
+    def _energy_value_template(self) -> str:
+        parts = "0 "
+        for operator, channel_numbers, type in self._channel_combination:
+            for channel_number in channel_numbers:
+                field = "absolute" if type == ChannelValueType.ABSOLUTE else "polarized"
+                parts += f" {operator} value_json.channel_{channel_number}.{field}_watt_seconds"
+
+        return f"{{{{ (({parts}) / 3600) | round }}}}"
 
 
 class ChannelsManager:
@@ -222,30 +239,14 @@ class ChannelsManager:
         for c in self._channels:
             channels_by_type[c.config.type].add(c)
 
-        main_absolute = " + ".join(
-            [
-                f"value_json.channel_{c.config.number}.absolute_watt_seconds"
-                for c in channels_by_type[ChannelType.MAIN]
-            ]
-        )
-        main_polarized = " + ".join(
-            [
-                f"value_json.channel_{c.config.number}.polarized_watt_seconds"
-                for c in channels_by_type[ChannelType.MAIN]
-            ]
-        )
-        solar_downstream_polarized = " + ".join(
-            [
-                f"value_json.channel_{c.config.number}.polarized_watt_seconds"
-                for c in channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]
-            ]
-        )
-        solar_upstream_polarized = " + ".join(
-            [
-                f"value_json.channel_{c.config.number}.polarized_watt_seconds"
-                for c in channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]
-            ]
-        )
+        main_absolute = {c.config.number for c in channels_by_type[ChannelType.MAIN]}
+        main_polarized = {c.config.number for c in channels_by_type[ChannelType.MAIN]}
+        solar_downstream_polarized = {
+            c.config.number for c in channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]
+        }
+        solar_upstream_polarized = {
+            c.config.number for c in channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]
+        }
 
         channels = set()
 
@@ -259,7 +260,10 @@ class ChannelsManager:
                     config=config,
                     name="Solar Production",
                     unique_id="solar_production_energy",
-                    value_template=f"{{{{ ((({solar_downstream_polarized}) + ({solar_upstream_polarized})) / 3600) | round }}}}",
+                    channel_combination=[
+                        ("+", solar_downstream_polarized, ChannelValueType.POLARIZED),
+                        ("+", solar_upstream_polarized, ChannelValueType.POLARIZED),
+                    ],
                     reference_packet=self._previous_packet,
                 )
             )
@@ -272,7 +276,9 @@ class ChannelsManager:
                     config=config,
                     name="Solar Production",
                     unique_id="solar_production_energy",
-                    value_template=f"{{{{ (({solar_upstream_polarized}) / 3600) | round }}}}",
+                    channel_combination=[
+                        ("+", solar_upstream_polarized, ChannelValueType.POLARIZED)
+                    ],
                     reference_packet=self._previous_packet,
                 )
             )
@@ -285,7 +291,9 @@ class ChannelsManager:
                     config=config,
                     name="Solar Production",
                     unique_id="solar_production_energy",
-                    value_template=f"{{{{ (({solar_downstream_polarized}) / 3600) | round }}}}",
+                    channel_combination=[
+                        ("+", solar_downstream_polarized, ChannelValueType.POLARIZED)
+                    ],
                     reference_packet=self._previous_packet,
                 )
             )
@@ -302,7 +310,11 @@ class ChannelsManager:
                     config=config,
                     name="Grid Consumption",
                     unique_id="grid_consumed_energy",
-                    value_template=f"{{{{ ((({main_absolute}) + ({solar_downstream_polarized}) - ({main_polarized})) / 3600) | round }}}}",
+                    channel_combination=[
+                        ("+", main_absolute, ChannelValueType.ABSOLUTE),
+                        ("+", solar_downstream_polarized, ChannelValueType.POLARIZED),
+                        ("-", main_polarized, ChannelValueType.POLARIZED),
+                    ],
                     reference_packet=self._previous_packet,
                 )
             )
@@ -312,7 +324,9 @@ class ChannelsManager:
                     config=config,
                     name="Return to Grid",
                     unique_id="grid_returned_energy",
-                    value_template=f"{{{{ (({main_polarized}) / 3600) | round }}}}",
+                    channel_combination=[
+                        ("+", main_polarized, ChannelValueType.POLARIZED)
+                    ],
                     reference_packet=self._previous_packet,
                 )
             )
