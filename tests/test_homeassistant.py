@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Union
+from typing import Any, Dict, Generator, Union
 
 import pytest
 from homeassistant.components.mqtt.sensor import DISCOVERY_SCHEMA
@@ -12,12 +12,12 @@ from brultech_serial2mqtt.device import DeviceManager
 
 
 @pytest.fixture(autouse=True)
-def auto_hass(hass: HomeAssistant):
+def auto_hass(hass: HomeAssistant) -> Generator[HomeAssistant, None, None]:
     yield hass
 
 
 @pytest.fixture()
-def packet():
+def packet() -> Generator[Packet, None, None]:
     yield Packet(
         BIN48_NET_TIME,
         voltage=120.0,
@@ -34,7 +34,9 @@ def packet():
 
 
 @pytest.fixture()
-def parsed_values(local_config: Config, packet: Packet, hass: HomeAssistant):
+def parsed_values(
+    local_config: Config, packet: Packet, hass: HomeAssistant
+) -> Generator[Dict[str, Union[int, float]], None, None]:
     device_manager = DeviceManager(local_config, packet)
 
     discovery_configs_by_unique_id: Dict[str, Dict[str, Any]] = {}
@@ -59,7 +61,7 @@ def parsed_values(local_config: Config, packet: Packet, hass: HomeAssistant):
     yield values_by_unique_id
 
 
-def assertParsedValues(parsed: Dict[str, Any], expected: Dict[str, Any]):
+def assertParsedValues(parsed: Dict[str, Any], expected: Dict[str, Any]) -> None:
     for entity, expected_value in expected.items():
         assert entity in parsed, f"Expected entity '{entity}' in parsed data."
         assert (
