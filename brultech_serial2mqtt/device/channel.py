@@ -1,4 +1,5 @@
 import asyncio
+import functools
 from enum import Enum, unique
 from typing import Any, Coroutine, Dict, List, Literal, Set, Tuple
 
@@ -151,6 +152,9 @@ class AggregatedEnergyChannel(SensorMixin):
         self._name_root = f"{config.device.name} {name_root}"
         self._unique_id_root = f"gem_{reference_packet.serial_number}_{unique_id_root}"
         self._channel_combination = channel_combination
+        self._total_channels = functools.reduce(
+            lambda v, t: v + len(t[1]), channel_combination, 0
+        )
 
     async def handle_new_packet(self, packet: Packet) -> None:
         pass
@@ -163,7 +167,11 @@ class AggregatedEnergyChannel(SensorMixin):
     def _sensor_specific_home_assistant_discovery_configs(
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
-        entities = {
+        entities: Set[HomeAssistantDiscoveryConfig] = set()
+        if self._total_channels == 0:
+            return entities
+
+        entities.add(
             HomeAssistantDiscoveryConfig(
                 component="sensor",
                 config={
@@ -176,7 +184,7 @@ class AggregatedEnergyChannel(SensorMixin):
                     "value_template": f"{self._energy_value_template}",
                 },
             ),
-        }
+        )
 
         return entities
 
@@ -253,52 +261,18 @@ class ChannelsManager:
         channels = set()
 
         # Solar Production
-        if (
-            len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
-            and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) > 0
-        ):
-            channels.add(
-                AggregatedEnergyChannel(
-                    config=config,
-                    name_root="Solar Production",
-                    unique_id_root="solar_production",
-                    channel_combination=[
-                        ("+", solar_downstream_polarized, ChannelValueType.POLARIZED),
-                        ("+", solar_upstream_polarized, ChannelValueType.POLARIZED),
-                    ],
-                    reference_packet=self._previous_packet,
-                )
+        channels.add(
+            AggregatedEnergyChannel(
+                config=config,
+                name_root="Solar Production",
+                unique_id_root="solar_production",
+                channel_combination=[
+                    ("+", solar_downstream_polarized, ChannelValueType.POLARIZED),
+                    ("+", solar_upstream_polarized, ChannelValueType.POLARIZED),
+                ],
+                reference_packet=self._previous_packet,
             )
-        elif (
-            len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) == 0
-            and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) > 0
-        ):
-            channels.add(
-                AggregatedEnergyChannel(
-                    config=config,
-                    name_root="Solar Production",
-                    unique_id_root="solar_production",
-                    channel_combination=[
-                        ("+", solar_upstream_polarized, ChannelValueType.POLARIZED)
-                    ],
-                    reference_packet=self._previous_packet,
-                )
-            )
-        elif (
-            len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
-            and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) == 0
-        ):
-            channels.add(
-                AggregatedEnergyChannel(
-                    config=config,
-                    name_root="Solar Production",
-                    unique_id_root="solar_production",
-                    channel_combination=[
-                        ("+", solar_downstream_polarized, ChannelValueType.POLARIZED)
-                    ],
-                    reference_packet=self._previous_packet,
-                )
-            )
+        )
 
         if (
             len(channels_by_type[ChannelType.MAIN]) > 0
