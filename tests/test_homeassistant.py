@@ -54,10 +54,11 @@ def parsed_values(
             discovery_config["value_template"].template,
             hass,
         )
-        values_by_unique_id[unique_id] = t.async_render(
+        num: Union[int, float] = t.async_render(
             {"entity_id": unique_id, "value_json": device_manager.state_data},
             limited=True,
         )
+        values_by_unique_id[unique_id] = num
     yield values_by_unique_id
 
 
