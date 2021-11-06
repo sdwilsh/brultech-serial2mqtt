@@ -16,7 +16,7 @@ class SensorMixin:
         self._device_name = device_name
         self._mqtt_config = mqtt_config
 
-    def home_assistant_discovery_config(
+    def home_assistant_discovery_configs(
         self, packet: Packet
     ) -> Set[HomeAssistantDiscoveryConfig]:
         """The sensor(s) for Home Assistant MQTT Discovery."""
@@ -33,7 +33,7 @@ class SensorMixin:
             "state_topic": get_device_state_topic(packet, self._mqtt_config),
         }
         configs = set()
-        for config in self._sensor_specific_home_assistant_discovery_config:
+        for config in self._sensor_specific_home_assistant_discovery_configs:
             config.apply_common_config(common)
             configs.add(config)
         return configs
@@ -49,7 +49,7 @@ class SensorMixin:
 
     @property
     @abc.abstractmethod
-    def _sensor_specific_home_assistant_discovery_config(
+    def _sensor_specific_home_assistant_discovery_configs(
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
         pass

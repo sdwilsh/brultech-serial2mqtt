@@ -38,7 +38,7 @@ def parsed_values(local_config: Config, packet: Packet, hass: HomeAssistant):
     device_manager = DeviceManager(local_config, packet)
 
     discovery_configs_by_unique_id: Dict[str, Dict[str, Any]] = {}
-    for discovery_config in device_manager.home_assistant_discovery_config:
+    for discovery_config in device_manager.home_assistant_discovery_configs:
         home_assistant_config = {"platform": "mqtt"}
         home_assistant_config.update(discovery_config.config)
         parsed_discover_config: Dict[str, Any] = DISCOVERY_SCHEMA(home_assistant_config)

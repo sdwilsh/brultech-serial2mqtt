@@ -53,7 +53,7 @@ class Channel(SensorMixin):
         return {f"channel_{self._channel_config.number}": state}
 
     @property
-    def _sensor_specific_home_assistant_discovery_config(
+    def _sensor_specific_home_assistant_discovery_configs(
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
         # Future improvements: Power
@@ -153,7 +153,7 @@ class AggregatedEnergyChannel(SensorMixin):
         raise Exception("not implemented; should use real channel data to compute!")
 
     @property
-    def _sensor_specific_home_assistant_discovery_config(
+    def _sensor_specific_home_assistant_discovery_configs(
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
         return {
@@ -196,19 +196,19 @@ class ChannelsManager:
         return states
 
     @property
-    def home_assistant_discovery_config(
+    def home_assistant_discovery_configs(
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
         """The sensor(s) for Home Assistant MQTT Discovery."""
         configs = set()
         for channel in self._channels:
-            for config in channel.home_assistant_discovery_config(
+            for config in channel.home_assistant_discovery_configs(
                 self._previous_packet
             ):
                 configs.add(config)
 
         for channel in self._aggregate_channels:
-            for config in channel.home_assistant_discovery_config(
+            for config in channel.home_assistant_discovery_configs(
                 self._previous_packet
             ):
                 configs.add(config)

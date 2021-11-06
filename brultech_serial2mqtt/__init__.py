@@ -93,7 +93,7 @@ class BrultechSerial2MQTT:
             packet = await self._first_packet
             configs = DeviceManager(
                 self._config, packet
-            ).home_assistant_discovery_config
+            ).home_assistant_discovery_configs
             try:
                 for config in configs:
                     topic = config.get_discovery_topic(

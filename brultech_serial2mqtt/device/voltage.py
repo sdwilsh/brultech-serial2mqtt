@@ -22,7 +22,7 @@ class Voltage(SensorMixin):
         return {"voltage": self._last_packet.voltage}
 
     @property
-    def _sensor_specific_home_assistant_discovery_config(
+    def _sensor_specific_home_assistant_discovery_configs(
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
         return {
