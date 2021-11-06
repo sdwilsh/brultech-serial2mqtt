@@ -110,15 +110,15 @@ def test_main_with_downstream_soloar_config(parsed_values: Dict[str, Any]):
     assertParsedValues(
         parsed_values,
         {
-            "gem_3456_channel_1_absolute_energy": 1,
+            "gem_3456_channel_1_absolute_energy": 1,  # To/from grid, through main
             "gem_3456_channel_1_current": 0.1,
-            "gem_3456_channel_1_polarized_energy": 0,
-            "gem_3456_channel_2_absolute_energy": 2,
+            "gem_3456_channel_1_polarized_energy": 0,  # To grid, through main
+            "gem_3456_channel_2_absolute_energy": 2,  # To/from solar
             "gem_3456_channel_2_current": 0.2,
-            "gem_3456_channel_2_polarized_energy": 1,
+            "gem_3456_channel_2_polarized_energy": 1,  # From solar
             "gem_3456_solar_production_energy": 1,
             "gem_3456_grid_returned_energy": 0,
-            "gem_3456_grid_consumed_energy": 2,
+            "gem_3456_grid_consumed_energy": 1,
             "gem_3456_voltage": 120.0,
         },
     )

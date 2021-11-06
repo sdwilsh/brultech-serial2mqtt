@@ -303,8 +303,7 @@ class ChannelsManager:
             and len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
             and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) == 0
         ):
-            # Grid consumption of main power looks like this:
-            # main_absolute + solar_polarized - main_polarized
+            # Grid consumption of power should be main_absolute + main_polarized
             channels.add(
                 AggregatedEnergyChannel(
                     config=config,
@@ -312,7 +311,6 @@ class ChannelsManager:
                     unique_id="grid_consumed_energy",
                     channel_combination=[
                         ("+", main_absolute, ChannelValueType.ABSOLUTE),
-                        ("+", solar_downstream_polarized, ChannelValueType.POLARIZED),
                         ("-", main_polarized, ChannelValueType.POLARIZED),
                     ],
                     reference_packet=self._previous_packet,
