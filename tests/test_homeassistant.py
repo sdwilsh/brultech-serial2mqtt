@@ -122,3 +122,93 @@ def test_main_with_downstream_soloar_config(parsed_values: Dict[str, Any]):
             "gem_3456_voltage": 120.0,
         },
     )
+
+
+@pytest.mark.local_config(
+    {
+        "device": {
+            "channels": [
+                {"number": 1, "type": "solar_upstream_main"},
+                {"number": 2, "type": "solar_upstream_main"},
+            ],
+            "device_com": "COM1",
+            "name": "gem",
+            "url": "/dev/ttyUSB0",
+        },
+        "mqtt": {"broker": "localhost"},
+    }
+)
+def test_solar_production_only_upstream_config(parsed_values: Dict[str, Any]):
+    assertParsedValues(
+        parsed_values,
+        {
+            "gem_3456_channel_1_absolute_energy": 1,
+            "gem_3456_channel_1_current": 0.1,
+            "gem_3456_channel_1_polarized_energy": 0,
+            "gem_3456_channel_2_absolute_energy": 2,
+            "gem_3456_channel_2_current": 0.2,
+            "gem_3456_channel_2_polarized_energy": 1,
+            "gem_3456_solar_production_energy": 1,
+            "gem_3456_voltage": 120.0,
+        },
+    )
+
+
+@pytest.mark.local_config(
+    {
+        "device": {
+            "channels": [
+                {"number": 1, "type": "solar_downstream_main"},
+                {"number": 2, "type": "solar_downstream_main"},
+            ],
+            "device_com": "COM1",
+            "name": "gem",
+            "url": "/dev/ttyUSB0",
+        },
+        "mqtt": {"broker": "localhost"},
+    }
+)
+def test_solar_production_only_downstream_config(parsed_values: Dict[str, Any]):
+    assertParsedValues(
+        parsed_values,
+        {
+            "gem_3456_channel_1_absolute_energy": 1,
+            "gem_3456_channel_1_current": 0.1,
+            "gem_3456_channel_1_polarized_energy": 0,
+            "gem_3456_channel_2_absolute_energy": 2,
+            "gem_3456_channel_2_current": 0.2,
+            "gem_3456_channel_2_polarized_energy": 1,
+            "gem_3456_solar_production_energy": 1,
+            "gem_3456_voltage": 120.0,
+        },
+    )
+
+
+@pytest.mark.local_config(
+    {
+        "device": {
+            "channels": [
+                {"number": 1, "type": "solar_upstream_main"},
+                {"number": 2, "type": "solar_downstream_main"},
+            ],
+            "device_com": "COM1",
+            "name": "gem",
+            "url": "/dev/ttyUSB0",
+        },
+        "mqtt": {"broker": "localhost"},
+    }
+)
+def test_solar_production_upstream_and_downstream_config(parsed_values: Dict[str, Any]):
+    assertParsedValues(
+        parsed_values,
+        {
+            "gem_3456_channel_1_absolute_energy": 1,
+            "gem_3456_channel_1_current": 0.1,
+            "gem_3456_channel_1_polarized_energy": 0,
+            "gem_3456_channel_2_absolute_energy": 2,
+            "gem_3456_channel_2_current": 0.2,
+            "gem_3456_channel_2_polarized_energy": 1,
+            "gem_3456_solar_production_energy": 1,
+            "gem_3456_voltage": 120.0,
+        },
+    )
