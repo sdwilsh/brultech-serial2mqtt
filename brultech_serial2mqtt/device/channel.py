@@ -142,14 +142,14 @@ class AggregatedEnergyChannel(SensorMixin):
     def __init__(
         self,
         config: Config,
-        name: str,
-        unique_id: str,
+        name_root: str,
+        unique_id_root: str,
         channel_combination: List[Tuple[Literal["+", "-"], Set[int], ChannelValueType]],
         reference_packet: Packet,
     ):
         super().__init__(config.device.name, config.mqtt)
-        self._name = f"{config.device.name} {name}"
-        self._unique_id = f"gem_{reference_packet.serial_number}_{unique_id}"
+        self._name_root = f"{config.device.name} {name_root}"
+        self._unique_id_root = f"gem_{reference_packet.serial_number}_{unique_id_root}"
         self._channel_combination = channel_combination
 
     async def handle_new_packet(self, packet: Packet) -> None:
@@ -163,20 +163,22 @@ class AggregatedEnergyChannel(SensorMixin):
     def _sensor_specific_home_assistant_discovery_configs(
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
-        return {
+        entities = {
             HomeAssistantDiscoveryConfig(
                 component="sensor",
                 config={
                     "device_class": "energy",
-                    "name": f"{self._name}",
+                    "name": f"{self._name_root} Energy",
                     "qos": 1,
                     "state_class": "total_increasing",
-                    "unique_id": f"{self._unique_id}",
+                    "unique_id": f"{self._unique_id_root}_energy",
                     "unit_of_measurement": "Wh",
                     "value_template": f"{self._energy_value_template}",
                 },
             ),
         }
+
+        return entities
 
     @property
     def _energy_value_template(self) -> str:
@@ -258,8 +260,8 @@ class ChannelsManager:
             channels.add(
                 AggregatedEnergyChannel(
                     config=config,
-                    name="Solar Production",
-                    unique_id="solar_production_energy",
+                    name_root="Solar Production",
+                    unique_id_root="solar_production",
                     channel_combination=[
                         ("+", solar_downstream_polarized, ChannelValueType.POLARIZED),
                         ("+", solar_upstream_polarized, ChannelValueType.POLARIZED),
@@ -274,8 +276,8 @@ class ChannelsManager:
             channels.add(
                 AggregatedEnergyChannel(
                     config=config,
-                    name="Solar Production",
-                    unique_id="solar_production_energy",
+                    name_root="Solar Production",
+                    unique_id_root="solar_production",
                     channel_combination=[
                         ("+", solar_upstream_polarized, ChannelValueType.POLARIZED)
                     ],
@@ -289,8 +291,8 @@ class ChannelsManager:
             channels.add(
                 AggregatedEnergyChannel(
                     config=config,
-                    name="Solar Production",
-                    unique_id="solar_production_energy",
+                    name_root="Solar Production",
+                    unique_id_root="solar_production",
                     channel_combination=[
                         ("+", solar_downstream_polarized, ChannelValueType.POLARIZED)
                     ],
@@ -307,8 +309,8 @@ class ChannelsManager:
             channels.add(
                 AggregatedEnergyChannel(
                     config=config,
-                    name="Grid Consumption",
-                    unique_id="grid_consumed_energy",
+                    name_root="Grid Consumption",
+                    unique_id_root="grid_consumed",
                     channel_combination=[
                         ("+", main_absolute, ChannelValueType.ABSOLUTE),
                         ("-", main_polarized, ChannelValueType.POLARIZED),
@@ -320,8 +322,8 @@ class ChannelsManager:
             channels.add(
                 AggregatedEnergyChannel(
                     config=config,
-                    name="Return to Grid",
-                    unique_id="grid_returned_energy",
+                    name_root="Return to Grid",
+                    unique_id_root="grid_returned",
                     channel_combination=[
                         ("+", main_polarized, ChannelValueType.POLARIZED)
                     ],
