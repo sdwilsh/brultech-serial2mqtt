@@ -51,11 +51,11 @@ class TestSimpleConfig(unittest.TestCase):
         self.assertIsNone(config.mqtt.username)
         self.assertEqual(config.mqtt.birth_message.payload, "online")
         self.assertEqual(config.mqtt.birth_message.qos, 0)
-        self.assertFalse(config.mqtt.birth_message.retain)
+        self.assertTrue(config.mqtt.birth_message.retain)
         self.assertEqual(config.mqtt.birth_message.topic, "brultech-serial2mqtt/status")
         self.assertEqual(config.mqtt.will_message.payload, "offline")
         self.assertEqual(config.mqtt.will_message.qos, 0)
-        self.assertFalse(config.mqtt.will_message.retain)
+        self.assertTrue(config.mqtt.will_message.retain)
         self.assertEqual(config.mqtt.will_message.topic, "brultech-serial2mqtt/status")
 
         self.assertTrue(config.mqtt.home_assistant.enable)

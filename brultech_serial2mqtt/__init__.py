@@ -65,16 +65,7 @@ class BrultechSerial2MQTT:
                 ),
             ) as mqtt_client:
                 self._publish_home_assistant_discovery_config(mqtt_client)
-
-                logger.info(
-                    f"Notifying clients that we are online on {self._config.mqtt.birth_message.topic}"
-                )
-                await mqtt_client.publish(
-                    payload=self._config.mqtt.birth_message.payload,
-                    qos=self._config.mqtt.birth_message.qos,
-                    retain=self._config.mqtt.birth_message.retain,
-                    topic=self._config.mqtt.birth_message.topic,
-                )
+                self._publish_birth_message(mqtt_client)
 
                 async for packet in device_connection.packets():
                     await self._handle_packet(packet, mqtt_client)
@@ -152,6 +143,22 @@ class BrultechSerial2MQTT:
 
         asyncio.create_task(publish_discovery_config())
         asyncio.create_task(subscribe_to_home_assistant_birth())
+
+    def _publish_birth_message(self, mqtt_client: MQTTClient) -> None:
+        async def publish_birth_message() -> None:
+            logger.debug("Waiting for first packet to publish birth message...")
+            await self._first_packet
+            logger.info(
+                f"Notifying clients that we are online on {self._config.mqtt.birth_message.topic}"
+            )
+            await mqtt_client.publish(
+                payload=self._config.mqtt.birth_message.payload,
+                qos=self._config.mqtt.birth_message.qos,
+                retain=self._config.mqtt.birth_message.retain,
+                topic=self._config.mqtt.birth_message.topic,
+            )
+
+        asyncio.create_task(publish_birth_message())
 
     async def _handle_packet(
         self, packet: DevicePacket, mqtt_client: MQTTClient
