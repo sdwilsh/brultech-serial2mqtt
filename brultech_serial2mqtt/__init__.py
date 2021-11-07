@@ -128,6 +128,9 @@ class BrultechSerial2MQTT:
                         message.payload.decode()
                         == self._config.mqtt.home_assistant.birth_message.payload
                     ):
+                        logger.debug(
+                            "Home Assistant has re-connected to the mqtt server.  Resending discovery configuration..."
+                        )
                         asyncio.create_task(publish_discovery_config())
 
         asyncio.create_task(publish_discovery_config())
