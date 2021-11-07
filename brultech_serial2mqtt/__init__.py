@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 import pprint
-from typing import Any, Dict, Optional
 
 from aiobrultech_serial import Connection as DeviceConnection
 from asyncio_mqtt import Client as MQTTClient
@@ -16,7 +14,6 @@ from brultech_serial2mqtt.config import load_config
 from brultech_serial2mqtt.config.config_device import DeviceCOM
 from brultech_serial2mqtt.config.config_logging import LoggingConfig
 from brultech_serial2mqtt.device import DeviceManager
-from brultech_serial2mqtt.device.mqtt import get_device_state_topic
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +22,7 @@ class BrultechSerial2MQTT:
     def __init__(self):
         self._config = load_config()
         self._first_packet: asyncio.Future[DevicePacket] = asyncio.Future()
-        self._last_packet: Optional[DevicePacket] = None
+        self._device_manager: asyncio.Future[DeviceManager] = asyncio.Future()
 
         BrultechSerial2MQTT.setup_logging(self._config.logging)
 
@@ -95,15 +92,13 @@ class BrultechSerial2MQTT:
             return
 
         async def publish_discovery_config() -> None:
-            logger.debug(
-                "Waiting for first packet to publish Home Assistant dicovery configuration..."
-            )
-            packet = await self._first_packet
-            configs = DeviceManager(
-                self._config, packet
-            ).home_assistant_discovery_configs
+            if not self._device_manager.done():
+                logger.debug(
+                    "Waiting for device manager to publish Home Assistant dicovery configuration..."
+                )
+            device_manager = await self._device_manager
             try:
-                for config in configs:
+                for config in device_manager.home_assistant_discovery_configs:
                     topic = config.get_discovery_topic(
                         self._config.mqtt.home_assistant.discovery_prefix
                     )
@@ -165,34 +160,8 @@ class BrultechSerial2MQTT:
     ) -> None:
         if not self._first_packet.done():
             self._first_packet.set_result(packet)
-            self._last_packet = packet
+            self._device_manager.set_result(DeviceManager(self._config, packet))
             return
 
-        cm = DeviceManager(self._config, packet)
-        await cm.handle_new_packet(packet)
-
-        try:
-            await self._publish_packet(packet, mqtt_client, cm)
-        except Exception as exc:
-            logger.exception(
-                "Exception caught while attempting to publish a packet!",
-                exc,
-            )
-        self._last_packet = packet
-
-    async def _publish_packet(
-        self,
-        packet: DevicePacket,
-        mqtt_client: MQTTClient,
-        device_manager: DeviceManager,
-    ) -> None:
-        state: Dict[str, Any] = {}
-        state.update(device_manager.state_data)
-        json_state = json.dumps(state, indent=2)
-        topic = get_device_state_topic(packet, self._config.mqtt)
-        await mqtt_client.publish(
-            topic=topic,
-            payload=json_state,
-            qos=1,
-        )
-        logger.debug(f"Published packet data to {topic}:\n{pprint.pformat(state)}")
+        device_manager = await self._device_manager
+        await device_manager.handle_new_packet(packet, mqtt_client)
