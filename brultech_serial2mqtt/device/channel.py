@@ -279,7 +279,7 @@ class ChannelsManager:
             and len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
             and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) == 0
         ):
-            # Grid consumption of power should be main_absolute + main_polarized
+            # Grid consumption of power should be main_absolute - main_polarized
             channels.add(
                 AggregatedEnergyChannel(
                     config=config,
