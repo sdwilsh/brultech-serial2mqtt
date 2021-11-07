@@ -8,6 +8,7 @@ from typing import Any, Dict, Optional
 
 from aiobrultech_serial import Connection as DeviceConnection
 from asyncio_mqtt import Client as MQTTClient
+from asyncio_mqtt.client import Will
 from siobrultech_protocols.gem.packets import Packet as DevicePacket
 from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFormatType
 
@@ -51,13 +52,29 @@ class BrultechSerial2MQTT:
             await self._setup_gem(device_connection)
 
             async with MQTTClient(
+                client_id=self._config.mqtt.client_id,
                 hostname=self._config.mqtt.broker,
+                password=self._config.mqtt.password,
                 port=self._config.mqtt.port,
                 username=self._config.mqtt.username,
-                password=self._config.mqtt.password,
-                client_id=self._config.mqtt.client_id,
+                will=Will(
+                    payload=self._config.mqtt.will_message.payload,
+                    qos=self._config.mqtt.will_message.qos,
+                    retain=self._config.mqtt.will_message.retain,
+                    topic=self._config.mqtt.will_message.topic,
+                ),
             ) as mqtt_client:
                 self._publish_home_assistant_discovery_config(mqtt_client)
+
+                logger.info(
+                    f"Notifying clients that we are online on {self._config.mqtt.birth_message.topic}"
+                )
+                await mqtt_client.publish(
+                    payload=self._config.mqtt.birth_message.payload,
+                    qos=self._config.mqtt.birth_message.qos,
+                    retain=self._config.mqtt.birth_message.retain,
+                    topic=self._config.mqtt.birth_message.topic,
+                )
 
                 async for packet in device_connection.packets():
                     await self._handle_packet(packet, mqtt_client)

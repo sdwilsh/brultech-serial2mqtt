@@ -21,6 +21,16 @@ class SensorMixin:
     ) -> Set[HomeAssistantDiscoveryConfig]:
         """The sensor(s) for Home Assistant MQTT Discovery."""
         common = {
+            "availability": [
+                {
+                    "payload_available": self._mqtt_config.birth_message.payload,
+                    "topic": self._mqtt_config.birth_message.topic,
+                },
+                {
+                    "payload_not_available": self._mqtt_config.will_message.payload,
+                    "topic": self._mqtt_config.will_message.topic,
+                },
+            ],
             "device": {
                 "identifiers": [
                     ",".join((HOME_ASSISTANT_DOMAIN, f"serial-{packet.serial_number}")),
