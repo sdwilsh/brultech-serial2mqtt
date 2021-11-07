@@ -1,7 +1,9 @@
 from typing import Any, Dict, Optional
 
+from voluptuous import All
 from voluptuous import Any as AnyValid
 from voluptuous import Optional as OptionalField
+from voluptuous import Range
 from voluptuous import Required as RequiredField
 from voluptuous import Schema
 
@@ -14,6 +16,14 @@ SCHEMA = Schema(
         OptionalField("home_assistant", default=EmptyConfigDict): {
             OptionalField("enable", default=True): bool,
             OptionalField("discovery_prefix", default="homeassistant"): str,
+            OptionalField("birth_message", default=EmptyConfigDict): {
+                OptionalField("topic", default="homeassistant/status"): str,
+                OptionalField("payload", default="online"): str,
+                OptionalField("qos", default=0): All(
+                    int,
+                    Range(min=0, max=2),
+                ),
+            },
         },
         OptionalField("password", default=None): AnyValid(str, None),
         OptionalField("port", default=1883): int,
@@ -25,12 +35,40 @@ SCHEMA = Schema(
 )
 
 
+class HomeAssistantBirthMessage:
+    """Home Assistant birth message config."""
+
+    def __init__(self, birth_message_config: Dict[str, Any]):
+        self._topic: str = birth_message_config["topic"]
+        self._payload: str = birth_message_config["payload"]
+        self._qos: int = birth_message_config["qos"]
+
+    @property
+    def topic(self) -> str:
+        return self._topic
+
+    @property
+    def payload(self) -> str:
+        return self._payload
+
+    @property
+    def qos(self) -> int:
+        return self._qos
+
+
 class HomeAssistant:
     """Home Assistant integration config."""
 
     def __init__(self, home_assistant_config: Dict[str, Any]):
+        self._birth_message = HomeAssistantBirthMessage(
+            home_assistant_config["birth_message"]
+        )
         self._enable = home_assistant_config["enable"]
         self._discovery_prefix = home_assistant_config["discovery_prefix"]
+
+    @property
+    def birth_message(self) -> HomeAssistantBirthMessage:
+        return self._birth_message
 
     @property
     def enable(self) -> bool:

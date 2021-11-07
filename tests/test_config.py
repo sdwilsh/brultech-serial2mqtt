@@ -52,6 +52,11 @@ class TestSimpleConfig(unittest.TestCase):
 
         self.assertTrue(config.mqtt.home_assistant.enable)
         self.assertEqual(config.mqtt.home_assistant.discovery_prefix, "homeassistant")
+        self.assertEqual(config.mqtt.home_assistant.birth_message.payload, "online")
+        self.assertEqual(config.mqtt.home_assistant.birth_message.qos, 0)
+        self.assertEqual(
+            config.mqtt.home_assistant.birth_message.topic, "homeassistant/status"
+        )
 
 
 class TestChannelConfig(unittest.TestCase):

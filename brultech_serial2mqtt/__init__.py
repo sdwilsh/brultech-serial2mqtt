@@ -115,7 +115,23 @@ class BrultechSerial2MQTT:
                     exc,
                 )
 
+        async def subscribe_to_home_assistant_birth() -> None:
+            async with mqtt_client.filtered_messages(
+                self._config.mqtt.home_assistant.birth_message.topic
+            ) as messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/87
+                await mqtt_client.subscribe(
+                    self._config.mqtt.home_assistant.birth_message.topic,
+                    qos=self._config.mqtt.home_assistant.birth_message.qos,
+                )
+                async for message in messages:
+                    if (
+                        message.payload.decode()
+                        == self._config.mqtt.home_assistant.birth_message.payload
+                    ):
+                        asyncio.create_task(publish_discovery_config())
+
         asyncio.create_task(publish_discovery_config())
+        asyncio.create_task(subscribe_to_home_assistant_birth())
 
     async def _handle_packet(
         self, packet: DevicePacket, mqtt_client: MQTTClient
