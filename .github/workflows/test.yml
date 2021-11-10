@@ -1,5 +1,5 @@
 ---
-name: Build & Test
+name: Test
 
 on: # yamllint disable-line rule:truthy
   push:
@@ -10,7 +10,7 @@ on: # yamllint disable-line rule:truthy
       - "main"
 
 jobs:
-  test:
+  pytest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
