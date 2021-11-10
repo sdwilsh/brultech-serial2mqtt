@@ -126,7 +126,7 @@ class BrultechSerial2MQTT:
                     self._config.mqtt.home_assistant.birth_message.topic,
                     qos=self._config.mqtt.home_assistant.birth_message.qos,
                 )
-                async for message in messages:
+                async for message in messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/87
                     if (
                         message.payload.decode()
                         == self._config.mqtt.home_assistant.birth_message.payload

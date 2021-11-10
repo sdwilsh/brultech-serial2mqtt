@@ -42,7 +42,7 @@ class SensorMixin:
             },
             "state_topic": get_device_state_topic(packet, self._mqtt_config),
         }
-        configs = set()
+        configs: Set[HomeAssistantDiscoveryConfig] = set()
         for config in self._sensor_specific_home_assistant_discovery_configs:
             config.apply_common_config(common)
             configs.add(config)

@@ -59,7 +59,7 @@ class Channel(SensorMixin):
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
         # Future improvements: Power
-        entities = set()
+        entities: Set[HomeAssistantDiscoveryConfig] = set()
         if self._channel_config.polarized:
             entities.add(
                 HomeAssistantDiscoveryConfig(
@@ -217,7 +217,7 @@ class ChannelsManager:
 
     @property
     def state_data(self) -> Dict[str, Dict[str, Any]]:
-        states = {}
+        states: Dict[str, Dict[str, Any]] = {}
         for c in self._channels:
             states.update(c.state_data)
         return states
@@ -227,7 +227,7 @@ class ChannelsManager:
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
         """The sensor(s) for Home Assistant MQTT Discovery."""
-        configs = set()
+        configs: Set[HomeAssistantDiscoveryConfig] = set()
         for channel in self._channels:
             for config in channel.home_assistant_discovery_configs(
                 self._previous_packet
@@ -258,7 +258,7 @@ class ChannelsManager:
             c.config.number for c in channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]
         }
 
-        channels = set()
+        channels: Set[AggregatedEnergyChannel] = set()
 
         # Solar Production
         channels.add(

@@ -9,7 +9,6 @@ src_paths = ["brultech_serial2mqtt", "tests"]
 [tool.pyright]
 include = [
     "brultech_serial2mqtt",
-    "scripts",
     "tests",
 ]
 exclude = [
@@ -30,7 +29,7 @@ reportOverlappingOverload = "error"
 reportPrivateUsage = "error"
 reportUnknownMemberType = "none"
 reportUnknownParameterType = "error"
-reportUnknownVariableType = "none"
+reportUnknownVariableType = "error"
 reportUntypedBaseClass = "error"
 reportUntypedClassDecorator = "error"
 reportUntypedFunctionDecorator = "error"

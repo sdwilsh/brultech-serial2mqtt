@@ -67,7 +67,7 @@ class DeviceManager:
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
         """The sensor(s) for Home Assistant MQTT Discovery."""
-        configs = set()
+        configs: Set[HomeAssistantDiscoveryConfig] = set()
         for c in self._voltage.home_assistant_discovery_configs(self._previous_packet):
             configs.add(c)
         for c in self._channels_manager.home_assistant_discovery_configs:

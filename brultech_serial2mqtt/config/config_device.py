@@ -118,7 +118,7 @@ class ChannelsConfig:
 
     @staticmethod
     def _get_polarized_channels(channels_config: List[Dict[str, Any]]) -> List[int]:
-        polarized_channels = []
+        polarized_channels: List[int] = []
 
         # Any MAIN should be polarized if there is a solar channel downstream of it.
         include_main = False
