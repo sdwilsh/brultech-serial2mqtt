@@ -21,5 +21,4 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-      - name: Pre-commit Lint
-        run: pre-commit run --all-files --show-diff-on-failure
+      - uses: "pre-commit/action@v2.0.3"
