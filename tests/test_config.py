@@ -47,6 +47,7 @@ class TestSimpleConfig(unittest.TestCase):
         self.assertEqual(config.mqtt.client_id, "brultech-serial2mqtt")
         self.assertEqual(config.mqtt.port, 1883)
         self.assertIsNone(config.mqtt.password)
+        self.assertEqual(config.mqtt.qos, 0)
         self.assertEqual(config.mqtt.topic_prefix, "brultech-serial2mqtt")
         self.assertIsNone(config.mqtt.username)
         self.assertEqual(config.mqtt.birth_message.payload, "online")

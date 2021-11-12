@@ -52,7 +52,7 @@ class DeviceManager:
         await mqtt_client.publish(
             topic=topic,
             payload=json_state,
-            qos=1,
+            qos=self._mqtt_config.qos,
         )
         logger.debug(f"Published packet data to {topic}:\n{pprint.pformat(state)}")
 

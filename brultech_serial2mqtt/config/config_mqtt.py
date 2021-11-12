@@ -36,6 +36,10 @@ SCHEMA = Schema(
         },
         OptionalField("password", default=None): AnyValid(str, None),
         OptionalField("port", default=1883): int,
+        OptionalField("qos", default=0): All(
+            int,
+            Range(min=0, max=2),
+        ),
         OptionalField("topic_prefix", default="brultech-serial2mqtt"): AnyValid(
             str, None
         ),
@@ -125,6 +129,7 @@ class MQTTConfig:
         self._home_assistant = HomeAssistant(mqtt_config["home_assistant"])
         self._password = mqtt_config["password"]
         self._port = mqtt_config["port"]
+        self._qos = mqtt_config["qos"]
         self._topic_prefix = mqtt_config["topic_prefix"]
         self._username = mqtt_config["username"]
         self._will_message = MQTTBirthWillMessageConfig(mqtt_config["will_message"])
@@ -157,6 +162,11 @@ class MQTTConfig:
     def port(self) -> int:
         """Return broker port."""
         return self._port
+
+    @property
+    def qos(self) -> int:
+        """Return qos to use for messages."""
+        return self._qos
 
     @property
     def topic_prefix(self) -> str:
