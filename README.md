@@ -23,12 +23,12 @@ decode the data, and then sends the data to an MQTT server.
 
 ### Channels
 
-| Name                      | Type | Default                    | Supported Options                  | Description                                                                    |
-| ------------------------- | ---- | -------------------------- | ---------------------------------- | ------------------------------------------------------------------------------ |
-| number                    | int  | **required**               | 1-32                               | The channel number in the device.                                              |
-| enabled_in_home_assistant | bool | True if `type` is `normal` | Any bool                           | If the entity for this channel should be enabled by default in Home Assistant. |
-| name                      | str  | Channel {`number`}         | Any str                            | The name of the entity in Home Assistant                                       |
-| type                      | str  | normal                     | See [channel types](#channel-type) | The type of channel to support net-metering and aggregation.                   |
+| Name           | Type | Default                    | Supported Options                  | Description                                                                    |
+| -------------- | ---- | -------------------------- | ---------------------------------- | ------------------------------------------------------------------------------ |
+| number         | int  | **required**               | 1-32                               | The channel number in the device.                                              |
+| home_assistant | bool | True if `type` is `normal` | Any bool                           | If the entity for this channel should be enabled by default in Home Assistant. |
+| name           | str  | Channel {`number`}         | Any str                            | The name of the entity in Home Assistant                                       |
+| type           | str  | normal                     | See [channel types](#channel-type) | The type of channel to support net-metering and aggregation.                   |
 
 #### Channel Type
 

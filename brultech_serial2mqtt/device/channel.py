@@ -65,7 +65,7 @@ class Channel(SensorMixin):
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
-                        "enabled_by_default": self.config.enabled_in_home_assistant,
+                        "enabled_by_default": self.config.home_assistant,
                         "device_class": "energy",
                         "name": f"{self._name} Absolute Energy",
                         "qos": 1,
@@ -82,7 +82,7 @@ class Channel(SensorMixin):
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
-                        "enabled_by_default": self.config.enabled_in_home_assistant,
+                        "enabled_by_default": self.config.home_assistant,
                         "device_class": "energy",
                         "name": f"{self._name} Polarized Energy",
                         "qos": 1,
@@ -100,7 +100,7 @@ class Channel(SensorMixin):
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
-                        "enabled_by_default": self.config.enabled_in_home_assistant,
+                        "enabled_by_default": self.config.home_assistant,
                         "device_class": "energy",
                         "name": f"{self._name} Energy",
                         "qos": 1,
@@ -119,7 +119,7 @@ class Channel(SensorMixin):
                 HomeAssistantDiscoveryConfig(
                     component="sensor",
                     config={
-                        "enabled_by_default": self.config.enabled_in_home_assistant,
+                        "enabled_by_default": self.config.home_assistant,
                         "device_class": "current",
                         "name": f"{self._name} Current",
                         "qos": 1,
