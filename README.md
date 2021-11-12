@@ -72,15 +72,6 @@ Power flows in two directions from/to a solar inverter, without a `main` channel
 | retain  | bool | True                 | Any bool          | If the retain flag is set on the birth message.    |
 | topic   | str  | brultech-serial2mqtt | Any str           | The topic to use when sending the birth message.   |
 
-### Will Message
-
-| Name    | Type | Default              | Supported Options | Description                                       |
-| ------- | ---- | -------------------- | ----------------- | ------------------------------------------------- |
-| payload | str  | online               | Any str           | The payload to use when sending the will message. |
-| qos     | int  | 0                    | 0-2               | The qos to use for the will message.              |
-| retain  | bool | True                 | Any bool          | If the retain flag is set on the will message.    |
-| topic   | str  | brultech-serial2mqtt | Any str           | The topic to use when sending the will message.   |
-
 ### Home Assistant
 
 | Name             | Type | Default       | Supported Options                                  | Description                                                                              |
@@ -96,6 +87,15 @@ Power flows in two directions from/to a solar inverter, without a `main` channel
 | payload | str  | online               | Any str           | The payload Home Assistant is configured to use when sending the birth message. |
 | qos     | int  | 0                    | 0-2               | The qos Home Assistant is configured to use for the birth message.              |
 | topic   | str  | homeassistant/status | Any str           | The topic Home Assistant is configured to use when sending the birth message.   |
+
+### Will Message
+
+| Name    | Type | Default              | Supported Options | Description                                       |
+| ------- | ---- | -------------------- | ----------------- | ------------------------------------------------- |
+| payload | str  | online               | Any str           | The payload to use when sending the will message. |
+| qos     | int  | 0                    | 0-2               | The qos to use for the will message.              |
+| retain  | bool | True                 | Any bool          | If the retain flag is set on the will message.    |
+| topic   | str  | brultech-serial2mqtt | Any str           | The topic to use when sending the will message.   |
 
 ## Logging
 
