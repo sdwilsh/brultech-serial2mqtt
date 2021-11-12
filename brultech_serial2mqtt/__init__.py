@@ -62,9 +62,7 @@ class BrultechSerial2MQTT:
                     payload=self._config.mqtt.will_message.payload,
                     qos=self._config.mqtt.will_message.qos,
                     retain=self._config.mqtt.will_message.retain,
-                    topic=self._config.mqtt.will_message.topic(
-                        first_packet.serial_number
-                    ),
+                    topic=self._config.mqtt.status_topic(first_packet.serial_number),
                 ),
             ) as mqtt_client:
                 await self._publish_home_assistant_discovery_config(
@@ -150,11 +148,11 @@ class BrultechSerial2MQTT:
         self, mqtt_client: MQTTClient, device_serial: int
     ) -> None:
         logger.info(
-            f"Notifying clients that we are online on {self._config.mqtt.birth_message.topic(device_serial)}"
+            f"Notifying clients that we are online on {self._config.mqtt.status_topic(device_serial)}"
         )
         await mqtt_client.publish(
             payload=self._config.mqtt.birth_message.payload,
             qos=self._config.mqtt.birth_message.qos,
             retain=self._config.mqtt.birth_message.retain,
-            topic=self._config.mqtt.birth_message.topic(device_serial),
+            topic=self._config.mqtt.status_topic(device_serial),
         )

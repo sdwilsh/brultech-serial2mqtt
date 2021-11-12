@@ -21,13 +21,11 @@ class SensorMixin:
             "availability": [
                 {
                     "payload_available": self._mqtt_config.birth_message.payload,
-                    "topic": self._mqtt_config.birth_message.topic(
-                        packet.serial_number
-                    ),
+                    "topic": self._mqtt_config.status_topic(packet.serial_number),
                 },
                 {
                     "payload_not_available": self._mqtt_config.will_message.payload,
-                    "topic": self._mqtt_config.will_message.topic(packet.serial_number),
+                    "topic": self._mqtt_config.status_topic(packet.serial_number),
                 },
             ],
             "device": {

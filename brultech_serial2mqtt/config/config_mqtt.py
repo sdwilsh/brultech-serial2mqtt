@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Dict, Optional
 
 from jinja2 import Template
 from voluptuous import All
@@ -115,18 +115,13 @@ class MQTTBirthWillMessageConfig(BirthWillConfigMixin):
     def __init__(
         self,
         birth_will_config: Dict[str, Any],
-        topic_prefix_getter: Callable[[int], str],
     ):
         super().__init__(birth_will_config)
         self._retain: bool = birth_will_config["retain"]
-        self._topic_prefix_getter = topic_prefix_getter
 
     @property
     def retain(self) -> bool:
         return self._retain
-
-    def topic(self, device_serial: int) -> str:
-        return f"{self._topic_prefix_getter(device_serial)}/status"
 
 
 class MQTTConfig:
@@ -135,9 +130,7 @@ class MQTTConfig:
     schema = SCHEMA
 
     def __init__(self, mqtt_config: Dict[str, Any]):
-        self._birth_message = MQTTBirthWillMessageConfig(
-            mqtt_config["birth_message"], self.topic_prefix
-        )
+        self._birth_message = MQTTBirthWillMessageConfig(mqtt_config["birth_message"])
         self._broker = mqtt_config["broker"]
         self._client_id = mqtt_config["client_id"]
         self._home_assistant = HomeAssistant(mqtt_config["home_assistant"])
@@ -146,9 +139,7 @@ class MQTTConfig:
         self._qos = mqtt_config["qos"]
         self._topic_prefix = mqtt_config["topic_prefix"]
         self._username = mqtt_config["username"]
-        self._will_message = MQTTBirthWillMessageConfig(
-            mqtt_config["will_message"], self.topic_prefix
-        )
+        self._will_message = MQTTBirthWillMessageConfig(mqtt_config["will_message"])
 
     @property
     def birth_message(self) -> MQTTBirthWillMessageConfig:
@@ -186,6 +177,10 @@ class MQTTConfig:
     def state_topic(self, device_serial: int) -> str:
         """Return the topic used to convey device state."""
         return f"{self.topic_prefix(device_serial)}/state"
+
+    def status_topic(self, device_serial: int) -> str:
+        """Return the topic used to convey service status (via birth and will)."""
+        return f"{self.topic_prefix(device_serial)}/status"
 
     def topic_prefix(self, device_serial: int) -> str:
         """Return topic prefix to use when sending to broker."""
