@@ -34,7 +34,7 @@ class TestSimpleConfig(unittest.TestCase):
         self.assertEqual(config.device.baud, 115200)
         self.assertEqual(len(config.device.channels), 1)
         self.assertTrue(config.device.channels[1].enabled_in_home_assistant)
-        self.assertEqual(config.device.channels[1].name, "channel_1")
+        self.assertEqual(config.device.channels[1].name, "Channel 1")
         self.assertEqual(config.device.channels[1].number, 1)
         self.assertEqual(config.device.channels[1].type, ChannelType.NORMAL)
         self.assertEqual(config.device.device_com, DeviceCOM.COM1)

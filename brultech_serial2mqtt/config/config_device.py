@@ -64,7 +64,7 @@ class ChannelConfig:
         self._name = (
             channel_config["name"]
             if "name" in channel_config
-            else f"channel_{channel_config['number']}"
+            else f"Channel {channel_config['number']}"
         )
         self._number = channel_config["number"]
         self._polarized = polarized
