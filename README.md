@@ -12,14 +12,14 @@ decode the data, and then sends the data to an MQTT server.
 
 ## Device
 
-| Name                 | Type | Default      | Supported Options                                                       | Description                                                         |
-| -------------------- | ---- | ------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| channels             | list | **required** | See [channels config](#channels)                                        | Channels to monitor and send to MQTT.                               |
-| device_com           | str  | **required** | Either `COM1` or `COM2`                                                 | Which COM port on the device this serial connection is attached to. |
-| name                 | str  | **required** | Any string                                                              | The name of the device to be used in Home Assistant Discovery       |
-| url                  | str  | **required** | Any [pyserial URL](https://pythonhosted.org/pyserial/url_handlers.html) | The local connection to the device (i.e. `/dev/ttyUSB0`).           |
-| baud                 | int  | 115200       | Any int                                                                 | The baud rate to communicate with the attached device with.         |
-| packet_send_interval | int  | 8            | 5-256                                                                   | The frequency in which to have the device send packets.             |
+| Name                  | Type | Default      | Supported Options                                                       | Description                                                         |
+| --------------------- | ---- | ------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| channels              | list | **required** | See [channels config](#channels)                                        | Channels to monitor and send to MQTT.                               |
+| device_com            | str  | **required** | Either `COM1` or `COM2`                                                 | Which COM port on the device this serial connection is attached to. |
+| name                  | str  | **required** | Any string                                                              | The name of the device to be used in Home Assistant Discovery       |
+| url                   | str  | **required** | Any [pyserial URL](https://pythonhosted.org/pyserial/url_handlers.html) | The local connection to the device (i.e. `/dev/ttyUSB0`).           |
+| baud                  | int  | 115200       | Any int                                                                 | The baud rate to communicate with the attached device with.         |
+| send_interval_seconds | int  | 8            | 5-256                                                                   | The frequency in which to have the device send packets.             |
 
 ### Channels
 

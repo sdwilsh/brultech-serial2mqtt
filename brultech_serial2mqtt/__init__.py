@@ -80,7 +80,7 @@ class BrultechSerial2MQTT:
             )
         logger.debug("Setting the packet send interval on the GEM device")
         await connection.set_packet_send_interval(
-            self._config.device.packet_send_interval_seconds
+            self._config.device.send_interval_seconds
         )
         logger.info("Setup of GEM device complete!")
 

@@ -51,7 +51,7 @@ SCHEMA = Schema(
         ),
         RequiredField("name"): All(str, Length(min=1)),
         OptionalField(
-            "packet_send_interval_seconds",
+            "send_interval_seconds",
             default=8,
         ): All(int, Range(min=5, max=256)),
         RequiredField("url"): str,
@@ -154,9 +154,7 @@ class DeviceConfig:
             DeviceCOM.COM1 if device_config["device_com"] == "COM1" else DeviceCOM.COM2
         )
         self._name: str = device_config["name"]
-        self._packet_send_interval_seconds = device_config[
-            "packet_send_interval_seconds"
-        ]
+        self._send_interval_seconds = device_config["send_interval_seconds"]
         self._url = device_config["url"]
 
     @property
@@ -179,8 +177,8 @@ class DeviceConfig:
         return self._name
 
     @property
-    def packet_send_interval_seconds(self) -> int:
-        return self._packet_send_interval_seconds
+    def send_interval_seconds(self) -> int:
+        return self._send_interval_seconds
 
     @property
     def url(self) -> str:
