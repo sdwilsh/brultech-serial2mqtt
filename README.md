@@ -57,7 +57,7 @@ Power flows in two directions from/to a solar inverter, without a `main` channel
 | client_id      | Jinja2 template str | brultech-serial2mqtt-{serial} | Any Jinja2 template str               | The client ID to use when connecting to the MQTT broker. `device_serial` is available to use in the template. |
 | home_assistant | dict                | `{}`                          | See [home assistant](#home-assistant) | Configuration on how Home Assitant communicates with the MQTT broker.                                         |
 | password       | str                 | None                          | Any str                               | The password to use to connect to the MQTT broker.                                                            |
-| port           | int                 | 1883                          | The port to connect to the broker on. |
+| port           | int                 | 1883                          | Any int                               | The port to connect to the broker on.                                                                         |
 | qos            | int                 | 0                             | 0-2                                   | The qos to use for messages sent to the MQTT broker.                                                          |
 | topic_prefix   | Jina2 template str  | brultech-serial2mqtt-{serial} | Any Jinja2 template str               | The root topic to publish status messages on. `device_serial` is available to use in the template.            |
 | username       | str                 | None                          | Any str                               | The username to connect to use to connect to the MQTT broker.                                                 |
