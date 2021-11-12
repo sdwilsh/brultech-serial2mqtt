@@ -7,7 +7,6 @@ import pprint
 from aiobrultech_serial import Connection as DeviceConnection
 from asyncio_mqtt import Client as MQTTClient
 from asyncio_mqtt.client import Will
-from siobrultech_protocols.gem.packets import Packet as DevicePacket
 from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFormatType
 
 from brultech_serial2mqtt.config import load_config
@@ -21,8 +20,6 @@ logger = logging.getLogger(__name__)
 class BrultechSerial2MQTT:
     def __init__(self):
         self._config = load_config()
-        self._first_packet: asyncio.Future[DevicePacket] = asyncio.Future()
-        self._device_manager: asyncio.Future[DeviceManager] = asyncio.Future()
 
         BrultechSerial2MQTT.setup_logging(self._config.logging)
 
@@ -48,6 +45,13 @@ class BrultechSerial2MQTT:
 
             await self._setup_gem(device_connection)
 
+            packets = device_connection.packets()
+
+            logger.info("Waiting for first packet to finish setup...")
+            first_packet = await packets.__anext__()
+            device_manager = DeviceManager(self._config, first_packet)
+
+            logger.debug(f"Connecting to MQTT broker at {self._config.mqtt.broker}")
             async with MQTTClient(
                 client_id=self._config.mqtt.client_id,
                 hostname=self._config.mqtt.broker,
@@ -61,11 +65,13 @@ class BrultechSerial2MQTT:
                     topic=self._config.mqtt.will_message.topic,
                 ),
             ) as mqtt_client:
-                self._publish_home_assistant_discovery_config(mqtt_client)
-                self._publish_birth_message(mqtt_client)
+                await self._publish_home_assistant_discovery_config(
+                    mqtt_client, device_manager
+                )
+                await self._publish_birth_message(mqtt_client)
 
                 async for packet in device_connection.packets():
-                    await self._handle_packet(packet, mqtt_client)
+                    await device_manager.handle_new_packet(packet, mqtt_client)
 
     async def _setup_gem(self, connection: DeviceConnection) -> None:
         logger.info("Setting up GEM device...")
@@ -84,7 +90,9 @@ class BrultechSerial2MQTT:
         )
         logger.info("Setup of GEM device complete!")
 
-    def _publish_home_assistant_discovery_config(self, mqtt_client: MQTTClient) -> None:
+    async def _publish_home_assistant_discovery_config(
+        self, mqtt_client: MQTTClient, device_manager: DeviceManager
+    ) -> None:
         if not self._config.mqtt.home_assistant.enable:
             logger.info(
                 "Home Assistant dicovery configuration is disabled.  Not publishing configuration."
@@ -92,11 +100,6 @@ class BrultechSerial2MQTT:
             return
 
         async def publish_discovery_config() -> None:
-            if not self._device_manager.done():
-                logger.debug(
-                    "Waiting for device manager to publish Home Assistant dicovery configuration..."
-                )
-            device_manager = await self._device_manager
             try:
                 for config in device_manager.home_assistant_discovery_configs:
                     topic = config.get_discovery_topic(
@@ -136,32 +139,16 @@ class BrultechSerial2MQTT:
                         )
                         asyncio.create_task(publish_discovery_config())
 
-        asyncio.create_task(publish_discovery_config())
+        await publish_discovery_config()
         asyncio.create_task(subscribe_to_home_assistant_birth())
 
-    def _publish_birth_message(self, mqtt_client: MQTTClient) -> None:
-        async def publish_birth_message() -> None:
-            logger.debug("Waiting for first packet to publish birth message...")
-            await self._first_packet
-            logger.info(
-                f"Notifying clients that we are online on {self._config.mqtt.birth_message.topic}"
-            )
-            await mqtt_client.publish(
-                payload=self._config.mqtt.birth_message.payload,
-                qos=self._config.mqtt.birth_message.qos,
-                retain=self._config.mqtt.birth_message.retain,
-                topic=self._config.mqtt.birth_message.topic,
-            )
-
-        asyncio.create_task(publish_birth_message())
-
-    async def _handle_packet(
-        self, packet: DevicePacket, mqtt_client: MQTTClient
-    ) -> None:
-        if not self._first_packet.done():
-            self._first_packet.set_result(packet)
-            self._device_manager.set_result(DeviceManager(self._config, packet))
-            return
-
-        device_manager = await self._device_manager
-        await device_manager.handle_new_packet(packet, mqtt_client)
+    async def _publish_birth_message(self, mqtt_client: MQTTClient) -> None:
+        logger.info(
+            f"Notifying clients that we are online on {self._config.mqtt.birth_message.topic}"
+        )
+        await mqtt_client.publish(
+            payload=self._config.mqtt.birth_message.payload,
+            qos=self._config.mqtt.birth_message.qos,
+            retain=self._config.mqtt.birth_message.retain,
+            topic=self._config.mqtt.birth_message.topic,
+        )
