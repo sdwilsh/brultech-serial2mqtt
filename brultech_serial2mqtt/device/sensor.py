@@ -5,10 +5,7 @@ from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config.config_mqtt import MQTTConfig
 from brultech_serial2mqtt.const import HOME_ASSISTANT_DOMAIN
-from brultech_serial2mqtt.device.mqtt import (
-    HomeAssistantDiscoveryConfig,
-    get_device_state_topic,
-)
+from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 
 
 class SensorMixin:
@@ -24,11 +21,13 @@ class SensorMixin:
             "availability": [
                 {
                     "payload_available": self._mqtt_config.birth_message.payload,
-                    "topic": self._mqtt_config.birth_message.topic,
+                    "topic": self._mqtt_config.birth_message.topic(
+                        packet.serial_number
+                    ),
                 },
                 {
                     "payload_not_available": self._mqtt_config.will_message.payload,
-                    "topic": self._mqtt_config.will_message.topic,
+                    "topic": self._mqtt_config.will_message.topic(packet.serial_number),
                 },
             ],
             "device": {
@@ -40,7 +39,7 @@ class SensorMixin:
                 "model": "GreenEye Monitor",
                 "name": self._device_name,
             },
-            "state_topic": get_device_state_topic(packet, self._mqtt_config),
+            "state_topic": self._mqtt_config.state_topic(packet.serial_number),
         }
         configs: Set[HomeAssistantDiscoveryConfig] = set()
         for config in self._sensor_specific_home_assistant_discovery_configs:

@@ -9,10 +9,7 @@ from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config import Config
 from brultech_serial2mqtt.device.channel import ChannelsManager
-from brultech_serial2mqtt.device.mqtt import (
-    HomeAssistantDiscoveryConfig,
-    get_device_state_topic,
-)
+from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 from brultech_serial2mqtt.device.voltage import Voltage
 
 logger = logging.getLogger(__name__)
@@ -48,7 +45,7 @@ class DeviceManager:
         state: Dict[str, Any] = {}
         state.update(self.state_data)
         json_state = json.dumps(state, indent=2)
-        topic = get_device_state_topic(packet, self._mqtt_config)
+        topic = self._mqtt_config.state_topic(packet.serial_number)
         await mqtt_client.publish(
             topic=topic,
             payload=json_state,

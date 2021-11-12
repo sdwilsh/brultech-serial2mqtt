@@ -53,7 +53,7 @@ class BrultechSerial2MQTT:
 
             logger.debug(f"Connecting to MQTT broker at {self._config.mqtt.broker}")
             async with MQTTClient(
-                client_id=self._config.mqtt.client_id,
+                client_id=self._config.mqtt.client_id(first_packet.serial_number),
                 hostname=self._config.mqtt.broker,
                 password=self._config.mqtt.password,
                 port=self._config.mqtt.port,
@@ -62,13 +62,17 @@ class BrultechSerial2MQTT:
                     payload=self._config.mqtt.will_message.payload,
                     qos=self._config.mqtt.will_message.qos,
                     retain=self._config.mqtt.will_message.retain,
-                    topic=self._config.mqtt.will_message.topic,
+                    topic=self._config.mqtt.will_message.topic(
+                        first_packet.serial_number
+                    ),
                 ),
             ) as mqtt_client:
                 await self._publish_home_assistant_discovery_config(
                     mqtt_client, device_manager
                 )
-                await self._publish_birth_message(mqtt_client)
+                await self._publish_birth_message(
+                    mqtt_client, first_packet.serial_number
+                )
 
                 async for packet in device_connection.packets():
                     await device_manager.handle_new_packet(packet, mqtt_client)
@@ -142,13 +146,15 @@ class BrultechSerial2MQTT:
         await publish_discovery_config()
         asyncio.create_task(subscribe_to_home_assistant_birth())
 
-    async def _publish_birth_message(self, mqtt_client: MQTTClient) -> None:
+    async def _publish_birth_message(
+        self, mqtt_client: MQTTClient, device_serial: int
+    ) -> None:
         logger.info(
-            f"Notifying clients that we are online on {self._config.mqtt.birth_message.topic}"
+            f"Notifying clients that we are online on {self._config.mqtt.birth_message.topic(device_serial)}"
         )
         await mqtt_client.publish(
             payload=self._config.mqtt.birth_message.payload,
             qos=self._config.mqtt.birth_message.qos,
             retain=self._config.mqtt.birth_message.retain,
-            topic=self._config.mqtt.birth_message.topic,
+            topic=self._config.mqtt.birth_message.topic(device_serial),
         )

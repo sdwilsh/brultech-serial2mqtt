@@ -44,20 +44,25 @@ class TestSimpleConfig(unittest.TestCase):
 
         self.assertEqual(config.logging.level, LogLevel.INFO)
         self.assertEqual(config.mqtt.broker, "localhost")
-        self.assertEqual(config.mqtt.client_id, "brultech-serial2mqtt")
+        self.assertEqual(config.mqtt.client_id(123), "brultech-serial2mqtt-123")
         self.assertEqual(config.mqtt.port, 1883)
         self.assertIsNone(config.mqtt.password)
         self.assertEqual(config.mqtt.qos, 0)
-        self.assertEqual(config.mqtt.topic_prefix, "brultech-serial2mqtt")
+        self.assertEqual(config.mqtt.state_topic(123), "brultech-serial2mqtt-123/state")
+        self.assertEqual(config.mqtt.topic_prefix(123), "brultech-serial2mqtt-123")
         self.assertIsNone(config.mqtt.username)
         self.assertEqual(config.mqtt.birth_message.payload, "online")
         self.assertEqual(config.mqtt.birth_message.qos, 0)
         self.assertTrue(config.mqtt.birth_message.retain)
-        self.assertEqual(config.mqtt.birth_message.topic, "brultech-serial2mqtt/status")
+        self.assertEqual(
+            config.mqtt.birth_message.topic(123), "brultech-serial2mqtt-123/status"
+        )
         self.assertEqual(config.mqtt.will_message.payload, "offline")
         self.assertEqual(config.mqtt.will_message.qos, 0)
         self.assertTrue(config.mqtt.will_message.retain)
-        self.assertEqual(config.mqtt.will_message.topic, "brultech-serial2mqtt/status")
+        self.assertEqual(
+            config.mqtt.will_message.topic(123), "brultech-serial2mqtt-123/status"
+        )
 
         self.assertTrue(config.mqtt.home_assistant.enable)
         self.assertEqual(config.mqtt.home_assistant.discovery_prefix, "homeassistant")

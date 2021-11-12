@@ -1,5 +1,6 @@
 from typing import Any, Callable, Dict, Optional
 
+from jinja2 import Template
 from voluptuous import All
 from voluptuous import Any as AnyValid
 from voluptuous import Optional as OptionalField
@@ -20,7 +21,9 @@ SCHEMA = Schema(
             OptionalField("retain", default=True): bool,
         },
         RequiredField("broker"): str,
-        OptionalField("client_id", default="brultech-serial2mqtt"): AnyValid(str, None),
+        OptionalField(
+            "client_id", default="brultech-serial2mqtt-{{ device_serial }}"
+        ): AnyValid(str, None),
         OptionalField("home_assistant", default=EmptyConfigDict): {
             OptionalField("enable", default=True): bool,
             OptionalField("discovery_prefix", default="homeassistant"): str,
@@ -39,9 +42,9 @@ SCHEMA = Schema(
             int,
             Range(min=0, max=2),
         ),
-        OptionalField("topic_prefix", default="brultech-serial2mqtt"): AnyValid(
-            str, None
-        ),
+        OptionalField(
+            "topic_prefix", default="brultech-serial2mqtt-{{ device_serial }}"
+        ): AnyValid(str, None),
         OptionalField("username", default=None): AnyValid(str, None),
         OptionalField("will_message", default=EmptyConfigDict): {
             OptionalField("payload", default="offline"): str,
@@ -112,7 +115,7 @@ class MQTTBirthWillMessageConfig(BirthWillConfigMixin):
     def __init__(
         self,
         birth_will_config: Dict[str, Any],
-        topic_prefix_getter: Callable[[], str],
+        topic_prefix_getter: Callable[[int], str],
     ):
         super().__init__(birth_will_config)
         self._retain: bool = birth_will_config["retain"]
@@ -122,9 +125,8 @@ class MQTTBirthWillMessageConfig(BirthWillConfigMixin):
     def retain(self) -> bool:
         return self._retain
 
-    @property
-    def topic(self) -> str:
-        return f"{self._topic_prefix_getter()}/status"
+    def topic(self, device_serial: int) -> str:
+        return f"{self._topic_prefix_getter(device_serial)}/status"
 
 
 class MQTTConfig:
@@ -134,7 +136,7 @@ class MQTTConfig:
 
     def __init__(self, mqtt_config: Dict[str, Any]):
         self._birth_message = MQTTBirthWillMessageConfig(
-            mqtt_config["birth_message"], lambda: self.topic_prefix
+            mqtt_config["birth_message"], self.topic_prefix
         )
         self._broker = mqtt_config["broker"]
         self._client_id = mqtt_config["client_id"]
@@ -145,7 +147,7 @@ class MQTTConfig:
         self._topic_prefix = mqtt_config["topic_prefix"]
         self._username = mqtt_config["username"]
         self._will_message = MQTTBirthWillMessageConfig(
-            mqtt_config["will_message"], lambda: self.topic_prefix
+            mqtt_config["will_message"], self.topic_prefix
         )
 
     @property
@@ -157,10 +159,9 @@ class MQTTConfig:
         """Return broker IP or hostname."""
         return self._broker
 
-    @property
-    def client_id(self) -> Optional[str]:
+    def client_id(self, device_serial: int) -> str:
         """Return client id."""
-        return self._client_id
+        return Template(self._client_id).render(device_serial=device_serial)
 
     @property
     def home_assistant(self) -> HomeAssistant:
@@ -182,10 +183,13 @@ class MQTTConfig:
         """Return qos to use for messages."""
         return self._qos
 
-    @property
-    def topic_prefix(self) -> str:
+    def state_topic(self, device_serial: int) -> str:
+        """Return the topic used to convey device state."""
+        return f"{self.topic_prefix(device_serial)}/state"
+
+    def topic_prefix(self, device_serial: int) -> str:
         """Return topic prefix to use when sending to broker."""
-        return self._topic_prefix
+        return Template(self._topic_prefix).render(device_serial=device_serial)
 
     @property
     def username(self) -> Optional[str]:
