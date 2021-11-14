@@ -16,9 +16,9 @@ decode the data, and then sends the data to an MQTT server.
 | --------------------- | ---- | ------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | channels              | list | **required** | See [channels config](#channels)                                        | Channels to monitor and send to MQTT.                               |
 | device_com            | str  | **required** | Either `COM1` or `COM2`                                                 | Which COM port on the device this serial connection is attached to. |
-| name                  | str  | **required** | Any string                                                              | The name of the device to be used in Home Assistant Discovery       |
+| name                  | str  | **required** | Any string                                                              | The name of the device to be used in Home Assistant Discovery.      |
 | url                   | str  | **required** | Any [pyserial URL](https://pythonhosted.org/pyserial/url_handlers.html) | The local connection to the device (i.e. `/dev/ttyUSB0`).           |
-| baud                  | int  | 115200       | Any int                                                                 | The baud rate to communicate with the attached device with.         |
+| baud                  | int  | 115200       | Any int                                                                 | The baud rate to communicate with the attached device.              |
 | send_interval_seconds | int  | 8            | 5-256                                                                   | The frequency in which to have the device send packets.             |
 
 ### Channels
@@ -27,7 +27,7 @@ decode the data, and then sends the data to an MQTT server.
 | -------------- | ---- | -------------------------- | ---------------------------------- | ------------------------------------------------------------------------------ |
 | number         | int  | **required**               | 1-32                               | The channel number in the device.                                              |
 | home_assistant | bool | True if `type` is `normal` | Any bool                           | If the entity for this channel should be enabled by default in Home Assistant. |
-| name           | str  | Channel {`number`}         | Any str                            | The name of the entity in Home Assistant                                       |
+| name           | str  | Channel {`number`}         | Any str                            | The name of the entity in Home Assistant.                                      |
 | type           | str  | normal                     | See [channel types](#channel-type) | The type of channel to support net-metering and aggregation.                   |
 
 #### Channel Type
@@ -55,7 +55,7 @@ Power flows in two directions from/to a solar inverter, without a `main` channel
 | broker         | str                 | **required**                  | Any str                               | The MQTT broker to connect to.                                                                                |
 | birth_message  | dict                | `{}`                          | See [birth message](#birth-message)   | The birth message to send when we connect to the MQTT broker.                                                 |
 | client_id      | Jinja2 template str | brultech-serial2mqtt-{serial} | Any Jinja2 template str               | The client ID to use when connecting to the MQTT broker. `device_serial` is available to use in the template. |
-| home_assistant | dict                | `{}`                          | See [home assistant](#home-assistant) | Configuration on how Home Assitant communicates with the MQTT broker.                                         |
+| home_assistant | dict                | `{}`                          | See [home assistant](#home-assistant) | Configuration on how Home Assistant communicates with the MQTT broker.                                        |
 | password       | str                 | None                          | Any str                               | The password to use to connect to the MQTT broker.                                                            |
 | port           | int                 | 1883                          | Any int                               | The port to connect to the broker on.                                                                         |
 | qos            | int                 | 0                             | 0-2                                   | The qos to use for messages sent to the MQTT broker.                                                          |
