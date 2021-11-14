@@ -12,15 +12,14 @@ decode the data, and then sends the data to an MQTT server.
 
 ## Device
 
-### Required
-
 | Name       | Type | Supported Options                | Description                                                         |
 | ---------- | ---- | -------------------------------- | ------------------------------------------------------------------- |
 | channels   | list | See [channels config](#channels) | Channels to monitor and send to MQTT.                               |
 | device_com | str  | Either `COM1` or `COM2`          | Which COM port on the device this serial connection is attached to. |
 | name       | str  | Any string                       | The name of the device to be used in Home Assistant Discovery.      |
 
-### Optional
+<details>
+<summary>Optional Device Configuration Options</summary>
 
 | Name                  | Type | Default      | Supported Options                                                       | Description                                             |
 | --------------------- | ---- | ------------ | ----------------------------------------------------------------------- | ------------------------------------------------------- |
@@ -28,15 +27,16 @@ decode the data, and then sends the data to an MQTT server.
 | send_interval_seconds | int  | 8            | 5-256                                                                   | The frequency in which to have the device send packets. |
 | url                   | str  | /dev/ttyUSB0 | Any [pyserial URL](https://pythonhosted.org/pyserial/url_handlers.html) | The local connection to the device.                     |
 
-### Channels
+</details>
 
-#### Required
+### Channels
 
 | Name   | Type | Supported Options | Description                       |
 | ------ | ---- | ----------------- | --------------------------------- |
 | number | int  | 1-32              | The channel number in the device. |
 
-#### Optional
+<details>
+<summary>Optional Channel Configuration Options</summary>
 
 | Name           | Type | Default                    | Supported Options                  | Description                                                                    |
 | -------------- | ---- | -------------------------- | ---------------------------------- | ------------------------------------------------------------------------------ |
@@ -62,15 +62,16 @@ Power flows in two directions from/to a solar inverter, with a `main` channel be
 
 Power flows in two directions from/to a solar inverter, without a `main` channel between it and the electricity provider.
 
-## MQTT
+</details>
 
-### Required
+## MQTT
 
 | Name   | Type | Supported Options | Description                    |
 | ------ | ---- | ----------------- | ------------------------------ |
 | broker | str  | Any str           | The MQTT broker to connect to. |
 
-### Optional
+<details>
+<summary>Optional MQTT Configuration Options</summary>
 
 | Name           | Type                | Default                       | Supported Options                     | Description                                                                                                   |
 | -------------- | ------------------- | ----------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -120,12 +121,19 @@ The well message is sent under the topic prefix configured in the [MQTT](#mqtt) 
 | qos     | int  | 0       | 0-2               | The qos to use for the will message.              |
 | retain  | bool | True    | Any bool          | If the retain flag is set on the will message.    |
 
+</details>
+
 ## Logging
+
+<details>
+<summary>Optional Logging Configuration Options</summary>
 
 | Name  | Type | Default | Supported Options                                  | Description                                                               |
 | ----- | ---- | ------- | -------------------------------------------------- | ------------------------------------------------------------------------- |
 | level | str  | info    | `critical`, `error`, `warning`, `info`, or `debug` | The logging level the application should print messages to stdout with.   |
 | logs  | dict | `{}`    | Any dict of levels                                 | A dict of Python named-logs and the level in which to log them to stdout. |
+
+</details>
 
 # Development
 
