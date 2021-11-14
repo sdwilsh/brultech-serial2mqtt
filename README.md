@@ -3,7 +3,7 @@
 
 # What is brultech-serial2mqtt?
 
-This library talks to devices from [Brultech Research](https://www.brultech.com/)
+This image talks to devices from [Brultech Research](https://www.brultech.com/)
 over their serial port, using
 [siobrultech-protocols](https://github.com/sdwilsh/siobrultech-protocols) to
 decode the data, and then sends the data to an MQTT server.
