@@ -46,21 +46,12 @@ decode the data, and then sends the data to an MQTT server.
 
 #### Channel Type
 
-##### `normal`
-
-Power flows through one direction in this channel.
-
-##### `main`
-
-Power may flow through in both directions (depending on other channels like solar existing), and represents power coming in and going out from an electricity provider.
-
-##### `solar_downstream_main`
-
-Power flows in two directions from/to a solar inverter, with a `main` channel between it and the electricity provider.
-
-##### `solar_upstream_main`
-
-Power flows in two directions from/to a solar inverter, without a `main` channel between it and the electricity provider.
+| Channel Type          | Description                                                                                                                                                             |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| normal                | Power flows through one direction in this channel.                                                                                                                      |
+| main                  | Power may flow through in both directions (depending on other channels like solar existing), and represents power coming in and going out from an electricity provider. |
+| solar_downstream_main | Power flows in two directions from/to a solar inverter, with a `main` channel between it and the electricity provider.                                                  |
+| solar_upstream_main   | Power flows in two directions from/to a solar inverter, without a `main` channel between it and the electricity provider.                                               |
 
 </details>
 
