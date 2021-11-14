@@ -71,6 +71,8 @@ The available images are:
 
 # Configuration Options
 
+The configuration file supports `!secret` strings, [as documented for Home Assistant](https://www.home-assistant.io/docs/configuration/secrets/).
+
 ## Device
 
 | Name       | Type | Supported Options                | Description                                                         |
