@@ -10,12 +10,27 @@ decode the data, and then sends the data to an MQTT server.
 
 # Table of Contents
 
+- [Supported Architectures](#supported-architectures)
 - [Configuration Options](#configuration-options)
   - [Device](#device)
   - [Channels](#channels)
   - [MQTT](#mqtt)
   - [Logging](#logging)
 - [Contributing](#contributing)
+
+# Supported Architectures
+
+All published images support multiple architectures. The images are currently published with support for the folowing:
+
+- linux/amd64
+- linux/arm/v7
+- linux/arm64
+
+The available images are:
+
+| Image                                     | Description                               |
+| ----------------------------------------- | ----------------------------------------- |
+| ghcr.io/sdwilsh/brultech-serial2mqtt:main | Bleeding edge tracking the `main` branch. |
 
 # Configuration Options
 
