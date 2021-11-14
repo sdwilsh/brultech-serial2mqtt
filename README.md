@@ -52,12 +52,12 @@ mqtt:
 services:
   brultech:
     container_name: "serial2mqtt"
+    devices:
+      - "/dev/serial/by-id/usb-XXXXX:/dev/ttyUSB0"
     image: "ghcr.io/sdwilsh/brultech-serial2mqtt:main"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "<config path>:/config:ro"
-    devices:
-      - "/dev/serial/by-id/usb-XXXXX:/dev/ttyUSB0"
 ```
 
 # Supported Architectures
