@@ -8,6 +8,15 @@ over their serial port, using
 [siobrultech-protocols](https://github.com/sdwilsh/siobrultech-protocols) to
 decode the data, and then sends the data to an MQTT server.
 
+# Table of Contents
+
+- [Configuration Options](#configuration-options)
+  - [Device](#device)
+  - [Channels](#channels)
+  - [MQTT](#mqtt)
+  - [Logging](#logging)
+- [Contributing](#contributing)
+
 # Configuration Options
 
 ## Device
@@ -126,7 +135,7 @@ The well message is sent under the topic prefix configured in the [MQTT](#mqtt) 
 
 </details>
 
-# Development
+# Contributing
 
 ## Setup
 
