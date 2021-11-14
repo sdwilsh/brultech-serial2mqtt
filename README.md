@@ -75,11 +75,11 @@ The birth message is sent under the topic prefix configured in the [MQTT](#mqtt)
 
 ### Home Assistant
 
-| Name             | Type | Default       | Supported Options                                  | Description                                                                              |
-| ---------------- | ---- | ------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| enable           | bool | True          | Any bool                                           | If the Home Assistant discovery configuration should be sent or not.                     |
-| discovery_prefix | str  | homeassistant | Any str                                            | The topic prefix Home Assistant is configured to listen to for discovery configurations. |
-| birth_message    | dict | `{}`          | See [birth message](#home-assistant-birth-message) | The birth message configuration of Home Assistant.                                       |
+| Name             | Type | Default       | Supported Options                                  | Description                                                                                                                                 |
+| ---------------- | ---- | ------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| enable           | bool | True          | Any bool                                           | If the Home Assistant discovery configuration should be sent or not.                                                                        |
+| discovery_prefix | str  | homeassistant | Any str                                            | The topic prefix Home Assistant is configured to listen to for discovery configurations.                                                    |
+| birth_message    | dict | `{}`          | See [birth message](#home-assistant-birth-message) | The birth message configuration of Home Assistant. See [Home Assistant documentation](https://www.home-assistant.io/docs/mqtt/birth_will/). |
 
 #### Home Assistant Birth Message
 
