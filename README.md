@@ -8,7 +8,7 @@ over their serial port, using
 [siobrultech-protocols](https://github.com/sdwilsh/siobrultech-protocols) to
 decode the data, and then sends the data to an MQTT server.
 
-This image works will with Home Assistant, and will automatically create sesnors
+This image works well with Home Assistant, and will automatically create sesnors
 if [MQTT Discovery](https://www.home-assistant.io/docs/mqtt/discovery/) is
 enabled. Additionally, it creates named senors to easily integrate into the
 native [Energy Management](https://www.home-assistant.io/docs/energy/).
