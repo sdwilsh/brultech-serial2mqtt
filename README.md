@@ -215,3 +215,14 @@ pre-commit install
 ## Testing
 
 Tests are run with `pytest`.
+
+## Docker Builds
+
+To build for a single plaform, use the following command:
+
+```sh
+docker buildx build . -f docker/Dockerfile --platform {platform}
+```
+
+See Docker's documentation on
+[working with buildx](https://docs.docker.com/buildx/working-with-buildx/).
