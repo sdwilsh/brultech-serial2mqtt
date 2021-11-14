@@ -21,12 +21,14 @@ def packet() -> Generator[Packet, None, None]:
     yield Packet(
         BIN48_NET_TIME,
         voltage=120.0,
+        # In Wh, this is [1, 2, 3, ...]
         absolute_watt_seconds=[i * 3600 for i in range(1, 32)],
         device_id=12,
         serial_number=3456,
         seconds=0,
         pulse_counts=[],
         temperatures=[],
+        # In Wh, this is [0, 1, 2, ...]
         polarized_watt_seconds=[(i - 1) * 3600 for i in range(1, 32)],
         currents=[i / 10 for i in range(1, 32)],
         time_stamp=datetime.now(),
@@ -129,7 +131,9 @@ def test_main_with_downstream_soloar_config(parsed_values: Dict[str, Any]):
     {
         "device": {
             "channels": [
+                # Absolute: 1 Wh, Polarized 0 Wh
                 {"number": 1, "type": "solar_upstream_main"},
+                # Absolute: 2 Wh, Polarized 1 Wh
                 {"number": 2, "type": "solar_upstream_main"},
             ],
             "device_com": "COM1",
@@ -149,6 +153,8 @@ def test_solar_production_only_upstream_config(parsed_values: Dict[str, Any]):
             "gem_3456_channel_2_current": 0.2,
             "gem_3456_channel_2_polarized_energy": 1,
             "gem_3456_solar_production_energy": 1,
+            "gem_3456_grid_returned_energy": 1,
+            "gem_3456_grid_consumed_energy": 2,
             "gem_3456_voltage": 120.0,
         },
     )
@@ -187,8 +193,12 @@ def test_solar_production_only_downstream_config(parsed_values: Dict[str, Any]):
     {
         "device": {
             "channels": [
-                {"number": 1, "type": "solar_upstream_main"},
-                {"number": 2, "type": "solar_downstream_main"},
+                # Absolute: 1 Wh, Polarized 0 Wh
+                {"number": 1, "type": "main"},
+                # Absolute: 2 Wh, Polarized 1 Wh
+                {"number": 2, "type": "solar_upstream_main"},
+                # Absolute: 3 Wh, Polarized 2 Wh
+                {"number": 3, "type": "solar_downstream_main"},
             ],
             "device_com": "COM1",
             "name": "gem",
@@ -206,7 +216,12 @@ def test_solar_production_upstream_and_downstream_config(parsed_values: Dict[str
             "gem_3456_channel_2_absolute_energy": 2,
             "gem_3456_channel_2_current": 0.2,
             "gem_3456_channel_2_polarized_energy": 1,
-            "gem_3456_solar_production_energy": 1,
+            "gem_3456_channel_3_absolute_energy": 3,
+            "gem_3456_channel_3_current": 0.3,
+            "gem_3456_channel_3_polarized_energy": 2,
+            "gem_3456_solar_production_energy": 3,
+            "gem_3456_grid_returned_energy": 1,
+            "gem_3456_grid_consumed_energy": 2,
             "gem_3456_voltage": 120.0,
         },
     )

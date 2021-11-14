@@ -249,12 +249,11 @@ class ChannelsManager:
         for c in self._channels:
             channels_by_type[c.config.type].add(c)
 
-        main_absolute = {c.config.number for c in channels_by_type[ChannelType.MAIN]}
-        main_polarized = {c.config.number for c in channels_by_type[ChannelType.MAIN]}
-        solar_downstream_polarized = {
+        main = {c.config.number for c in channels_by_type[ChannelType.MAIN]}
+        solar_downstream = {
             c.config.number for c in channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]
         }
-        solar_upstream_polarized = {
+        solar_upstream = {
             c.config.number for c in channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]
         }
 
@@ -267,42 +266,53 @@ class ChannelsManager:
                 name_root="Solar Production",
                 unique_id_root="solar_production",
                 channel_combination=[
-                    ("+", solar_downstream_polarized, ChannelValueType.POLARIZED),
-                    ("+", solar_upstream_polarized, ChannelValueType.POLARIZED),
+                    ("+", solar_downstream, ChannelValueType.POLARIZED),
+                    ("+", solar_upstream, ChannelValueType.POLARIZED),
                 ],
                 reference_packet=self._previous_packet,
             )
         )
 
-        if (
-            len(channels_by_type[ChannelType.MAIN]) > 0
-            and len(channels_by_type[ChannelType.SOLAR_DOWNSTREAM_MAIN]) > 0
-            and len(channels_by_type[ChannelType.SOLAR_UPSTREAM_MAIN]) == 0
-        ):
-            # Grid consumption of power should be main_absolute - main_polarized
-            channels.add(
-                AggregatedEnergyChannel(
-                    config=config,
-                    name_root="Grid Consumption",
-                    unique_id_root="grid_consumed",
-                    channel_combination=[
-                        ("+", main_absolute, ChannelValueType.ABSOLUTE),
-                        ("-", main_polarized, ChannelValueType.POLARIZED),
-                    ],
-                    reference_packet=self._previous_packet,
-                )
+        # Grid Consumption
+        channels.add(
+            AggregatedEnergyChannel(
+                config=config,
+                name_root="Grid Consumption",
+                unique_id_root="grid_consumed",
+                channel_combination=[
+                    ("+", main, ChannelValueType.ABSOLUTE),  # to/from utility
+                    ("-", main, ChannelValueType.POLARIZED),  # to utility
+                    (
+                        "+",
+                        solar_upstream,
+                        ChannelValueType.ABSOLUTE,
+                    ),  # to/from utility
+                    (
+                        "-",
+                        solar_upstream,
+                        ChannelValueType.POLARIZED,
+                    ),  # to utility
+                ],
+                reference_packet=self._previous_packet,
             )
-            # Return to grid should just be main_polarized.
-            channels.add(
-                AggregatedEnergyChannel(
-                    config=config,
-                    name_root="Return to Grid",
-                    unique_id_root="grid_returned",
-                    channel_combination=[
-                        ("+", main_polarized, ChannelValueType.POLARIZED)
-                    ],
-                    reference_packet=self._previous_packet,
-                )
+        )
+
+        # Return to Grid
+        channels.add(
+            AggregatedEnergyChannel(
+                config=config,
+                name_root="Return to Grid",
+                unique_id_root="grid_returned",
+                channel_combination=[
+                    ("+", main, ChannelValueType.POLARIZED),
+                    (
+                        "+",
+                        solar_upstream,
+                        ChannelValueType.POLARIZED,
+                    ),
+                ],
+                reference_packet=self._previous_packet,
             )
+        )
 
         return channels
