@@ -54,7 +54,7 @@ SCHEMA = Schema(
             "send_interval_seconds",
             default=8,
         ): All(int, Range(min=5, max=256)),
-        RequiredField("url"): str,
+        OptionalField("url", default="/dev/ttyUSB0"): str,
     },
 )
 

@@ -79,7 +79,6 @@ def assertParsedValues(parsed: Dict[str, Any], expected: Dict[str, Any]) -> None
             "channels": [{"number": 1}],
             "device_com": "COM1",
             "name": "gem",
-            "url": "/dev/ttyUSB0",
         },
         "mqtt": {"broker": "localhost"},
     }
@@ -104,7 +103,6 @@ def test_simple_config(parsed_values: Dict[str, Any]):
             ],
             "device_com": "COM1",
             "name": "gem",
-            "url": "/dev/ttyUSB0",
         },
         "mqtt": {"broker": "localhost"},
     }
@@ -136,7 +134,6 @@ def test_main_with_downstream_soloar_config(parsed_values: Dict[str, Any]):
             ],
             "device_com": "COM1",
             "name": "gem",
-            "url": "/dev/ttyUSB0",
         },
         "mqtt": {"broker": "localhost"},
     }
@@ -166,7 +163,6 @@ def test_solar_production_only_upstream_config(parsed_values: Dict[str, Any]):
             ],
             "device_com": "COM1",
             "name": "gem",
-            "url": "/dev/ttyUSB0",
         },
         "mqtt": {"broker": "localhost"},
     }
@@ -196,7 +192,6 @@ def test_solar_production_only_downstream_config(parsed_values: Dict[str, Any]):
             ],
             "device_com": "COM1",
             "name": "gem",
-            "url": "/dev/ttyUSB0",
         },
         "mqtt": {"broker": "localhost"},
     }
