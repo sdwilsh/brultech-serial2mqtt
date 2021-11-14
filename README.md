@@ -10,6 +10,9 @@ decode the data, and then sends the data to an MQTT server.
 
 # Table of Contents
 
+- [Getting Started](#getting-started)
+  - [Minimum Configuration](#minimum-configuration)
+  - [Docker Compose](#docker-compose)
 - [Supported Architectures](#supported-architectures)
 - [Configuration Options](#configuration-options)
   - [Device](#device)
@@ -17,6 +20,40 @@ decode the data, and then sends the data to an MQTT server.
   - [MQTT](#mqtt)
   - [Logging](#logging)
 - [Contributing](#contributing)
+
+# Getting Started
+
+## Minimum Configuration
+
+Below is an example of the the minimum amount of configuration needed. See
+[Configuration Options](#configuration-options) for more details and additional
+options.
+
+```yaml
+---
+device:
+  channels:
+    - number: 1
+  device_com: "COM1"
+  name: "House Energy Monitor"
+mqtt:
+  broker: "mqtt.mybroker.com"
+```
+
+## Docker Compose
+
+```yaml
+---
+services:
+  brultech:
+    container_name: "serial2mqtt"
+    image: "ghcr.io/sdwilsh/brultech-serial2mqtt:main"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "<config path>:/config:ro"
+    devices:
+      - "/dev/serial/by-id/usb-XXXXX:/dev/ttyUSB0"
+```
 
 # Supported Architectures
 
