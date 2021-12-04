@@ -120,7 +120,7 @@ class BrultechSerial2MQTT:
             except Exception as exc:
                 logger.exception(
                     "Exception caught while attempting to publish Home Assistant discovery configuration!",
-                    exc,
+                    exc_info=exc,
                 )
 
         async def subscribe_to_home_assistant_birth() -> None:

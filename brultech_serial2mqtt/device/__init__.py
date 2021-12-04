@@ -34,7 +34,7 @@ class DeviceManager:
         except Exception as exc:
             logger.exception(
                 "Exception caught while attempting to publish a packet!",
-                exc,
+                exc_info=exc,
             )
 
     async def _publish_packet(
