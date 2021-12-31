@@ -24,7 +24,7 @@ COPY setup.py /src/brultech_serial2mqtt/setup.py
 COPY brultech_serial2mqtt /src/brultech_serial2mqtt/brultech_serial2mqtt
 WORKDIR /src/brultech_serial2mqtt
 RUN \
-    echo "########## Install Python Deps ##########" && \
+    echo "########## Install Python Package and Deps ##########" && \
     pip install -r requirements.txt && \
     echo "########## Add User to Dialout Group ##########" && \
     usermod abc -a -G dialout
