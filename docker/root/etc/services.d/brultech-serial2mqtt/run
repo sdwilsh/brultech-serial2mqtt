@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
 
+cd /src/brultech_serial2mqtt || exit
 exec \
     s6-setuidgid abc python3 -m brultech_serial2mqtt
