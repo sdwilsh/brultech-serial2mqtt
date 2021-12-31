@@ -7,6 +7,7 @@ import pprint
 from aiobrultech_serial import Connection as DeviceConnection
 from asyncio_mqtt import Client as MQTTClient
 from asyncio_mqtt.client import Will
+from asyncio_mqtt.error import MqttError
 from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFormatType
 
 from brultech_serial2mqtt.config import load_config
@@ -117,6 +118,11 @@ class BrultechSerial2MQTT:
                     logger.debug(
                         f"Configuration for {config.component} identified by {config.object_id}:\n{pprint.pformat(config.config)}"
                     )
+            except MqttError as exc:
+                logger.debug(
+                    "MqttError while attempting to publish Home Assistant dicovery configuration!",
+                    exc_info=exc,
+                )
             except Exception as exc:
                 logger.exception(
                     "Exception caught while attempting to publish Home Assistant discovery configuration!",
@@ -124,22 +130,33 @@ class BrultechSerial2MQTT:
                 )
 
         async def subscribe_to_home_assistant_birth() -> None:
-            async with mqtt_client.filtered_messages(
-                self._config.mqtt.home_assistant.birth_message.topic
-            ) as messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/87
-                await mqtt_client.subscribe(
-                    self._config.mqtt.home_assistant.birth_message.topic,
-                    qos=self._config.mqtt.home_assistant.birth_message.qos,
+            try:
+                async with mqtt_client.filtered_messages(
+                    self._config.mqtt.home_assistant.birth_message.topic
+                ) as messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/87
+                    await mqtt_client.subscribe(
+                        self._config.mqtt.home_assistant.birth_message.topic,
+                        qos=self._config.mqtt.home_assistant.birth_message.qos,
+                    )
+                    async for message in messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/87
+                        if (
+                            message.payload.decode()
+                            == self._config.mqtt.home_assistant.birth_message.payload
+                        ):
+                            logger.debug(
+                                "Home Assistant has re-connected to the mqtt server.  Resending discovery configuration..."
+                            )
+                            asyncio.create_task(publish_discovery_config())
+            except MqttError as exc:
+                logger.debug(
+                    "MqttError while listenting/publishing for Home Assistant birth!",
+                    exc_info=exc,
                 )
-                async for message in messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/87
-                    if (
-                        message.payload.decode()
-                        == self._config.mqtt.home_assistant.birth_message.payload
-                    ):
-                        logger.debug(
-                            "Home Assistant has re-connected to the mqtt server.  Resending discovery configuration..."
-                        )
-                        asyncio.create_task(publish_discovery_config())
+            except Exception as exc:
+                logger.exception(
+                    "Exception caught while listenting/publishing for Home Assistant birth!",
+                    exc_info=exc,
+                )
 
         await publish_discovery_config()
         asyncio.create_task(subscribe_to_home_assistant_birth())
