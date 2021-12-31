@@ -3,6 +3,9 @@ from __future__ import annotations
 import asyncio
 import logging
 import pprint
+from asyncio.tasks import Task
+from contextlib import AsyncExitStack
+from typing import Optional
 
 from aiobrultech_serial import Connection as DeviceConnection
 from asyncio_mqtt import Client as MQTTClient
@@ -53,28 +56,45 @@ class BrultechSerial2MQTT:
             device_manager = DeviceManager(self._config, first_packet)
 
             logger.debug(f"Connecting to MQTT broker at {self._config.mqtt.broker}")
-            async with MQTTClient(
-                client_id=self._config.mqtt.client_id(first_packet.serial_number),
-                hostname=self._config.mqtt.broker,
-                password=self._config.mqtt.password,
-                port=self._config.mqtt.port,
-                username=self._config.mqtt.username,
-                will=Will(
-                    payload=self._config.mqtt.will_message.payload,
-                    qos=self._config.mqtt.will_message.qos,
-                    retain=self._config.mqtt.will_message.retain,
-                    topic=self._config.mqtt.status_topic(first_packet.serial_number),
-                ),
-            ) as mqtt_client:
-                await self._publish_home_assistant_discovery_config(
+            async with AsyncExitStack() as stack:
+                mqtt_client: MQTTClient = await stack.enter_async_context(
+                    MQTTClient(
+                        client_id=self._config.mqtt.client_id(
+                            first_packet.serial_number
+                        ),
+                        hostname=self._config.mqtt.broker,
+                        password=self._config.mqtt.password,
+                        port=self._config.mqtt.port,
+                        username=self._config.mqtt.username,
+                        will=Will(
+                            payload=self._config.mqtt.will_message.payload,
+                            qos=self._config.mqtt.will_message.qos,
+                            retain=self._config.mqtt.will_message.retain,
+                            topic=self._config.mqtt.status_topic(
+                                first_packet.serial_number
+                            ),
+                        ),
+                    )  # type:ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/99
+                )
+                task = await self._publish_home_assistant_discovery_config(
                     mqtt_client, device_manager
                 )
+                if not task is None:
+                    stack.callback(lambda: task.cancel())
+
                 await self._publish_birth_message(
                     mqtt_client, first_packet.serial_number
                 )
 
                 async for packet in device_connection.packets():
-                    await device_manager.handle_new_packet(packet, mqtt_client)
+                    try:
+                        await device_manager.handle_new_packet(packet, mqtt_client)
+                    except MqttError as exc:
+                        logger.exception(
+                            "MqttError while handling a new packet!",
+                            exc_info=exc,
+                        )
+                        break
 
     async def _setup_gem(self, connection: DeviceConnection) -> None:
         logger.info("Setting up GEM device...")
@@ -95,12 +115,12 @@ class BrultechSerial2MQTT:
 
     async def _publish_home_assistant_discovery_config(
         self, mqtt_client: MQTTClient, device_manager: DeviceManager
-    ) -> None:
+    ) -> Optional[Task[None]]:
         if not self._config.mqtt.home_assistant.enable:
             logger.info(
                 "Home Assistant dicovery configuration is disabled.  Not publishing configuration."
             )
-            return
+            return None
 
         async def publish_discovery_config() -> None:
             try:
@@ -118,6 +138,8 @@ class BrultechSerial2MQTT:
                     logger.debug(
                         f"Configuration for {config.component} identified by {config.object_id}:\n{pprint.pformat(config.config)}"
                     )
+            except asyncio.CancelledError:
+                pass
             except MqttError as exc:
                 logger.debug(
                     "MqttError while attempting to publish Home Assistant dicovery configuration!",
@@ -146,7 +168,9 @@ class BrultechSerial2MQTT:
                             logger.debug(
                                 "Home Assistant has re-connected to the mqtt server.  Resending discovery configuration..."
                             )
-                            asyncio.create_task(publish_discovery_config())
+                            await asyncio.create_task(publish_discovery_config())
+            except asyncio.CancelledError:
+                pass
             except MqttError as exc:
                 logger.debug(
                     "MqttError while listenting/publishing for Home Assistant birth!",
@@ -159,7 +183,7 @@ class BrultechSerial2MQTT:
                 )
 
         await publish_discovery_config()
-        asyncio.create_task(subscribe_to_home_assistant_birth())
+        return asyncio.create_task(subscribe_to_home_assistant_birth())
 
     async def _publish_birth_message(
         self, mqtt_client: MQTTClient, device_serial: int
