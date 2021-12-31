@@ -5,6 +5,7 @@ import pprint
 from typing import Any, Dict, Set
 
 from asyncio_mqtt import Client as MQTTClient
+from asyncio_mqtt.error import MqttError
 from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config import Config
@@ -31,6 +32,8 @@ class DeviceManager:
 
         try:
             await self._publish_packet(packet, mqtt_client)
+        except MqttError as exc:
+            raise exc
         except Exception as exc:
             logger.exception(
                 "Exception caught while attempting to publish a packet!",
