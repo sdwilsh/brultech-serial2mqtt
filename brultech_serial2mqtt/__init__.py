@@ -74,7 +74,7 @@ class BrultechSerial2MQTT:
                                 first_packet.serial_number
                             ),
                         ),
-                    )  # type:ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/99
+                    )
                 )
                 task = await self._publish_home_assistant_discovery_config(
                     mqtt_client, device_manager
@@ -155,12 +155,12 @@ class BrultechSerial2MQTT:
             try:
                 async with mqtt_client.filtered_messages(
                     self._config.mqtt.home_assistant.birth_message.topic
-                ) as messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/87
+                ) as messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/issues/100
                     await mqtt_client.subscribe(
                         self._config.mqtt.home_assistant.birth_message.topic,
                         qos=self._config.mqtt.home_assistant.birth_message.qos,
                     )
-                    async for message in messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/pull/87
+                    async for message in messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/issues/100
                         if (
                             message.payload.decode()
                             == self._config.mqtt.home_assistant.birth_message.payload
