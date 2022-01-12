@@ -86,7 +86,8 @@ class BrultechSerial2MQTT:
                     mqtt_client, first_packet.serial_number
                 )
 
-                packet_count = 0
+                # Set the packet count such that we will send the first packet to Home Assistant.
+                packet_count = self._config.mqtt.home_assistant.skip_packets + 1
                 async for packet in device_connection.packets():
                     packet_count += 1
                     if packet_count <= self._config.mqtt.home_assistant.skip_packets:
