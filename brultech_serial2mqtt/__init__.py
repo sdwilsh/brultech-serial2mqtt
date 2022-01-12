@@ -86,7 +86,18 @@ class BrultechSerial2MQTT:
                     mqtt_client, first_packet.serial_number
                 )
 
+                packet_count = 0
                 async for packet in device_connection.packets():
+                    packet_count += 1
+                    if packet_count <= self._config.mqtt.home_assistant.skip_packets:
+                        logger.debug(
+                            "Skipping packet #%d because we are supposed to skip every %d packets",
+                            packet_count,
+                            self._config.mqtt.home_assistant.skip_packets,
+                        )
+                        continue
+                    else:
+                        packet_count = 0
                     try:
                         await device_manager.handle_new_packet(packet, mqtt_client)
                     except MqttError as exc:
