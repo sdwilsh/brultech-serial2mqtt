@@ -26,7 +26,6 @@ SCHEMA = Schema(
         ): AnyValid(str, None),
         OptionalField("home_assistant", default=EmptyConfigDict): {
             OptionalField("enable", default=True): bool,
-            OptionalField("discovery_prefix", default="homeassistant"): str,
             OptionalField("birth_message", default=EmptyConfigDict): {
                 OptionalField("topic", default="homeassistant/status"): str,
                 OptionalField("payload", default="online"): str,
@@ -35,6 +34,8 @@ SCHEMA = Schema(
                     Range(min=0, max=2),
                 ),
             },
+            OptionalField("discovery_prefix", default="homeassistant"): str,
+            OptionalField("skip_packets", default=37): All(int, Range(min=0)),
         },
         OptionalField("password", default=None): AnyValid(str, None),
         OptionalField("port", default=1883): int,
@@ -91,12 +92,18 @@ class HomeAssistant:
         self._birth_message = HomeAssistantBirthMessage(
             home_assistant_config["birth_message"]
         )
-        self._enable = home_assistant_config["enable"]
         self._discovery_prefix = home_assistant_config["discovery_prefix"]
+        self._enable = home_assistant_config["enable"]
+        self._skip_packets = home_assistant_config["skip_packets"]
 
     @property
     def birth_message(self) -> HomeAssistantBirthMessage:
         return self._birth_message
+
+    @property
+    def discovery_prefix(self) -> str:
+        """Return Home Assistant discovery prefix."""
+        return self._discovery_prefix
 
     @property
     def enable(self) -> bool:
@@ -104,9 +111,9 @@ class HomeAssistant:
         return self._enable
 
     @property
-    def discovery_prefix(self) -> str:
-        """Return Home Assistant discovery prefix."""
-        return self._discovery_prefix
+    def skip_packets(self) -> int:
+        """Return the number of packets to skip before updating Home Assistant."""
+        return self._skip_packets
 
 
 class MQTTBirthWillMessageConfig(BirthWillConfigMixin):

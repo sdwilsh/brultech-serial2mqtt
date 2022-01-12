@@ -61,13 +61,14 @@ class TestSimpleConfig(unittest.TestCase):
         self.assertEqual(config.mqtt.will_message.qos, 0)
         self.assertTrue(config.mqtt.will_message.retain)
 
-        self.assertTrue(config.mqtt.home_assistant.enable)
-        self.assertEqual(config.mqtt.home_assistant.discovery_prefix, "homeassistant")
         self.assertEqual(config.mqtt.home_assistant.birth_message.payload, "online")
         self.assertEqual(config.mqtt.home_assistant.birth_message.qos, 0)
         self.assertEqual(
             config.mqtt.home_assistant.birth_message.topic, "homeassistant/status"
         )
+        self.assertEqual(config.mqtt.home_assistant.discovery_prefix, "homeassistant")
+        self.assertTrue(config.mqtt.home_assistant.enable)
+        self.assertEqual(config.mqtt.home_assistant.skip_packets, 37)
 
 
 class TestChannelConfig(unittest.TestCase):

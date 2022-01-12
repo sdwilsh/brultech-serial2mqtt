@@ -156,11 +156,12 @@ The birth message is sent under the topic prefix configured in the [MQTT](#mqtt)
 
 ### Home Assistant
 
-| Name             | Type | Default       | Supported Options                                  | Description                                                                                                                                 |
-| ---------------- | ---- | ------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| enable           | bool | True          | Any bool                                           | If the Home Assistant discovery configuration should be sent or not.                                                                        |
-| discovery_prefix | str  | homeassistant | Any str                                            | The topic prefix Home Assistant is configured to listen to for discovery configurations.                                                    |
-| birth_message    | dict | `{}`          | See [birth message](#home-assistant-birth-message) | The birth message configuration of Home Assistant. See [Home Assistant documentation](https://www.home-assistant.io/docs/mqtt/birth_will/). |
+| Name             | Type | Default       | Supported Options                                  | Description                                                                                                                                          |
+| ---------------- | ---- | ------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| birth_message    | dict | `{}`          | See [birth message](#home-assistant-birth-message) | The birth message configuration of Home Assistant. See [Home Assistant documentation](https://www.home-assistant.io/docs/mqtt/birth_will/).          |
+| discovery_prefix | str  | homeassistant | Any str                                            | The topic prefix Home Assistant is configured to listen to for discovery configurations.                                                             |
+| enable           | bool | True          | Any bool                                           | If the Home Assistant discovery configuration should be sent or not.                                                                                 |
+| skip_packets     | int  | `37`          | `> 0`                                              | The number of packets received from the device to skip before updating Home Assistant. Default updates Home Assistant about once every five minutes. |
 
 #### Home Assistant Birth Message
 
