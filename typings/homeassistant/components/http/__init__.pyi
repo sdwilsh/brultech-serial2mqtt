@@ -129,7 +129,7 @@ class HomeAssistantHTTP:
         url: str,
         redirect_to: StrOrURL,
         *,
-        redirect_exc: type[HTTPRedirection] = ...
+        redirect_exc: type[HTTPRedirection] = ...,
     ) -> None:
         """Register a redirect with the server.
 

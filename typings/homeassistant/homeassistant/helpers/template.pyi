@@ -61,6 +61,7 @@ class ResultWrapper:
 
 def gen_result_wrapper(kls):
     """Generate a result wrapper."""
+
     class Wrapper(kls, ResultWrapper):
         """Wrapper of a kls that can store render_result."""
 
