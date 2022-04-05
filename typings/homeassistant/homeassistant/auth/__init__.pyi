@@ -62,7 +62,7 @@ class AuthManagerFlowManager(data_entry_flow.FlowManager):
         handler_key: Any,
         *,
         context: dict[str, Any] | None = ...,
-        data: dict[str, Any] | None = ...
+        data: dict[str, Any] | None = ...,
     ) -> data_entry_flow.FlowHandler:
         """Create a login flow."""
         ...
