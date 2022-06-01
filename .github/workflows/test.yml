@@ -52,7 +52,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "Metadata"
-        uses: "docker/metadata-action@v3"
+        uses: "docker/metadata-action@v4"
         id: "metadata"
         with:
           images: ghcr.io/${{ github.repository }}
