@@ -1,5 +1,6 @@
-from datetime import datetime
-from typing import Any, Dict, Generator, Union
+from datetime import datetime, timedelta
+from typing import Any, AsyncGenerator, Dict, Generator, Union
+from unittest.mock import MagicMock
 
 import pytest
 from homeassistant.components.mqtt.sensor import DISCOVERY_SCHEMA
@@ -17,30 +18,53 @@ def auto_hass(hass: HomeAssistant) -> Generator[HomeAssistant, None, None]:
 
 
 @pytest.fixture()
-def packet() -> Generator[Packet, None, None]:
-    yield Packet(
+async def device_manager(
+    local_config: Config,
+) -> AsyncGenerator[DeviceManager, None]:
+    ts = datetime.now()
+    first_packet = Packet(
         BIN48_NET_TIME,
         voltage=120.0,
-        # In Wh, this is [1, 2, 3, ...]
-        absolute_watt_seconds=[i * 3600 for i in range(1, 32)],
+        # In Wh, this is [0, 0, 0, ...]
+        absolute_watt_seconds=[0 for _ in range(1, 32)],
         device_id=12,
         serial_number=3456,
         seconds=0,
         pulse_counts=[],
         temperatures=[],
-        # In Wh, this is [0, 1, 2, ...]
-        polarized_watt_seconds=[(i - 1) * 3600 for i in range(1, 32)],
-        currents=[i / 10 for i in range(1, 32)],
-        time_stamp=datetime.now(),
+        # In Wh, this is [0, 0, 0, ...]
+        polarized_watt_seconds=[0 for _ in range(1, 32)],
+        currents=[0 for _ in range(1, 32)],
+        time_stamp=ts,
     )
+
+    device_manager = DeviceManager(local_config, first_packet)
+    await device_manager.handle_new_packet(
+        # A Packet with increased values 10 seconds later.
+        Packet(
+            BIN48_NET_TIME,
+            voltage=120.0,
+            # In Wh, this is [1, 2, 3, ...]
+            absolute_watt_seconds=[i * 3600 for i in range(1, 32)],
+            device_id=12,
+            serial_number=3456,
+            seconds=10,
+            pulse_counts=[],
+            temperatures=[],
+            # In Wh, this is [0, 1, 2, ...]
+            polarized_watt_seconds=[(i - 1) * 3600 for i in range(1, 32)],
+            currents=[i / 10 for i in range(1, 32)],
+            time_stamp=ts + timedelta(seconds=10),
+        ),
+        MagicMock(),
+    )
+    yield device_manager
 
 
 @pytest.fixture()
 def parsed_values(
-    local_config: Config, packet: Packet, hass: HomeAssistant
+    device_manager: DeviceManager, hass: HomeAssistant
 ) -> Generator[Dict[str, Union[int, float]], None, None]:
-    device_manager = DeviceManager(local_config, packet)
-
     discovery_configs_by_unique_id: Dict[str, Dict[str, Any]] = {}
     for discovery_config in device_manager.home_assistant_discovery_configs:
         home_assistant_config = {"platform": "mqtt"}
@@ -91,6 +115,7 @@ def test_simple_config(parsed_values: Dict[str, Any]):
         {
             "gem_3456_channel_1_current": 0.1,
             "gem_3456_channel_1_energy": 1,
+            "gem_3456_channel_1_power": 360,
             "gem_3456_voltage": 120.0,
         },
     )
@@ -116,9 +141,11 @@ def test_main_with_downstream_soloar_config(parsed_values: Dict[str, Any]):
             "gem_3456_channel_1_absolute_energy": 1,  # To/from grid, through main
             "gem_3456_channel_1_current": 0.1,
             "gem_3456_channel_1_polarized_energy": 0,  # To grid, through main
+            "gem_3456_channel_1_power": 360,
             "gem_3456_channel_2_absolute_energy": 2,  # To/from solar
             "gem_3456_channel_2_current": 0.2,
             "gem_3456_channel_2_polarized_energy": 1,  # From solar
+            "gem_3456_channel_2_power": 0,
             "gem_3456_solar_production_energy": 1,
             "gem_3456_grid_returned_energy": 0,
             "gem_3456_grid_consumed_energy": 1,
@@ -149,9 +176,11 @@ def test_solar_production_only_upstream_config(parsed_values: Dict[str, Any]):
             "gem_3456_channel_1_absolute_energy": 1,
             "gem_3456_channel_1_current": 0.1,
             "gem_3456_channel_1_polarized_energy": 0,
+            "gem_3456_channel_1_power": 360,
             "gem_3456_channel_2_absolute_energy": 2,
             "gem_3456_channel_2_current": 0.2,
             "gem_3456_channel_2_polarized_energy": 1,
+            "gem_3456_channel_2_power": 0,
             "gem_3456_solar_production_energy": 1,
             "gem_3456_grid_returned_energy": 1,
             "gem_3456_grid_consumed_energy": 2,
@@ -180,9 +209,11 @@ def test_solar_production_only_downstream_config(parsed_values: Dict[str, Any]):
             "gem_3456_channel_1_absolute_energy": 1,
             "gem_3456_channel_1_current": 0.1,
             "gem_3456_channel_1_polarized_energy": 0,
+            "gem_3456_channel_1_power": 360,
             "gem_3456_channel_2_absolute_energy": 2,
             "gem_3456_channel_2_current": 0.2,
             "gem_3456_channel_2_polarized_energy": 1,
+            "gem_3456_channel_2_power": 0,
             "gem_3456_solar_production_energy": 1,
             "gem_3456_voltage": 120.0,
         },
@@ -213,12 +244,15 @@ def test_solar_production_upstream_and_downstream_config(parsed_values: Dict[str
             "gem_3456_channel_1_absolute_energy": 1,
             "gem_3456_channel_1_current": 0.1,
             "gem_3456_channel_1_polarized_energy": 0,
+            "gem_3456_channel_1_power": 360,
             "gem_3456_channel_2_absolute_energy": 2,
             "gem_3456_channel_2_current": 0.2,
             "gem_3456_channel_2_polarized_energy": 1,
+            "gem_3456_channel_2_power": 0,
             "gem_3456_channel_3_absolute_energy": 3,
             "gem_3456_channel_3_current": 0.3,
             "gem_3456_channel_3_polarized_energy": 2,
+            "gem_3456_channel_3_power": -360,
             "gem_3456_solar_production_energy": 3,
             "gem_3456_grid_returned_energy": 1,
             "gem_3456_grid_consumed_energy": 2,
