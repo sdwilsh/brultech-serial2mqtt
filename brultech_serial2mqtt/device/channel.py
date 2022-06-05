@@ -14,6 +14,7 @@ from brultech_serial2mqtt.device.sensor import SensorMixin
 class Channel(SensorMixin):
     def __init__(self, config: Config, channel_num: int, previous_packet: Packet):
         super().__init__(config.device.name, config.mqtt)
+        self._average_power = 0.0
         self._channel_config = config.device.channels[channel_num]
         self._last_packet = previous_packet
         self._mqtt_config = config.mqtt
@@ -23,7 +24,16 @@ class Channel(SensorMixin):
         self._name = f"{config.device.name} {config.device.channels[channel_num].name}"
 
     async def handle_new_packet(self, packet: Packet) -> None:
+        self._average_power = self._last_packet.get_average_power(
+            self._channel_index,
+            packet,
+        )
         self._last_packet = packet
+
+    @property
+    def _channel_index(self) -> int:
+        # Channel numbers are 1-based, but list index is 0-based
+        return self._channel_config.number - 1
 
     @property
     def config(self) -> ChannelConfig:
@@ -31,23 +41,22 @@ class Channel(SensorMixin):
 
     @property
     def state_data(self) -> Dict[str, Any]:
-        # Channel numbers are 1-based, but list index is 0-based
-        channel_index = self._channel_config.number - 1
         state: Dict[str, Any] = {
             "absolute_watt_seconds": self._last_packet.absolute_watt_seconds[
-                channel_index
+                self._channel_index
             ],
+            "power": self._average_power,
         }
 
         if self._last_packet.currents is not None:
-            state.update({"current": self._last_packet.currents[channel_index]})
+            state.update({"current": self._last_packet.currents[self._channel_index]})
 
         if self._channel_config.polarized:
             assert self._last_packet.polarized_watt_seconds is not None
             state.update(
                 {
                     "polarized_watt_seconds": self._last_packet.polarized_watt_seconds[
-                        channel_index
+                        self._channel_index
                     ],
                 }
             )
@@ -58,8 +67,23 @@ class Channel(SensorMixin):
     def _sensor_specific_home_assistant_discovery_configs(
         self,
     ) -> Set[HomeAssistantDiscoveryConfig]:
-        # Future improvements: Power
-        entities: Set[HomeAssistantDiscoveryConfig] = set()
+        entities: Set[HomeAssistantDiscoveryConfig] = {
+            HomeAssistantDiscoveryConfig(
+                component="sensor",
+                config={
+                    "enabled_by_default": self.config.home_assistant,
+                    "device_class": "power",
+                    "name": f"{self._name} Power",
+                    "qos": 1,
+                    "state_class": "measurement",
+                    "unique_id": f"{self._unique_id_base}_power",
+                    "unit_of_measurement": "W",
+                    "value_template": (
+                        f"{{{{ value_json.channel_{self._channel_config.number}.power }}}}"
+                    ),
+                },
+            ),
+        }
         if self._channel_config.polarized:
             entities.add(
                 HomeAssistantDiscoveryConfig(
