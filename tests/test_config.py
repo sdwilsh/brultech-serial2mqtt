@@ -54,6 +54,7 @@ class TestSimpleConfig(unittest.TestCase):
         )
         self.assertEqual(config.mqtt.topic_prefix(123), "brultech-serial2mqtt-123")
         self.assertIsNone(config.mqtt.username)
+        self.assertEqual(config.mqtt.usetls, False)
         self.assertEqual(config.mqtt.birth_message.payload, "online")
         self.assertEqual(config.mqtt.birth_message.qos, 0)
         self.assertTrue(config.mqtt.birth_message.retain)

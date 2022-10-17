@@ -140,8 +140,10 @@ The configuration file supports `!secret` strings, [as documented for Home Assis
 | password       | str                 | None                          | Any str                               | The password to use to connect to the MQTT broker.                                                            |
 | port           | int                 | 1883                          | Any int                               | The port to connect to the broker on.                                                                         |
 | qos            | int                 | 0                             | 0-2                                   | The qos to use for messages sent to the MQTT broker.                                                          |
+| tls_options    | dict                | `{}`                          | See [tls options](#tls-options)       | TLS Options to use when connecting to the MQTT broker. Only used when `usetls` is True.                       |
 | topic_prefix   | Jina2 template str  | brultech-serial2mqtt-{serial} | Any Jinja2 template str               | The root topic to publish status messages on. `device_serial` is available to use in the template.            |
 | username       | str                 | None                          | Any str                               | The username to connect to use to connect to the MQTT broker.                                                 |
+| usetls         | bool                | False                         | Any bool                              | Use TLS when connecting to the MQTT broker.                                                                   |
 | will_message   | dict                | `{}`                          | See [will message](#will-message)     | The will message to send when we disconnect from the MQTT broker.                                             |
 
 ### Birth Message
@@ -170,6 +172,20 @@ The birth message is sent under the topic prefix configured in the [MQTT](#mqtt)
 | payload | str  | online               | Any str           | The payload Home Assistant is configured to use when sending the birth message. |
 | qos     | int  | 0                    | 0-2               | The qos Home Assistant is configured to use for the birth message.              |
 | topic   | str  | homeassistant/status | Any str           | The topic Home Assistant is configured to use when sending the birth message.   |
+
+### TLS Options
+
+Corresponds directly to asyncio-mqtt's [TLSParameters](https://github.com/sbtinstruments/asyncio-mqtt#tls).
+
+| Name             | Type | Default              | Supported Options          | Description                                                                                               |
+| ---------------- | ---- | -------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------- |
+| ca_certs         | str  | None                 | Any str                    | Path to CA certificate files to be trusted by this client.                                                |
+| certfile         | str  | None                 | Any str                    | Path to a PEM encoded client certificate file.                                                            |
+| keyfile          | str  | None                 | Any str                    | Path to a PEM encoded private key file.                                                                   |
+| keyfile_password | str  | None                 | Any str                    | Password to decrypt either `certfile` or `keyfile` (if encrypted).                                        |
+| cert_reqs        | bool | True                 | Any bool                   | Enforce certificate requirements. Set to False to connect to, e.g., self-signed hosts.                    |
+| ciphers          | str  | None                 | Any str                    | Allowable encryption ciphers for this connection (set to None to use the defaults).                       |
+| tls_version      | str  | tls1.2               | None, tls1, tls1.1, tls1.2 | Version of the SSL/TLS protocol to use.                                                                   |
 
 ### Will Message
 
