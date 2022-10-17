@@ -1,3 +1,4 @@
+import ssl
 from typing import Any, Dict, Optional
 
 from jinja2 import Template
@@ -43,10 +44,22 @@ SCHEMA = Schema(
             int,
             Range(min=0, max=2),
         ),
+        OptionalField("tls_options", default=EmptyConfigDict): {
+            OptionalField("ca_certs", default=None): AnyValid(str, None),
+            OptionalField("cert_reqs", default=True): bool,
+            OptionalField("certfile", default=None): AnyValid(str, None),
+            OptionalField("ciphers", default=None): AnyValid(str, None),
+            OptionalField("keyfile", default=None): AnyValid(str, None),
+            OptionalField("keyfile_password", default=None): AnyValid(str, None),
+            OptionalField("tls_version", default="tls1.2"): AnyValid(
+                "tls1", "tls1.1", "tls1.2", None
+            ),
+        },
         OptionalField(
             "topic_prefix", default="brultech-serial2mqtt-{{ device_serial }}"
         ): AnyValid(str, None),
         OptionalField("username", default=None): AnyValid(str, None),
+        OptionalField("usetls", default=False): bool,
         OptionalField("will_message", default=EmptyConfigDict): {
             OptionalField("payload", default="offline"): str,
             OptionalField("qos", default=0): All(
@@ -131,6 +144,59 @@ class MQTTBirthWillMessageConfig(BirthWillConfigMixin):
         return self._retain
 
 
+class TlsConfig:
+    """TLS Param options."""
+
+    def __init__(self, tls_config: Dict[str, Any]):
+        self._ca_certs = tls_config["ca_certs"]
+        self._cert_reqs = tls_config["cert_reqs"]
+        self._certfile = tls_config["certfile"]
+        self._ciphers = tls_config["ciphers"]
+        self._keyfile = tls_config["keyfile"]
+        self._keyfile_password = tls_config["keyfile_password"]
+        self._tls_version = tls_config["tls_version"]
+
+    @property
+    def ca_certs(self) -> str:
+        return self._ca_certs
+
+    @property
+    def cert_reqs(self):
+        if not self._cert_reqs:
+            return ssl.CERT_NONE
+        else:
+            return ssl.CERT_REQUIRED
+
+    @property
+    def certfile(self) -> str:
+        return self._certfile
+
+    @property
+    def ciphers(self) -> str:
+        return self._ciphers
+
+    @property
+    def keyfile(self) -> str:
+        return self._keyfile
+
+    @property
+    def keyfile_password(self) -> str:
+        return self._keyfile_password
+
+    @property
+    def tls_version(self):
+        if self._tls_version == "tls1":
+            return ssl.PROTOCOL_TLSv1
+        elif self._tls_version == "tls1.1":
+            return ssl.PROTOCOL_TLSv1_1
+        elif self._tls_version == "tls1.2":
+            return ssl.PROTOCOL_TLSv1_2
+        elif self._tls_version is None:
+            return None
+        else:
+            return None
+
+
 class MQTTConfig:
     """MQTT config."""
 
@@ -144,8 +210,10 @@ class MQTTConfig:
         self._password = mqtt_config["password"]
         self._port = mqtt_config["port"]
         self._qos = mqtt_config["qos"]
+        self._tls_options = TlsConfig(mqtt_config["tls_options"])
         self._topic_prefix = mqtt_config["topic_prefix"]
         self._username = mqtt_config["username"]
+        self._usetls = mqtt_config["usetls"]
         self._will_message = MQTTBirthWillMessageConfig(mqtt_config["will_message"])
 
     @property
@@ -181,6 +249,11 @@ class MQTTConfig:
         """Return qos to use for messages."""
         return self._qos
 
+    @property
+    def tls_options(self) -> TlsConfig:
+        """Return TLS options"""
+        return self._tls_options
+
     def state_topic(self, device_serial: int) -> str:
         """Return the topic used to convey device state."""
         return f"{self.topic_prefix(device_serial)}/state"
@@ -197,6 +270,10 @@ class MQTTConfig:
     def username(self) -> Optional[str]:
         """Return broker username."""
         return self._username
+
+    @property
+    def usetls(self) -> bool:
+        return self._usetls
 
     @property
     def will_message(self) -> MQTTBirthWillMessageConfig:
