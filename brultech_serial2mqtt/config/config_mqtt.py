@@ -191,9 +191,8 @@ class TlsConfig:
             return ssl.PROTOCOL_TLSv1_1
         elif self._tls_version == "tls1.2":
             return ssl.PROTOCOL_TLSv1_2
-        elif self._tls_version is None:
-            return None
         else:
+            # Let paho-mqtt handle (defaults to ssl.PROTOCOL_TLS)
             return None
 
 
