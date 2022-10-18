@@ -161,7 +161,7 @@ class TlsConfig:
         return self._ca_certs
 
     @property
-    def cert_reqs(self):
+    def cert_reqs(self) -> ssl.VerifyMode:
         if not self._cert_reqs:
             return ssl.CERT_NONE
         else:
@@ -184,7 +184,7 @@ class TlsConfig:
         return self._keyfile_password
 
     @property
-    def tls_version(self):
+    def tls_version(self) -> Optional[int]:
         if self._tls_version == "tls1":
             return ssl.PROTOCOL_TLSv1
         elif self._tls_version == "tls1.1":
