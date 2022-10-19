@@ -1,6 +1,4 @@
-FROM --platform=linux/amd64 ghcr.io/linuxserver/baseimage-ubuntu:focal
-FROM --platform=linux/arm/v7 ghcr.io/linuxserver/baseimage-ubuntu:arm32v7-focal
-FROM --platform=linux/arm64 ghcr.io/linuxserver/baseimage-ubuntu:arm64v8-focal
+FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 LABEL maintainer="sdwilsh"
 
