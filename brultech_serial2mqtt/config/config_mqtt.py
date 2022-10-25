@@ -1,6 +1,7 @@
 import ssl
 from typing import Any, Dict, Optional
 
+from asyncio_mqtt import TLSParameters as MqttTlsParams
 from jinja2 import Template
 from voluptuous import All
 from voluptuous import Any as AnyValid
@@ -144,58 +145,6 @@ class MQTTBirthWillMessageConfig(BirthWillConfigMixin):
         return self._retain
 
 
-class TlsConfig:
-    """TLS Param options."""
-
-    def __init__(self, tls_config: Dict[str, Any]):
-        self._ca_certs = tls_config["ca_certs"]
-        self._cert_reqs = tls_config["cert_reqs"]
-        self._certfile = tls_config["certfile"]
-        self._ciphers = tls_config["ciphers"]
-        self._keyfile = tls_config["keyfile"]
-        self._keyfile_password = tls_config["keyfile_password"]
-        self._tls_version = tls_config["tls_version"]
-
-    @property
-    def ca_certs(self) -> str:
-        return self._ca_certs
-
-    @property
-    def cert_reqs(self) -> ssl.VerifyMode:
-        if not self._cert_reqs:
-            return ssl.CERT_NONE
-        else:
-            return ssl.CERT_REQUIRED
-
-    @property
-    def certfile(self) -> str:
-        return self._certfile
-
-    @property
-    def ciphers(self) -> str:
-        return self._ciphers
-
-    @property
-    def keyfile(self) -> str:
-        return self._keyfile
-
-    @property
-    def keyfile_password(self) -> str:
-        return self._keyfile_password
-
-    @property
-    def tls_version(self) -> Optional[int]:
-        if self._tls_version == "tls1":
-            return ssl.PROTOCOL_TLSv1
-        elif self._tls_version == "tls1.1":
-            return ssl.PROTOCOL_TLSv1_1
-        elif self._tls_version == "tls1.2":
-            return ssl.PROTOCOL_TLSv1_2
-        else:
-            # Let paho-mqtt handle (defaults to ssl.PROTOCOL_TLS)
-            return None
-
-
 class MQTTConfig:
     """MQTT config."""
 
@@ -209,7 +158,7 @@ class MQTTConfig:
         self._password = mqtt_config["password"]
         self._port = mqtt_config["port"]
         self._qos = mqtt_config["qos"]
-        self._tls_options = TlsConfig(mqtt_config["tls_options"])
+        self._tls_options = mqtt_config["tls_options"]
         self._topic_prefix = mqtt_config["topic_prefix"]
         self._username = mqtt_config["username"]
         self._usetls = mqtt_config["usetls"]
@@ -248,11 +197,6 @@ class MQTTConfig:
         """Return qos to use for messages."""
         return self._qos
 
-    @property
-    def tls_options(self) -> TlsConfig:
-        """Return TLS options"""
-        return self._tls_options
-
     def state_topic(self, device_serial: int) -> str:
         """Return the topic used to convey device state."""
         return f"{self.topic_prefix(device_serial)}/state"
@@ -260,6 +204,41 @@ class MQTTConfig:
     def status_topic(self, device_serial: int) -> str:
         """Return the topic used to convey service status (via birth and will)."""
         return f"{self.topic_prefix(device_serial)}/status"
+
+    @property
+    def tls_params(self) -> Optional[MqttTlsParams]:
+        """Return TLS parameters"""
+
+        if not self._usetls:
+            # Return nothing if not using TLS
+            return None
+
+        def cert_reqs(cert_req: bool) -> ssl.VerifyMode:
+            if not cert_req:
+                return ssl.CERT_NONE
+            else:
+                return ssl.CERT_REQUIRED
+
+        def tls_version(ver: str) -> Optional[int]:
+            if ver == "tls1":
+                return ssl.PROTOCOL_TLSv1
+            elif ver == "tls1.1":
+                return ssl.PROTOCOL_TLSv1_1
+            elif ver == "tls1.2":
+                return ssl.PROTOCOL_TLSv1_2
+            else:
+                # Let paho-mqtt handle (defaults to ssl.PROTOCOL_TLS)
+                return None
+
+        return MqttTlsParams(
+            ca_certs=self._tls_options["ca_certs"],
+            cert_reqs=cert_reqs(self._tls_options["cert_reqs"]),
+            certfile=self._tls_options["certfile"],
+            ciphers=self._tls_options["ciphers"],
+            keyfile=self._tls_options["keyfile"],
+            keyfile_password=self._tls_options["keyfile_password"],
+            tls_version=tls_version(self._tls_options["tls_version"]),
+        )
 
     def topic_prefix(self, device_serial: int) -> str:
         """Return topic prefix to use when sending to broker."""
