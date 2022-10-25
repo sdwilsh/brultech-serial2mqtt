@@ -9,7 +9,6 @@ from typing import Optional
 
 from aiobrultech_serial import Connection as DeviceConnection
 from asyncio_mqtt import Client as MQTTClient
-from asyncio_mqtt import TLSParameters as MqttTlsParams
 from asyncio_mqtt.client import Will
 from asyncio_mqtt.error import MqttError
 from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFormatType
@@ -66,18 +65,8 @@ class BrultechSerial2MQTT:
                         hostname=self._config.mqtt.broker,
                         password=self._config.mqtt.password,
                         port=self._config.mqtt.port,
+                        tls_params=self._config.mqtt.tls_params,
                         username=self._config.mqtt.username,
-                        tls_params=MqttTlsParams(
-                            ca_certs=self._config.mqtt.tls_options.ca_certs,
-                            cert_reqs=self._config.mqtt.tls_options.cert_reqs,
-                            certfile=self._config.mqtt.tls_options.certfile,
-                            ciphers=self._config.mqtt.tls_options.ciphers,
-                            keyfile=self._config.mqtt.tls_options.keyfile,
-                            keyfile_password=self._config.mqtt.tls_options.keyfile_password,
-                            tls_version=self._config.mqtt.tls_options.tls_version,
-                        )
-                        if self._config.mqtt.usetls
-                        else None,
                         will=Will(
                             payload=self._config.mqtt.will_message.payload,
                             qos=self._config.mqtt.will_message.qos,

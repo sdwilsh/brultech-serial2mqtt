@@ -1,10 +1,12 @@
 import os
 import shutil
+import ssl
 import tempfile
 import unittest
 from typing import Any, Dict, List, Union
 
 import yaml
+from asyncio_mqtt import TLSParameters as MqttTlsParams
 from voluptuous.error import MultipleInvalid
 
 from brultech_serial2mqtt.config import load_config
@@ -151,3 +153,45 @@ class TestLoggingConfig(unittest.TestCase):
         self._setLoggingConfig({"logs": {"siobrultech_protocols": "info"}})
         config = load_config(self.root.name).logging
         self.assertDictEqual(config.logs, {"siobrultech_protocols": LogLevel.INFO})
+
+
+class TestTlsConfig(unittest.TestCase):
+    def setUp(self) -> None:
+        self.root = tempfile.TemporaryDirectory(prefix=__class__.__name__)
+        config_dir = os.path.join(self.root.name, os.path.dirname(CONFIG_PATH))
+        os.mkdir(config_dir)
+        shutil.copyfile(
+            os.path.join(DATA_DIR, "simple_config.yml"),
+            os.path.join(self.root.name, CONFIG_PATH),
+        )
+
+    def tearDown(self) -> None:
+        self.root.cleanup()
+
+    def _setTlsConfig(self, usetls: bool, tls_options: Dict[str, Any] = {}) -> None:
+        path = os.path.join(self.root.name, CONFIG_PATH)
+        with open(path, "r") as config_file:
+            config = yaml.load(config_file, Loader=yaml.SafeLoader)
+        config["mqtt"]["usetls"] = usetls
+        config["mqtt"]["tls_options"] = tls_options
+
+        with open(path, "w") as config_file:
+            yaml.dump(config, config_file)
+
+    def test_no_tls(self):
+        self._setTlsConfig(False, {"tls_version": "tls1.1"})
+        config = load_config(self.root.name).mqtt
+        self.assertFalse(config.usetls)
+        self.assertIsNone(config.tls_params)
+
+    def test_default_tls(self):
+        self._setTlsConfig(True)
+        config = load_config(self.root.name).mqtt
+        self.assertTrue(config.usetls)
+        self.assertIsInstance(config.tls_params, MqttTlsParams)
+
+    def test_tls_v11(self):
+        self._setTlsConfig(True, {"tls_version": "tls1.1"})
+        config = load_config(self.root.name).mqtt
+        self.assertIsInstance(config.tls_params, MqttTlsParams)
+        self.assertEqual(config.tls_params.tls_version, ssl.PROTOCOL_TLSv1_1)  # type: ignore
