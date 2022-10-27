@@ -216,19 +216,17 @@ class MQTTConfig:
         def cert_reqs(cert_req: bool) -> ssl.VerifyMode:
             if not cert_req:
                 return ssl.CERT_NONE
-            else:
-                return ssl.CERT_REQUIRED
+            return ssl.CERT_REQUIRED
 
         def tls_version(ver: str) -> Optional[int]:
             if ver == "tls1":
                 return ssl.PROTOCOL_TLSv1
-            elif ver == "tls1.1":
+            if ver == "tls1.1":
                 return ssl.PROTOCOL_TLSv1_1
-            elif ver == "tls1.2":
+            if ver == "tls1.2":
                 return ssl.PROTOCOL_TLSv1_2
-            else:
-                # Let paho-mqtt handle (defaults to ssl.PROTOCOL_TLS)
-                return None
+            # Let paho-mqtt handle (defaults to ssl.PROTOCOL_TLS)
+            return None
 
         return MqttTlsParams(
             ca_certs=self._tls_options["ca_certs"],
