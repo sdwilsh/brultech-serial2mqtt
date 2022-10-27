@@ -174,7 +174,6 @@ class TestTlsConfig(unittest.TestCase):
             config = yaml.load(config_file, Loader=yaml.SafeLoader)
         config["mqtt"]["usetls"] = usetls
         config["mqtt"]["tls_options"] = tls_options
-
         with open(path, "w") as config_file:
             yaml.dump(config, config_file)
 
