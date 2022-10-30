@@ -5,6 +5,7 @@ import logging
 import pprint
 from asyncio.tasks import Task
 from contextlib import AsyncExitStack
+from datetime import timedelta
 from typing import Optional
 
 from aiobrultech_serial import Connection as DeviceConnection
@@ -44,7 +45,11 @@ class BrultechSerial2MQTT:
     async def start(self) -> None:
         """Starts listening to the serial connection and publishes packets to MQTT"""
         async with DeviceConnection(
-            port=self._config.device.url, baudrate=self._config.device.baud
+            port=self._config.device.url,
+            baudrate=self._config.device.baud,
+            packet_delay_clear_time=timedelta(
+                seconds=self._config.device.packet_delay_clear_seconds
+            ),
         ) as device_connection:
 
             await self._setup_gem(device_connection)
