@@ -3,6 +3,8 @@ from __future__ import annotations
 from enum import Enum, unique
 from typing import Any, Dict, Iterator, List
 
+from siobrultech_protocols.gem.const import PACKET_DELAY_CLEAR_TIME_DEFAULT
+from siobrultech_protocols.gem.protocol import API_RESPONSE_WAIT_TIME
 from voluptuous import All, Invalid, Match
 from voluptuous import Optional as OptionalField
 from voluptuous import Range
@@ -50,6 +52,10 @@ SCHEMA = Schema(
             ),
         ),
         RequiredField("name"): All(str, Length(min=1)),
+        OptionalField(
+            "packet_delay_clear_seconds",
+            default=PACKET_DELAY_CLEAR_TIME_DEFAULT.seconds,
+        ): All(int, Range(min=1, max=15 - API_RESPONSE_WAIT_TIME.seconds)),
         OptionalField(
             "send_interval_seconds",
             default=8,
@@ -154,6 +160,7 @@ class DeviceConfig:
             DeviceCOM.COM1 if device_config["device_com"] == "COM1" else DeviceCOM.COM2
         )
         self._name: str = device_config["name"]
+        self._packet_delay_clear_seconds = device_config["packet_delay_clear_seconds"]
         self._send_interval_seconds = device_config["send_interval_seconds"]
         self._url = device_config["url"]
 
@@ -175,6 +182,10 @@ class DeviceConfig:
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def packet_delay_clear_seconds(self) -> int:
+        return self._packet_delay_clear_seconds
 
     @property
     def send_interval_seconds(self) -> int:

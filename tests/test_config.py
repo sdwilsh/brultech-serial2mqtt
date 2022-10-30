@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Union
 
 import yaml
 from asyncio_mqtt import TLSParameters as MqttTlsParams
+from siobrultech_protocols.gem.const import PACKET_DELAY_CLEAR_TIME_DEFAULT
 from voluptuous.error import MultipleInvalid
 
 from brultech_serial2mqtt.config import load_config
@@ -41,6 +42,10 @@ class TestSimpleConfig(unittest.TestCase):
         self.assertEqual(config.device.channels[1].type, ChannelType.NORMAL)
         self.assertEqual(config.device.device_com, DeviceCOM.COM1)
         self.assertEqual(config.device.name, "gem")
+        self.assertEqual(
+            config.device.packet_delay_clear_seconds,
+            PACKET_DELAY_CLEAR_TIME_DEFAULT.seconds,
+        )
         self.assertEqual(config.device.send_interval_seconds, 8)
         self.assertEqual(config.device.url, "/dev/ttyUSB0")
 

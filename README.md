@@ -93,6 +93,7 @@ The configuration file supports `!secret` strings, [as documented for Home Assis
 | Name                  | Type | Default      | Supported Options                                                       | Description                                             |
 | --------------------- | ---- | ------------ | ----------------------------------------------------------------------- | ------------------------------------------------------- |
 | baud                  | int  | 115200       | Any int                                                                 | The baud rate to communicate with the attached device.  |
+| packet_delay_clear_seconds | int  | 3            | 1-12                                                                   | The amount of time to wait for the attached device to finish sending a packet before attempting to send a command to it. |
 | send_interval_seconds | int  | 8            | 5-256                                                                   | The frequency in which to have the device send packets. |
 | url                   | str  | /dev/ttyUSB0 | Any [pyserial URL](https://pythonhosted.org/pyserial/url_handlers.html) | The local connection to the device.                     |
 
