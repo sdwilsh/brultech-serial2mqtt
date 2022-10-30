@@ -24,6 +24,7 @@ native [Energy Management](https://www.home-assistant.io/docs/energy/).
   - [Channels](#channels)
   - [MQTT](#mqtt)
   - [Logging](#logging)
+- [Debugging](#debugging)
 - [Contributing](#contributing)
 
 # Getting Started
@@ -210,6 +211,16 @@ The well message is sent under the topic prefix configured in the [MQTT](#mqtt) 
 | logs  | dict | `{}`    | Any dict of levels                                 | A dict of Python named-logs and the level in which to log them to stdout. |
 
 </details>
+
+# Debugging
+
+If you are having issues connecting to your device, it can be useful to enable logging of the underlying
+[siobrultech-protocols](https://github.com/sdwilsh/siobrultech-protocols) library.  Add this to your configuration:
+```
+logging:
+  logs:
+    siobrultech_protocols: "debug"
+```
 
 # Contributing
 
