@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/execlineb -S1
 
-exec \
-    s6-svscanctl -t /var/run/s6/services
+if { s6-test ${1} -ne 0 -a ${1} -ne 256 }
+/run/s6/basedir/bin/halt
