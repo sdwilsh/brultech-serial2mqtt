@@ -21,19 +21,12 @@ repos:
     hooks:
       - id: isort
         language_version: python3
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.291
+    hooks:
+      - id: pyright
   - repo: https://github.com/adrienverge/yamllint.git
     rev: "v1.27.1"
     hooks:
       - id: yamllint
         language_version: python3
-  - repo: local
-    hooks:
-      - id: pyright
-        name: pyright
-        entry: pyright
-        language: node
-        pass_filenames: false
-        types:
-          - python
-        additional_dependencies:
-          - "pyright@1.1.186"

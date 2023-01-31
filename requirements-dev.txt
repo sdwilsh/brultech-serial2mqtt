@@ -2,5 +2,6 @@ black == 22.10.0
 flake8 == 5.0.4
 isort == 5.10.1
 pre-commit == 2.20.0
+pyright == 1.1.291
 pytest-homeassistant-custom-component==0.12.19
 yamllint==1.27.1

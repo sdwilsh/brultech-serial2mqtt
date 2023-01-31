@@ -12,7 +12,8 @@ include = [
     "tests",
 ]
 exclude = [
-    "**/__pycache__"
+    "**/__pycache__",
+    "typings",
 ]
 pythonVersion = "3.8"
 reportConstantRedefinition = "error"
@@ -39,3 +40,5 @@ reportUnusedFunction = "error"
 reportUnusedImport = "error"
 reportUnusedVariable = "error"
 typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
