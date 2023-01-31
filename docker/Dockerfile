@@ -6,16 +6,17 @@ ENV DEBIAN_FRONTEND="noninteractive"
 RUN \
     echo "########## Install Packages ##########" && \
     apt-get update && \
-    apt-get install -y software-properties-common && \
+    apt-get install -y --no-install-recommends software-properties-common=0.99.* && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y --no-install-recommends -q \
-    python3.10 \
-    python3.10-distutils \
-    python3.10-venv \
+    python3.10=3.10.* \
+    python3.10-distutils=3.10.* \
+    python3.10-venv=3.10.* \
     && \
     apt-get autoremove && \
     apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     echo "########## Install Pip ##########" && \
     python3.10 -m ensurepip
 
@@ -28,7 +29,7 @@ COPY brultech_serial2mqtt /src/brultech_serial2mqtt/brultech_serial2mqtt
 WORKDIR /src/brultech_serial2mqtt
 RUN \
     echo "########## Install Python Package and Deps ##########" && \
-    python3.10 -m pip install -r requirements.txt && \
+    python3.10 -m pip install --no-cache-dir -r requirements.txt && \
     echo "########## Add User to Dialout Group ##########" && \
     usermod abc -a -G dialout
 RUN \
