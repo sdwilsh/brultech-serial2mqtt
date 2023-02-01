@@ -39,7 +39,7 @@ jobs:
             type=ref,event=pr
 
       - name: "Build Container Image"
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: "."
           file: "docker/Dockerfile"
