@@ -1,4 +1,4 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 
 LABEL maintainer="sdwilsh"
 
@@ -10,15 +10,14 @@ RUN \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y --no-install-recommends -q \
-    python3.10=3.10.* \
-    python3.10-distutils=3.10.* \
-    python3.10-venv=3.10.* \
+    python3.11=3.11.* \
+    python3.11-venv=3.11.* \
     && \
     apt-get autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo "########## Install Pip ##########" && \
-    python3.10 -m ensurepip
+    python3.11 -m ensurepip
 
 COPY LICENSE /src/brultech_serial2mqtt/LICENSE
 COPY pyproject.toml /src/brultech_serial2mqtt/pyproject.toml
@@ -29,7 +28,7 @@ COPY brultech_serial2mqtt /src/brultech_serial2mqtt/brultech_serial2mqtt
 WORKDIR /src/brultech_serial2mqtt
 RUN \
     echo "########## Install Python Package and Deps ##########" && \
-    python3.10 -m pip install --no-cache-dir -r requirements.txt && \
+    python3.11 -m pip install --no-cache-dir -r requirements.txt && \
     echo "########## Add User to Dialout Group ##########" && \
     usermod abc -a -G dialout
 RUN \
