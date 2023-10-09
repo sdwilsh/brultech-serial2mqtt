@@ -228,7 +228,7 @@ logging:
 ## Setup
 
 ```
-python3.10 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
 
 # Install Requirements
