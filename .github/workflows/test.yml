@@ -92,7 +92,7 @@ jobs:
         with:
           cache: pip
           # renovate: datasource=docker depName=python
-          python-version: "3.11"
+          python-version: "3.12"
       - run: pip install pre-commit$PRECOMMIT_VERSION
         env:
           # renovate: datasource=pypi depName=pre-commit
