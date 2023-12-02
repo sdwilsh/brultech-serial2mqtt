@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Any, AsyncGenerator, Dict, Generator, Union
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 from homeassistant.components.mqtt.sensor import DISCOVERY_SCHEMA
@@ -10,11 +10,6 @@ from siobrultech_protocols.gem.packets import BIN48_NET_TIME, Packet
 
 from brultech_serial2mqtt.config import Config
 from brultech_serial2mqtt.device import DeviceManager
-
-
-@pytest.fixture(autouse=True)
-def auto_hass(hass: HomeAssistant) -> Generator[HomeAssistant, None, None]:
-    yield hass
 
 
 @pytest.fixture()
@@ -56,7 +51,7 @@ async def device_manager(
             currents=[i / 10 for i in range(1, 32)],
             time_stamp=ts + timedelta(seconds=10),
         ),
-        MagicMock(),
+        AsyncMock(),
     )
     yield device_manager
 

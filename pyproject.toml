@@ -2,6 +2,9 @@
 requires = ["setuptools >= 40.6.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
 [tool.isort]
 profile = "black"
 src_paths = ["brultech_serial2mqtt", "tests"]
