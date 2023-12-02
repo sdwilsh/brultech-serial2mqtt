@@ -49,20 +49,6 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.metadata.outputs.tags }}
 
-  build-virtualenv:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-      - uses: getsentry/action-setup-venv@v1.0.5
-        with:
-          install-cmd: pip install -r requirements.txt -r requirements-dev.txt
-          # renovate: datasource=docker depName=python
-          python-version: "3.11"
-
   earthly-lint:
     runs-on: ubuntu-latest
     permissions:
@@ -79,34 +65,46 @@ jobs:
           EARTHLY_CI: true
         run: earthly +lint
 
-  lint:
+  earthly-test:
     runs-on: ubuntu-latest
-    needs: build-virtualenv
+    permissions:
+      contents: read
+    steps:
+      - uses: earthly/actions-setup@v1.0.8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # renovate: datasource=docker depName=earthly/earthly
+          version: "v0.7.22"
+      - uses: actions/checkout@v4
+      - name: Run Earthly Lint
+        env:
+          EARTHLY_CI: true
+        run: earthly +test
+
+  pre-commit-lint:
+    runs-on: ubuntu-latest
     permissions:
       contents: read
 
     steps:
       - uses: actions/checkout@v4
-      - uses: getsentry/action-setup-venv@v1.0.5
+      - uses: actions/setup-python@v4
         with:
-          install-cmd: pip install -r requirements.txt -r requirements-dev.txt
+          cache: pip
           # renovate: datasource=docker depName=python
           python-version: "3.11"
-      - uses: "pre-commit/action@v3.0.0"
-
-  pytest:
-    runs-on: ubuntu-latest
-    needs: build-virtualenv
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: getsentry/action-setup-venv@v1.0.5
+      - run: pip install pre-commit$PRECOMMIT_VERSION
+        env:
+          # renovate: datasource=pypi depName=pre-commit
+          PRECOMMIT_VERSION: "==3.5.0"
+      - uses: actions/cache@v3
+        env:
+          # renovate: datasource=pypi depName=pre-commit
+          PRECOMMIT_VERSION: "==3.5.0"
         with:
-          install-cmd: pip install -r requirements.txt -r requirements-dev.txt
-          # renovate: datasource=docker depName=python
-          python-version: "3.11"
-      - name: Test with pytest
-        run: |
-          pytest
+          path: ~/.cache/pre-commit
+          key: |-
+            ${{ env.PRECOMMIT_VERSION }}
+            ${{ env.pythonLocation }}
+            ${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: pre-commit run --all-files --color=always --show-diff-on-failure

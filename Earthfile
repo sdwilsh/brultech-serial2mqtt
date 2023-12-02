@@ -29,6 +29,7 @@ python-requirements:
 python-dev-requirements:
     FROM +python-requirements
     WORKDIR /usr/src/app
+    COPY pyproject.toml .
     COPY requirements-dev.txt .
     RUN pip install --no-cache-dir -r requirements-dev.txt
 
@@ -37,7 +38,6 @@ pyright-image:
     RUN nodeenv /.cache/nodeenv
     ENV PYRIGHT_PYTHON_ENV_DIR=/.cache/nodeenv
     WORKDIR /usr/src/app
-    COPY pyproject.toml .
 
 pyright-validate:
     FROM +pyright-image
@@ -68,3 +68,9 @@ lint:
     BUILD +pyright-validate
     BUILD +renovate-validate
     BUILD +ruff-validate
+
+test:
+    FROM +python-dev-requirements
+    COPY --dir brultech_serial2mqtt .
+    COPY --dir tests .
+    RUN pytest
