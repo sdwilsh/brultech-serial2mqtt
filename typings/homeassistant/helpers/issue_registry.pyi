@@ -16,16 +16,18 @@ STORAGE_KEY = ...
 STORAGE_VERSION_MAJOR = ...
 STORAGE_VERSION_MINOR = ...
 SAVE_DELAY = ...
+
 class IssueSeverity(StrEnum):
     """Issue severity."""
+
     CRITICAL = ...
     ERROR = ...
     WARNING = ...
 
-
 @dataclasses.dataclass(slots=True, frozen=True)
 class IssueEntry:
     """Issue Registry Entry."""
+
     active: bool
     breaks_in_ha_version: str | None
     created: datetime
@@ -43,50 +45,60 @@ class IssueEntry:
     def to_json(self) -> dict[str, Any]:
         """Return a JSON serializable representation for storage."""
         ...
-    
-
 
 class IssueRegistryStore(Store[dict[str, list[dict[str, Any]]]]):
     """Store entity registry data."""
-    ...
 
+    ...
 
 class IssueRegistry:
     """Class to hold a registry of issues."""
     def __init__(self, hass: HomeAssistant, *, read_only: bool = ...) -> None:
         """Initialize the issue registry."""
         ...
-    
+
     @callback
     def async_get_issue(self, domain: str, issue_id: str) -> IssueEntry | None:
         """Get issue by id."""
         ...
-    
+
     @callback
-    def async_get_or_create(self, domain: str, issue_id: str, *, breaks_in_ha_version: str | None = ..., data: dict[str, str | int | float | None] | None = ..., is_fixable: bool, is_persistent: bool, issue_domain: str | None = ..., learn_more_url: str | None = ..., severity: IssueSeverity, translation_key: str, translation_placeholders: dict[str, str] | None = ...) -> IssueEntry:
+    def async_get_or_create(
+        self,
+        domain: str,
+        issue_id: str,
+        *,
+        breaks_in_ha_version: str | None = ...,
+        data: dict[str, str | int | float | None] | None = ...,
+        is_fixable: bool,
+        is_persistent: bool,
+        issue_domain: str | None = ...,
+        learn_more_url: str | None = ...,
+        severity: IssueSeverity,
+        translation_key: str,
+        translation_placeholders: dict[str, str] | None = ...,
+    ) -> IssueEntry:
         """Get issue. Create if it doesn't exist."""
         ...
-    
+
     @callback
     def async_delete(self, domain: str, issue_id: str) -> None:
         """Delete issue."""
         ...
-    
+
     @callback
     def async_ignore(self, domain: str, issue_id: str, ignore: bool) -> IssueEntry:
         """Ignore issue."""
         ...
-    
+
     async def async_load(self) -> None:
         """Load the issue registry."""
         ...
-    
+
     @callback
     def async_schedule_save(self) -> None:
         """Schedule saving the issue registry."""
         ...
-    
-
 
 @callback
 def async_get(hass: HomeAssistant) -> IssueRegistry:
@@ -98,11 +110,39 @@ async def async_load(hass: HomeAssistant, *, read_only: bool = ...) -> None:
     ...
 
 @callback
-def async_create_issue(hass: HomeAssistant, domain: str, issue_id: str, *, breaks_in_ha_version: str | None = ..., data: dict[str, str | int | float | None] | None = ..., is_fixable: bool, is_persistent: bool = ..., issue_domain: str | None = ..., learn_more_url: str | None = ..., severity: IssueSeverity, translation_key: str, translation_placeholders: dict[str, str] | None = ...) -> None:
+def async_create_issue(
+    hass: HomeAssistant,
+    domain: str,
+    issue_id: str,
+    *,
+    breaks_in_ha_version: str | None = ...,
+    data: dict[str, str | int | float | None] | None = ...,
+    is_fixable: bool,
+    is_persistent: bool = ...,
+    issue_domain: str | None = ...,
+    learn_more_url: str | None = ...,
+    severity: IssueSeverity,
+    translation_key: str,
+    translation_placeholders: dict[str, str] | None = ...,
+) -> None:
     """Create an issue, or replace an existing one."""
     ...
 
-def create_issue(hass: HomeAssistant, domain: str, issue_id: str, *, breaks_in_ha_version: str | None = ..., data: dict[str, str | int | float | None] | None = ..., is_fixable: bool, is_persistent: bool = ..., issue_domain: str | None = ..., learn_more_url: str | None = ..., severity: IssueSeverity, translation_key: str, translation_placeholders: dict[str, str] | None = ...) -> None:
+def create_issue(
+    hass: HomeAssistant,
+    domain: str,
+    issue_id: str,
+    *,
+    breaks_in_ha_version: str | None = ...,
+    data: dict[str, str | int | float | None] | None = ...,
+    is_fixable: bool,
+    is_persistent: bool = ...,
+    issue_domain: str | None = ...,
+    learn_more_url: str | None = ...,
+    severity: IssueSeverity,
+    translation_key: str,
+    translation_placeholders: dict[str, str] | None = ...,
+) -> None:
     """Create an issue, or replace an existing one."""
     ...
 
@@ -122,10 +162,11 @@ def delete_issue(hass: HomeAssistant, domain: str, issue_id: str) -> None:
     ...
 
 @callback
-def async_ignore_issue(hass: HomeAssistant, domain: str, issue_id: str, ignore: bool) -> None:
+def async_ignore_issue(
+    hass: HomeAssistant, domain: str, issue_id: str, ignore: bool
+) -> None:
     """Ignore an issue.
 
     Will raise if the issue does not exist.
     """
     ...
-

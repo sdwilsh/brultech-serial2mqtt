@@ -16,9 +16,11 @@ STORAGE_KEY = ...
 STORAGE_VERSION_MAJOR = ...
 STORAGE_VERSION_MINOR = ...
 SAVE_DELAY = ...
+
 @attr.s(slots=True, frozen=True)
 class AreaEntry:
     """Area Registry Entry."""
+
     name: str = ...
     normalized_name: str = ...
     aliases: set[str] = ...
@@ -27,65 +29,70 @@ class AreaEntry:
     def generate_id(self, existing_ids: Container[str]) -> None:
         """Initialize ID."""
         ...
-    
-
 
 class AreaRegistryStore(Store[dict[str, list[dict[str, Any]]]]):
     """Store area registry data."""
-    ...
 
+    ...
 
 class AreaRegistry:
     """Class to hold a registry of areas."""
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the area registry."""
         ...
-    
+
     @callback
     def async_get_area(self, area_id: str) -> AreaEntry | None:
         """Get area by id."""
         ...
-    
+
     @callback
     def async_get_area_by_name(self, name: str) -> AreaEntry | None:
         """Get area by name."""
         ...
-    
+
     @callback
     def async_list_areas(self) -> Iterable[AreaEntry]:
         """Get all areas."""
         ...
-    
+
     @callback
     def async_get_or_create(self, name: str) -> AreaEntry:
         """Get or create an area."""
         ...
-    
+
     @callback
-    def async_create(self, name: str, *, aliases: set[str] | None = ..., picture: str | None = ...) -> AreaEntry:
+    def async_create(
+        self, name: str, *, aliases: set[str] | None = ..., picture: str | None = ...
+    ) -> AreaEntry:
         """Create a new area."""
         ...
-    
+
     @callback
     def async_delete(self, area_id: str) -> None:
         """Delete area."""
         ...
-    
+
     @callback
-    def async_update(self, area_id: str, *, aliases: set[str] | UndefinedType = ..., name: str | UndefinedType = ..., picture: str | None | UndefinedType = ...) -> AreaEntry:
+    def async_update(
+        self,
+        area_id: str,
+        *,
+        aliases: set[str] | UndefinedType = ...,
+        name: str | UndefinedType = ...,
+        picture: str | None | UndefinedType = ...,
+    ) -> AreaEntry:
         """Update name of area."""
         ...
-    
+
     async def async_load(self) -> None:
         """Load the area registry."""
         ...
-    
+
     @callback
     def async_schedule_save(self) -> None:
         """Schedule saving the area registry."""
         ...
-    
-
 
 @callback
 def async_get(hass: HomeAssistant) -> AreaRegistry:
@@ -99,4 +106,3 @@ async def async_load(hass: HomeAssistant) -> None:
 def normalize_area_name(area_name: str) -> str:
     """Normalize an area name by removing whitespace and case folding."""
     ...
-

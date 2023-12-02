@@ -8,39 +8,42 @@ from homeassistant.core import HomeAssistant
 from .typing import ConfigType
 
 """Helper to check the configuration file."""
+
 class CheckConfigError(NamedTuple):
     """Configuration check error."""
+
     message: str
     domain: str | None
     config: ConfigType | None
     ...
-
 
 class HomeAssistantConfig(OrderedDict):
     """Configuration result with errors attribute."""
     def __init__(self) -> None:
         """Initialize HA config."""
         ...
-    
-    def add_error(self, message: str, domain: str | None = ..., config: ConfigType | None = ...) -> Self:
+
+    def add_error(
+        self, message: str, domain: str | None = ..., config: ConfigType | None = ...
+    ) -> Self:
         """Add an error."""
         ...
-    
+
     @property
     def error_str(self) -> str:
         """Concatenate all errors to a string."""
         ...
-    
-    def add_warning(self, message: str, domain: str | None = ..., config: ConfigType | None = ...) -> Self:
+
+    def add_warning(
+        self, message: str, domain: str | None = ..., config: ConfigType | None = ...
+    ) -> Self:
         """Add a warning."""
         ...
-    
+
     @property
     def warning_str(self) -> str:
         """Concatenate all warnings to a string."""
         ...
-    
-
 
 async def async_check_ha_config_file(hass: HomeAssistant) -> HomeAssistantConfig:
     """Load and check if Home Assistant configuration file is valid.
@@ -48,4 +51,3 @@ async def async_check_ha_config_file(hass: HomeAssistant) -> HomeAssistantConfig
     This method is a coroutine.
     """
     ...
-

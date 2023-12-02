@@ -8,6 +8,7 @@ from typing import Any, Final, TYPE_CHECKING
 
 """Helpers to help with encoding Home Assistant objects in JSON."""
 _LOGGER = ...
+
 class JSONEncoder(json.JSONEncoder):
     """JSONEncoder that supports Home Assistant objects."""
     def default(self, o: Any) -> Any:
@@ -16,8 +17,6 @@ class JSONEncoder(json.JSONEncoder):
         Hand other objects to the original method.
         """
         ...
-    
-
 
 def json_encoder_default(obj: Any) -> Any:
     """Convert Home Assistant objects.
@@ -30,9 +29,9 @@ if TYPE_CHECKING:
     def json_bytes(obj: Any) -> bytes:
         """Dump json bytes."""
         ...
-    
-else:
-    ...
+
+else: ...
+
 class ExtendedJSONEncoder(JSONEncoder):
     """JSONEncoder that supports Home Assistant objects and falls back to repr(o)."""
     def default(self, o: Any) -> Any:
@@ -41,8 +40,6 @@ class ExtendedJSONEncoder(JSONEncoder):
         Fall back to repr(o).
         """
         ...
-    
-
 
 def json_bytes_strip_null(data: Any) -> bytes:
     """Dump json bytes after terminating strings at the first NUL."""
@@ -68,14 +65,23 @@ def json_dumps_sorted(data: Any) -> str:
     ...
 
 JSON_DUMP: Final = ...
-def save_json(filename: str, data: list | dict, private: bool = ..., *, encoder: type[json.JSONEncoder] | None = ..., atomic_writes: bool = ...) -> None:
+
+def save_json(
+    filename: str,
+    data: list | dict,
+    private: bool = ...,
+    *,
+    encoder: type[json.JSONEncoder] | None = ...,
+    atomic_writes: bool = ...,
+) -> None:
     """Save JSON data to a file."""
     ...
 
-def find_paths_unserializable_data(bad_data: Any, *, dump: Callable[[Any], str] = ...) -> dict[str, Any]:
+def find_paths_unserializable_data(
+    bad_data: Any, *, dump: Callable[[Any], str] = ...
+) -> dict[str, Any]:
     """Find the paths to unserializable data.
 
     This method is slow! Only use for error handling.
     """
     ...
-

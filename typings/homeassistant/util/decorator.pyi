@@ -8,11 +8,9 @@ from typing import Any, TypeVar
 """Decorator utility functions."""
 _KT = TypeVar("_KT", bound=Hashable)
 _VT = TypeVar("_VT", bound=Callable[..., Any])
+
 class Registry(dict[_KT, _VT]):
     """Registry of items."""
     def register(self, name: _KT) -> Callable[[_VT], _VT]:
         """Return decorator to register item with a specific name."""
         ...
-    
-
-

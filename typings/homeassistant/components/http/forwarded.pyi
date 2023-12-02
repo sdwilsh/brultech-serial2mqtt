@@ -8,8 +8,13 @@ from homeassistant.core import callback
 
 """Middleware to handle forwarded data by a reverse proxy."""
 _LOGGER = ...
+
 @callback
-def async_setup_forwarded(app: Application, use_x_forwarded_for: bool | None, trusted_proxies: list[IPv4Network | IPv6Network]) -> None:
+def async_setup_forwarded(
+    app: Application,
+    use_x_forwarded_for: bool | None,
+    trusted_proxies: list[IPv4Network | IPv6Network],
+) -> None:
     """Create forwarded middleware for the app.
 
     Process IP addresses, proto and host information in the forwarded for headers.
@@ -56,4 +61,3 @@ def async_setup_forwarded(app: Application, use_x_forwarded_for: bool | None, tr
         an HTTP 400 status code is thrown.
     """
     ...
-

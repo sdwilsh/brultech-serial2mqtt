@@ -15,15 +15,16 @@ DATA_REQUIREMENTS_MANAGER = ...
 CONSTRAINT_FILE = ...
 DISCOVERY_INTEGRATIONS: dict[str, Iterable[str]] = ...
 _LOGGER = ...
+
 class RequirementsNotFound(HomeAssistantError):
     """Raised when a component is not found."""
     def __init__(self, domain: str, requirements: list[str]) -> None:
         """Initialize a component not found error."""
         ...
-    
 
-
-async def async_get_integration_with_requirements(hass: HomeAssistant, domain: str) -> Integration:
+async def async_get_integration_with_requirements(
+    hass: HomeAssistant, domain: str
+) -> Integration:
     """Get an integration with all requirements installed, including the dependencies.
 
     This can raise IntegrationNotFound if manifest or integration
@@ -32,7 +33,9 @@ async def async_get_integration_with_requirements(hass: HomeAssistant, domain: s
     """
     ...
 
-async def async_process_requirements(hass: HomeAssistant, name: str, requirements: list[str]) -> None:
+async def async_process_requirements(
+    hass: HomeAssistant, name: str, requirements: list[str]
+) -> None:
     """Install the requirements for a component or platform.
 
     This method is a coroutine. It will raise RequirementsNotFound
@@ -54,8 +57,10 @@ class RequirementsManager:
     def __init__(self, hass: HomeAssistant) -> None:
         """Init the requirements manager."""
         ...
-    
-    async def async_get_integration_with_requirements(self, domain: str, done: set[str] | None = ...) -> Integration:
+
+    async def async_get_integration_with_requirements(
+        self, domain: str, done: set[str] | None = ...
+    ) -> Integration:
         """Get an integration with all requirements installed, including dependencies.
 
         This can raise IntegrationNotFound if manifest or integration
@@ -63,14 +68,13 @@ class RequirementsManager:
         failure to install requirements.
         """
         ...
-    
-    async def async_process_requirements(self, name: str, requirements: list[str]) -> None:
+
+    async def async_process_requirements(
+        self, name: str, requirements: list[str]
+    ) -> None:
         """Install the requirements for a component or platform.
 
         This method is a coroutine. It will raise RequirementsNotFound
         if an requirement can't be satisfied.
         """
         ...
-    
-
-

@@ -6,6 +6,7 @@ from ssl import SSLContext
 from aiohttp import web
 
 """HomeAssistant specific aiohttp Site."""
+
 class HomeAssistantTCPSite(web.BaseSite):
     """HomeAssistant specific aiohttp Site.
 
@@ -18,19 +19,28 @@ class HomeAssistantTCPSite(web.BaseSite):
     Custom TCPSite can be dropped when https://github.com/aio-libs/aiohttp/pull/4894
     is merged.
     """
+
     __slots__ = ...
-    def __init__(self, runner: web.BaseRunner, host: None | str | list[str], port: int, *, shutdown_timeout: float = ..., ssl_context: SSLContext | None = ..., backlog: int = ..., reuse_address: bool | None = ..., reuse_port: bool | None = ...) -> None:
+    def __init__(
+        self,
+        runner: web.BaseRunner,
+        host: None | str | list[str],
+        port: int,
+        *,
+        shutdown_timeout: float = ...,
+        ssl_context: SSLContext | None = ...,
+        backlog: int = ...,
+        reuse_address: bool | None = ...,
+        reuse_port: bool | None = ...,
+    ) -> None:
         """Initialize HomeAssistantTCPSite."""
         ...
-    
+
     @property
     def name(self) -> str:
         """Return server URL."""
         ...
-    
+
     async def start(self) -> None:
         """Start server."""
         ...
-    
-
-

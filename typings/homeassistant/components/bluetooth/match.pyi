@@ -10,8 +10,7 @@ from .models import BluetoothCallback, BluetoothServiceInfoBleak
 from bleak.backends.scanner import AdvertisementData
 
 """The bluetooth integration matchers."""
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
 MAX_REMEMBER_ADDRESSES: Final = ...
 CALLBACK: Final = ...
 DOMAIN: Final = ...
@@ -23,38 +22,45 @@ SERVICE_DATA_UUID: Final = ...
 MANUFACTURER_ID: Final = ...
 MANUFACTURER_DATA_START: Final = ...
 LOCAL_NAME_MIN_MATCH_LENGTH = ...
+
 class BluetoothCallbackMatcherOptional(TypedDict, total=False):
     """Matcher for the bluetooth integration for callback optional fields."""
+
     address: str
     ...
 
-
-class BluetoothCallbackMatcher(BluetoothMatcherOptional, BluetoothCallbackMatcherOptional):
+class BluetoothCallbackMatcher(
+    BluetoothMatcherOptional, BluetoothCallbackMatcherOptional
+):
     """Callback matcher for the bluetooth integration."""
-    ...
 
+    ...
 
 class _BluetoothCallbackMatcherWithCallback(TypedDict):
     """Callback for the bluetooth integration."""
+
     callback: BluetoothCallback
     ...
 
-
-class BluetoothCallbackMatcherWithCallback(_BluetoothCallbackMatcherWithCallback, BluetoothCallbackMatcher):
+class BluetoothCallbackMatcherWithCallback(
+    _BluetoothCallbackMatcherWithCallback, BluetoothCallbackMatcher
+):
     """Callback matcher for the bluetooth integration that stores the callback."""
-    ...
 
+    ...
 
 @dataclass(slots=True, frozen=False)
 class IntegrationMatchHistory:
     """Track which fields have been seen."""
+
     manufacturer_data: bool
     service_data: set[str]
     service_uuids: set[str]
     ...
 
-
-def seen_all_fields(previous_match: IntegrationMatchHistory, advertisement_data: AdvertisementData) -> bool:
+def seen_all_fields(
+    previous_match: IntegrationMatchHistory, advertisement_data: AdvertisementData
+) -> bool:
     """Return if we have seen all fields."""
     ...
 
@@ -63,23 +69,22 @@ class IntegrationMatcher:
     def __init__(self, integration_matchers: list[BluetoothMatcher]) -> None:
         """Initialize the matcher."""
         ...
-    
+
     @callback
     def async_setup(self) -> None:
         """Set up the matcher."""
         ...
-    
+
     def async_clear_address(self, address: str) -> None:
         """Clear the history matches for a set of domains."""
         ...
-    
+
     def match_domains(self, service_info: BluetoothServiceInfoBleak) -> set[str]:
         """Return the domains that are matched."""
         ...
-    
-
 
 _T = TypeVar("_T", BluetoothMatcher, BluetoothCallbackMatcherWithCallback)
+
 class BluetoothMatcherIndexBase(Generic[_T]):
     """Bluetooth matcher base for the bluetooth integration.
 
@@ -93,7 +98,7 @@ class BluetoothMatcherIndexBase(Generic[_T]):
     def __init__(self) -> None:
         """Initialize the matcher index."""
         ...
-    
+
     def add(self, matcher: _T) -> bool:
         """Add a matcher to the index.
 
@@ -102,7 +107,7 @@ class BluetoothMatcherIndexBase(Generic[_T]):
         We put them in the bucket that they are most likely to match.
         """
         ...
-    
+
     def remove(self, matcher: _T) -> bool:
         """Remove a matcher from the index.
 
@@ -110,23 +115,23 @@ class BluetoothMatcherIndexBase(Generic[_T]):
         removed one, we are done.
         """
         ...
-    
+
     def build(self) -> None:
         """Rebuild the index sets."""
         ...
-    
+
     def match(self, service_info: BluetoothServiceInfoBleak) -> list[_T]:
         """Check for a match."""
         ...
-    
-
 
 class BluetoothMatcherIndex(BluetoothMatcherIndexBase[BluetoothMatcher]):
     """Bluetooth matcher for the bluetooth integration."""
+
     ...
 
-
-class BluetoothCallbackMatcherIndex(BluetoothMatcherIndexBase[BluetoothCallbackMatcherWithCallback]):
+class BluetoothCallbackMatcherIndex(
+    BluetoothMatcherIndexBase[BluetoothCallbackMatcherWithCallback]
+):
     """Bluetooth matcher for the bluetooth integration.
 
     Supports matching on addresses.
@@ -134,8 +139,10 @@ class BluetoothCallbackMatcherIndex(BluetoothMatcherIndexBase[BluetoothCallbackM
     def __init__(self) -> None:
         """Initialize the matcher index."""
         ...
-    
-    def add_callback_matcher(self, matcher: BluetoothCallbackMatcherWithCallback) -> None:
+
+    def add_callback_matcher(
+        self, matcher: BluetoothCallbackMatcherWithCallback
+    ) -> None:
         """Add a matcher to the index.
 
         Matchers must end up only in one bucket.
@@ -143,22 +150,25 @@ class BluetoothCallbackMatcherIndex(BluetoothMatcherIndexBase[BluetoothCallbackM
         We put them in the bucket that they are most likely to match.
         """
         ...
-    
-    def remove_callback_matcher(self, matcher: BluetoothCallbackMatcherWithCallback) -> None:
+
+    def remove_callback_matcher(
+        self, matcher: BluetoothCallbackMatcherWithCallback
+    ) -> None:
         """Remove a matcher from the index.
 
         Matchers only end up in one bucket, so once we have
         removed one, we are done.
         """
         ...
-    
-    def match_callbacks(self, service_info: BluetoothServiceInfoBleak) -> list[BluetoothCallbackMatcherWithCallback]:
+
+    def match_callbacks(
+        self, service_info: BluetoothServiceInfoBleak
+    ) -> list[BluetoothCallbackMatcherWithCallback]:
         """Check for a match."""
         ...
-    
 
-
-def ble_device_matches(matcher: BluetoothMatcherOptional, service_info: BluetoothServiceInfoBleak) -> bool:
+def ble_device_matches(
+    matcher: BluetoothMatcherOptional, service_info: BluetoothServiceInfoBleak
+) -> bool:
     """Check if a ble device and advertisement_data matches the matcher."""
     ...
-

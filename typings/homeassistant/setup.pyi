@@ -22,8 +22,11 @@ DATA_PERSISTENT_ERRORS = ...
 NOTIFY_FOR_TRANSLATION_KEYS = ...
 SLOW_SETUP_WARNING = ...
 SLOW_SETUP_MAX_WAIT = ...
+
 @callback
-def async_notify_setup_error(hass: HomeAssistant, component: str, display_link: str | None = ...) -> None:
+def async_notify_setup_error(
+    hass: HomeAssistant, component: str, display_link: str | None = ...
+) -> None:
     """Print a persistent notification.
 
     This method must be run in the event loop.
@@ -44,21 +47,27 @@ def setup_component(hass: core.HomeAssistant, domain: str, config: ConfigType) -
     """Set up a component and all its dependencies."""
     ...
 
-async def async_setup_component(hass: core.HomeAssistant, domain: str, config: ConfigType) -> bool:
+async def async_setup_component(
+    hass: core.HomeAssistant, domain: str, config: ConfigType
+) -> bool:
     """Set up a component and all its dependencies.
 
     This method is a coroutine.
     """
     ...
 
-async def async_prepare_setup_platform(hass: core.HomeAssistant, hass_config: ConfigType, domain: str, platform_name: str) -> ModuleType | None:
+async def async_prepare_setup_platform(
+    hass: core.HomeAssistant, hass_config: ConfigType, domain: str, platform_name: str
+) -> ModuleType | None:
     """Load a platform and makes sure dependencies are setup.
 
     This method is a coroutine.
     """
     ...
 
-async def async_process_deps_reqs(hass: core.HomeAssistant, config: ConfigType, integration: loader.Integration) -> None:
+async def async_process_deps_reqs(
+    hass: core.HomeAssistant, config: ConfigType, integration: loader.Integration
+) -> None:
     """Process all dependencies and requirements for a module.
 
     Module is a Python module of either a component or platform.
@@ -66,12 +75,20 @@ async def async_process_deps_reqs(hass: core.HomeAssistant, config: ConfigType, 
     ...
 
 @core.callback
-def async_when_setup(hass: core.HomeAssistant, component: str, when_setup_cb: Callable[[core.HomeAssistant, str], Awaitable[None]]) -> None:
+def async_when_setup(
+    hass: core.HomeAssistant,
+    component: str,
+    when_setup_cb: Callable[[core.HomeAssistant, str], Awaitable[None]],
+) -> None:
     """Call a method when a component is setup."""
     ...
 
 @core.callback
-def async_when_setup_or_start(hass: core.HomeAssistant, component: str, when_setup_cb: Callable[[core.HomeAssistant, str], Awaitable[None]]) -> None:
+def async_when_setup_or_start(
+    hass: core.HomeAssistant,
+    component: str,
+    when_setup_cb: Callable[[core.HomeAssistant, str], Awaitable[None]],
+) -> None:
     """Call a method when a component is setup or state is fired."""
     ...
 
@@ -81,7 +98,8 @@ def async_get_loaded_integrations(hass: core.HomeAssistant) -> set[str]:
     ...
 
 @contextlib.contextmanager
-def async_start_setup(hass: core.HomeAssistant, components: Iterable[str]) -> Generator[None, None, None]:
+def async_start_setup(
+    hass: core.HomeAssistant, components: Iterable[str]
+) -> Generator[None, None, None]:
     """Keep track of when setup starts and finishes."""
     ...
-

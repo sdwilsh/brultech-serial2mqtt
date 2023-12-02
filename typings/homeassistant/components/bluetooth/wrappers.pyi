@@ -14,47 +14,55 @@ from .base_scanner import BaseHaScanner
 """Bleak wrappers for bluetooth."""
 FILTER_UUIDS: Final = ...
 _LOGGER = ...
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
+
 @dataclass(slots=True)
 class _HaWrappedBleakBackend:
     """Wrap bleak backend to make it usable by Home Assistant."""
+
     device: BLEDevice
     scanner: BaseHaScanner
     client: type[BaseBleakClient]
     source: str | None
     ...
 
-
 class HaBleakScannerWrapper(BaseBleakScanner):
     """A wrapper that uses the single instance."""
-    def __init__(self, *args: Any, detection_callback: AdvertisementDataCallback | None = ..., service_uuids: list[str] | None = ..., **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *args: Any,
+        detection_callback: AdvertisementDataCallback | None = ...,
+        service_uuids: list[str] | None = ...,
+        **kwargs: Any,
+    ) -> None:
         """Initialize the BleakScanner."""
         ...
-    
+
     @classmethod
     async def discover(cls, timeout: float = ..., **kwargs: Any) -> list[BLEDevice]:
         """Discover devices."""
         ...
-    
+
     async def stop(self, *args: Any, **kwargs: Any) -> None:
         """Stop scanning for devices."""
         ...
-    
+
     async def start(self, *args: Any, **kwargs: Any) -> None:
         """Start scanning for devices."""
         ...
-    
+
     def set_scanning_filter(self, *args: Any, **kwargs: Any) -> None:
         """Set the filters to use."""
         ...
-    
+
     @property
     def discovered_devices(self) -> list[BLEDevice]:
         """Return a list of discovered devices."""
         ...
-    
-    def register_detection_callback(self, callback: AdvertisementDataCallback | None) -> Callable[[], None]:
+
+    def register_detection_callback(
+        self, callback: AdvertisementDataCallback | None
+    ) -> Callable[[], None]:
         """Register a detection callback.
 
         The callback is called when a device is discovered or has a property changed.
@@ -62,12 +70,10 @@ class HaBleakScannerWrapper(BaseBleakScanner):
         This method takes the callback and registers it with the long running scanner.
         """
         ...
-    
+
     def __del__(self) -> None:
         """Delete the BleakScanner."""
         ...
-    
-
 
 class HaBleakClientWrapper(BleakClient):
     """Wrap the BleakClient to ensure it does not shutdown our scanner.
@@ -79,30 +85,36 @@ class HaBleakClientWrapper(BleakClient):
     to avoid the whole stack from getting stuck in an in progress state
     when an integration does this.
     """
-    def __init__(self, address_or_ble_device: str | BLEDevice, disconnected_callback: Callable[[BleakClient], None] | None = ..., *args: Any, timeout: float = ..., **kwargs: Any) -> None:
+    def __init__(
+        self,
+        address_or_ble_device: str | BLEDevice,
+        disconnected_callback: Callable[[BleakClient], None] | None = ...,
+        *args: Any,
+        timeout: float = ...,
+        **kwargs: Any,
+    ) -> None:
         """Initialize the BleakClient."""
         ...
-    
+
     @property
     def is_connected(self) -> bool:
         """Return True if the client is connected to a device."""
         ...
-    
+
     async def clear_cache(self) -> bool:
         """Clear the GATT cache."""
         ...
-    
-    def set_disconnected_callback(self, callback: Callable[[BleakClient], None] | None, **kwargs: Any) -> None:
+
+    def set_disconnected_callback(
+        self, callback: Callable[[BleakClient], None] | None, **kwargs: Any
+    ) -> None:
         """Set the disconnect callback."""
         ...
-    
+
     async def connect(self, **kwargs: Any) -> bool:
         """Connect to the specified GATT server."""
         ...
-    
+
     async def disconnect(self) -> bool:
         """Disconnect from the device."""
         ...
-    
-
-

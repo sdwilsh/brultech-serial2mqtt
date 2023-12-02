@@ -22,17 +22,22 @@ NOTIFICATION_ID_LOGIN: Final = ...
 IP_BANS_FILE: Final = ...
 ATTR_BANNED_AT: Final = ...
 SCHEMA_IP_BAN_ENTRY: Final = ...
+
 @callback
 def setup_bans(hass: HomeAssistant, app: Application, login_threshold: int) -> None:
     """Create IP Ban middleware for the app."""
     ...
 
 @middleware
-async def ban_middleware(request: Request, handler: Callable[[Request], Awaitable[StreamResponse]]) -> StreamResponse:
+async def ban_middleware(
+    request: Request, handler: Callable[[Request], Awaitable[StreamResponse]]
+) -> StreamResponse:
     """IP Ban middleware."""
     ...
 
-def log_invalid_auth(func: Callable[Concatenate[_HassViewT, Request, _P], Awaitable[Response]]) -> Callable[Concatenate[_HassViewT, Request, _P], Coroutine[Any, Any, Response]]:
+def log_invalid_auth(
+    func: Callable[Concatenate[_HassViewT, Request, _P], Awaitable[Response]]
+) -> Callable[Concatenate[_HassViewT, Request, _P], Coroutine[Any, Any, Response]]:
     """Decorate function to handle invalid auth or failed login attempts."""
     ...
 
@@ -56,25 +61,22 @@ def process_success_login(request: Request) -> None:
 
 class IpBan:
     """Represents banned IP address."""
-    def __init__(self, ip_ban: str | IPv4Address | IPv6Address, banned_at: datetime | None = ...) -> None:
+    def __init__(
+        self, ip_ban: str | IPv4Address | IPv6Address, banned_at: datetime | None = ...
+    ) -> None:
         """Initialize IP Ban object."""
         ...
-    
-
 
 class IpBanManager:
     """Manage IP bans."""
     def __init__(self, hass: HomeAssistant) -> None:
         """Init the ban manager."""
         ...
-    
+
     async def async_load(self) -> None:
         """Load the existing IP bans."""
         ...
-    
+
     async def async_add_ban(self, remote_addr: IPv4Address | IPv6Address) -> None:
         """Add a new IP address to the banned list."""
         ...
-    
-
-

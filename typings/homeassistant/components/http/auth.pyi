@@ -17,17 +17,25 @@ SAFE_QUERY_PARAMS: Final = ...
 STORAGE_VERSION = ...
 STORAGE_KEY = ...
 CONTENT_USER_NAME = ...
+
 @callback
-def async_sign_path(hass: HomeAssistant, path: str, expiration: timedelta, *, refresh_token_id: str | None = ...) -> str:
+def async_sign_path(
+    hass: HomeAssistant,
+    path: str,
+    expiration: timedelta,
+    *,
+    refresh_token_id: str | None = ...,
+) -> str:
     """Sign a path for temporary access without auth header."""
     ...
 
 @callback
-def async_user_not_allowed_do_auth(hass: HomeAssistant, user: User, request: Request | None = ...) -> str | None:
+def async_user_not_allowed_do_auth(
+    hass: HomeAssistant, user: User, request: Request | None = ...
+) -> str | None:
     """Validate that user is not allowed to do auth things."""
     ...
 
 async def async_setup_auth(hass: HomeAssistant, app: Application) -> None:
     """Create auth middleware for the app."""
     ...
-

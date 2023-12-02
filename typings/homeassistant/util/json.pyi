@@ -11,18 +11,22 @@ from homeassistant.exceptions import HomeAssistantError
 """JSON utility functions."""
 _SENTINEL = ...
 _LOGGER = ...
-JsonValueType = (dict[str, "JsonValueType"] | list["JsonValueType"] | str | int | float | bool | None)
+JsonValueType = (
+    dict[str, "JsonValueType"] | list["JsonValueType"] | str | int | float | bool | None
+)
 JsonArrayType = list[JsonValueType]
 JsonObjectType = dict[str, JsonValueType]
 JSON_ENCODE_EXCEPTIONS = ...
 JSON_DECODE_EXCEPTIONS = ...
+
 class SerializationError(HomeAssistantError):
     """Error serializing the data to JSON."""
-    ...
 
+    ...
 
 json_loads: Callable[[bytes | bytearray | memoryview | str], JsonValueType]
 json_loads = ...
+
 def json_loads_array(__obj: bytes | bytearray | memoryview | str) -> JsonArrayType:
     """Parse JSON data and ensure result is a list."""
     ...
@@ -38,21 +42,32 @@ def load_json(filename: str | PathLike, default: JsonValueType = ...) -> JsonVal
     """
     ...
 
-def load_json_array(filename: str | PathLike, default: JsonArrayType = ...) -> JsonArrayType:
+def load_json_array(
+    filename: str | PathLike, default: JsonArrayType = ...
+) -> JsonArrayType:
     """Load JSON data from a file and return as list.
 
     Defaults to returning empty list if file is not found.
     """
     ...
 
-def load_json_object(filename: str | PathLike, default: JsonObjectType = ...) -> JsonObjectType:
+def load_json_object(
+    filename: str | PathLike, default: JsonObjectType = ...
+) -> JsonObjectType:
     """Load JSON data from a file and return as dict.
 
     Defaults to returning empty dict if file is not found.
     """
     ...
 
-def save_json(filename: str, data: list | dict, private: bool = ..., *, encoder: type[json.JSONEncoder] | None = ..., atomic_writes: bool = ...) -> None:
+def save_json(
+    filename: str,
+    data: list | dict,
+    private: bool = ...,
+    *,
+    encoder: type[json.JSONEncoder] | None = ...,
+    atomic_writes: bool = ...,
+) -> None:
     """Save JSON data to a file."""
     ...
 
@@ -63,10 +78,11 @@ def format_unserializable_data(data: dict[str, Any]) -> str:
     """
     ...
 
-def find_paths_unserializable_data(bad_data: Any, *, dump: Callable[[Any], str] = ...) -> dict[str, Any]:
+def find_paths_unserializable_data(
+    bad_data: Any, *, dump: Callable[[Any], str] = ...
+) -> dict[str, Any]:
     """Find the paths to unserializable data.
 
     This method is slow! Only use for error handling.
     """
     ...
-

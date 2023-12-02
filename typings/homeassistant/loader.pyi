@@ -19,8 +19,7 @@ from .helpers.typing import ConfigType
 This module has quite some complex parts. I have tried to add as much
 documentation as possible to keep it understandable.
 """
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
 _CallableT = TypeVar("_CallableT", bound=Callable[..., Any])
 _LOGGER = ...
 DATA_COMPONENTS = ...
@@ -32,33 +31,35 @@ CUSTOM_WARNING = ...
 _UNDEF = ...
 MAX_LOAD_CONCURRENTLY = ...
 MOVED_ZEROCONF_PROPS = ...
+
 class DHCPMatcherRequired(TypedDict, total=True):
     """Matcher for the dhcp integration for required fields."""
+
     domain: str
     ...
 
-
 class DHCPMatcherOptional(TypedDict, total=False):
     """Matcher for the dhcp integration for optional fields."""
+
     macaddress: str
     hostname: str
     registered_devices: bool
     ...
 
-
 class DHCPMatcher(DHCPMatcherRequired, DHCPMatcherOptional):
     """Matcher for the dhcp integration."""
-    ...
 
+    ...
 
 class BluetoothMatcherRequired(TypedDict, total=True):
     """Matcher for the bluetooth integration for required fields."""
+
     domain: str
     ...
 
-
 class BluetoothMatcherOptional(TypedDict, total=False):
     """Matcher for the bluetooth integration for optional fields."""
+
     local_name: str
     service_uuid: str
     service_data_uuid: str
@@ -67,20 +68,20 @@ class BluetoothMatcherOptional(TypedDict, total=False):
     connectable: bool
     ...
 
-
 class BluetoothMatcher(BluetoothMatcherRequired, BluetoothMatcherOptional):
     """Matcher for the bluetooth integration."""
-    ...
 
+    ...
 
 class USBMatcherRequired(TypedDict, total=True):
     """Matcher for the usb integration for required fields."""
+
     domain: str
     ...
 
-
 class USBMatcherOptional(TypedDict, total=False):
     """Matcher for the usb integration for optional fields."""
+
     vid: str
     pid: str
     serial_number: str
@@ -88,19 +89,18 @@ class USBMatcherOptional(TypedDict, total=False):
     description: str
     ...
 
-
 class USBMatcher(USBMatcherRequired, USBMatcherOptional):
     """Matcher for the bluetooth integration."""
-    ...
 
+    ...
 
 @dataclass(slots=True)
 class HomeKitDiscoveredIntegration:
     """HomeKit model."""
+
     domain: str
     always_discover: bool
     ...
-
 
 class Manifest(TypedDict, total=False):
     """Integration manifest.
@@ -109,10 +109,13 @@ class Manifest(TypedDict, total=False):
     them may be optional in manifest.json in the sense that they can be omitted
     altogether. But when present, they should not have null values in it.
     """
+
     name: str
     disabled: str
     domain: str
-    integration_type: Literal["entity", "device", "hardware", "helper", "hub", "service", "system"]
+    integration_type: Literal[
+        "entity", "device", "hardware", "helper", "hub", "service", "system"
+    ]
     dependencies: list[str]
     after_dependencies: list[str]
     requirements: list[str]
@@ -134,7 +137,6 @@ class Manifest(TypedDict, total=False):
     loggers: list[str]
     ...
 
-
 def async_setup(hass: HomeAssistant) -> None:
     """Set up the necessary data structures."""
     ...
@@ -147,47 +149,64 @@ async def async_get_custom_components(hass: HomeAssistant) -> dict[str, Integrat
     """Return cached list of custom integrations."""
     ...
 
-async def async_get_config_flows(hass: HomeAssistant, type_filter: Literal["device", "helper", "hub", "service"] | None = ...) -> set[str]:
+async def async_get_config_flows(
+    hass: HomeAssistant,
+    type_filter: Literal["device", "helper", "hub", "service"] | None = ...,
+) -> set[str]:
     """Return cached list of config flows."""
     ...
 
 class ComponentProtocol(Protocol):
     """Define the format of an integration."""
+
     CONFIG_SCHEMA: vol.Schema
     DOMAIN: str
-    async def async_setup_entry(self, hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    async def async_setup_entry(
+        self, hass: HomeAssistant, config_entry: ConfigEntry
+    ) -> bool:
         """Set up a config entry."""
         ...
-    
-    async def async_unload_entry(self, hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+
+    async def async_unload_entry(
+        self, hass: HomeAssistant, config_entry: ConfigEntry
+    ) -> bool:
         """Unload a config entry."""
         ...
-    
-    async def async_migrate_entry(self, hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+
+    async def async_migrate_entry(
+        self, hass: HomeAssistant, config_entry: ConfigEntry
+    ) -> bool:
         """Migrate an old config entry."""
         ...
-    
-    async def async_remove_entry(self, hass: HomeAssistant, config_entry: ConfigEntry) -> None:
+
+    async def async_remove_entry(
+        self, hass: HomeAssistant, config_entry: ConfigEntry
+    ) -> None:
         """Remove a config entry."""
         ...
-    
-    async def async_remove_config_entry_device(self, hass: HomeAssistant, config_entry: ConfigEntry, device_entry: dr.DeviceEntry) -> bool:
+
+    async def async_remove_config_entry_device(
+        self,
+        hass: HomeAssistant,
+        config_entry: ConfigEntry,
+        device_entry: dr.DeviceEntry,
+    ) -> bool:
         """Remove a config entry device."""
         ...
-    
-    async def async_reset_platform(self, hass: HomeAssistant, integration_name: str) -> None:
+
+    async def async_reset_platform(
+        self, hass: HomeAssistant, integration_name: str
+    ) -> None:
         """Release resources."""
         ...
-    
+
     async def async_setup(self, hass: HomeAssistant, config: ConfigType) -> bool:
         """Set up integration."""
         ...
-    
+
     def setup(self, hass: HomeAssistant, config: ConfigType) -> bool:
         """Set up integration."""
         ...
-    
-
 
 async def async_get_integration_descriptions(hass: HomeAssistant) -> dict[str, Any]:
     """Return cached list of integrations."""
@@ -201,7 +220,9 @@ def async_process_zeroconf_match_dict(entry: dict[str, Any]) -> dict[str, Any]:
     """Handle backwards compat with zeroconf matchers."""
     ...
 
-async def async_get_zeroconf(hass: HomeAssistant) -> dict[str, list[dict[str, str | dict[str, str]]]]:
+async def async_get_zeroconf(
+    hass: HomeAssistant
+) -> dict[str, list[dict[str, str | dict[str, str]]]]:
     """Return cached list of zeroconf types."""
     ...
 
@@ -221,7 +242,9 @@ def homekit_always_discover(iot_class: str | None) -> bool:
     """Return if we should always offer HomeKit control for a device."""
     ...
 
-async def async_get_homekit(hass: HomeAssistant) -> dict[str, HomeKitDiscoveredIntegration]:
+async def async_get_homekit(
+    hass: HomeAssistant
+) -> dict[str, HomeKitDiscoveredIntegration]:
     """Return cached list of homekit models."""
     ...
 
@@ -236,151 +259,159 @@ async def async_get_mqtt(hass: HomeAssistant) -> dict[str, list[str]]:
 class Integration:
     """An integration in Home Assistant."""
     @classmethod
-    def resolve_from_root(cls, hass: HomeAssistant, root_module: ModuleType, domain: str) -> Integration | None:
+    def resolve_from_root(
+        cls, hass: HomeAssistant, root_module: ModuleType, domain: str
+    ) -> Integration | None:
         """Resolve an integration from a root module."""
         ...
-    
-    def __init__(self, hass: HomeAssistant, pkg_path: str, file_path: pathlib.Path, manifest: Manifest) -> None:
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        pkg_path: str,
+        file_path: pathlib.Path,
+        manifest: Manifest,
+    ) -> None:
         """Initialize an integration."""
         ...
-    
+
     @property
     def name(self) -> str:
         """Return name."""
         ...
-    
+
     @property
     def disabled(self) -> str | None:
         """Return reason integration is disabled."""
         ...
-    
+
     @property
     def domain(self) -> str:
         """Return domain."""
         ...
-    
+
     @property
     def dependencies(self) -> list[str]:
         """Return dependencies."""
         ...
-    
+
     @property
     def after_dependencies(self) -> list[str]:
         """Return after_dependencies."""
         ...
-    
+
     @property
     def requirements(self) -> list[str]:
         """Return requirements."""
         ...
-    
+
     @property
     def config_flow(self) -> bool:
         """Return config_flow."""
         ...
-    
+
     @property
     def documentation(self) -> str | None:
         """Return documentation."""
         ...
-    
+
     @property
     def issue_tracker(self) -> str | None:
         """Return issue tracker link."""
         ...
-    
+
     @property
     def loggers(self) -> list[str] | None:
         """Return list of loggers used by the integration."""
         ...
-    
+
     @property
     def quality_scale(self) -> str | None:
         """Return Integration Quality Scale."""
         ...
-    
+
     @property
     def iot_class(self) -> str | None:
         """Return the integration IoT Class."""
         ...
-    
+
     @property
-    def integration_type(self) -> Literal["entity", "device", "hardware", "helper", "hub", "service", "system"]:
+    def integration_type(
+        self
+    ) -> Literal["entity", "device", "hardware", "helper", "hub", "service", "system"]:
         """Return the integration type."""
         ...
-    
+
     @property
     def mqtt(self) -> list[str] | None:
         """Return Integration MQTT entries."""
         ...
-    
+
     @property
     def ssdp(self) -> list[dict[str, str]] | None:
         """Return Integration SSDP entries."""
         ...
-    
+
     @property
     def zeroconf(self) -> list[str | dict[str, str]] | None:
         """Return Integration zeroconf entries."""
         ...
-    
+
     @property
     def bluetooth(self) -> list[dict[str, str | int]] | None:
         """Return Integration bluetooth entries."""
         ...
-    
+
     @property
     def dhcp(self) -> list[dict[str, str | bool]] | None:
         """Return Integration dhcp entries."""
         ...
-    
+
     @property
     def usb(self) -> list[dict[str, str]] | None:
         """Return Integration usb entries."""
         ...
-    
+
     @property
     def homekit(self) -> dict[str, list[str]] | None:
         """Return Integration homekit entries."""
         ...
-    
+
     @property
     def is_built_in(self) -> bool:
         """Test if package is a built-in integration."""
         ...
-    
+
     @property
     def version(self) -> AwesomeVersion | None:
         """Return the version of the integration."""
         ...
-    
+
     @property
     def all_dependencies(self) -> set[str]:
         """Return all dependencies including sub-dependencies."""
         ...
-    
+
     @property
     def all_dependencies_resolved(self) -> bool:
         """Return if all dependencies have been resolved."""
         ...
-    
+
     async def resolve_dependencies(self) -> bool:
         """Resolve all dependencies."""
         ...
-    
+
     def get_component(self) -> ComponentProtocol:
         """Return the component."""
         ...
-    
+
     def get_platform(self, platform_name: str) -> ModuleType:
         """Return a platform for an integration."""
         ...
-    
+
     def __repr__(self) -> str:
         """Text representation of class."""
         ...
-    
-
 
 @callback
 def async_get_loaded_integration(hass: HomeAssistant, domain: str) -> Integration:
@@ -394,74 +425,64 @@ async def async_get_integration(hass: HomeAssistant, domain: str) -> Integration
     """Get integration."""
     ...
 
-async def async_get_integrations(hass: HomeAssistant, domains: Iterable[str]) -> dict[str, Integration | Exception]:
+async def async_get_integrations(
+    hass: HomeAssistant, domains: Iterable[str]
+) -> dict[str, Integration | Exception]:
     """Get integrations."""
     ...
 
 class LoaderError(Exception):
     """Loader base error."""
-    ...
 
+    ...
 
 class IntegrationNotFound(LoaderError):
     """Raised when a component is not found."""
     def __init__(self, domain: str) -> None:
         """Initialize a component not found error."""
         ...
-    
-
 
 class IntegrationNotLoaded(LoaderError):
     """Raised when a component is not loaded."""
     def __init__(self, domain: str) -> None:
         """Initialize a component not found error."""
         ...
-    
-
 
 class CircularDependency(LoaderError):
     """Raised when a circular dependency is found when resolving components."""
     def __init__(self, from_domain: str | set[str], to_domain: str) -> None:
         """Initialize circular dependency error."""
         ...
-    
-
 
 class ModuleWrapper:
     """Class to wrap a Python module and auto fill in hass argument."""
     def __init__(self, hass: HomeAssistant, module: ComponentProtocol) -> None:
         """Initialize the module wrapper."""
         ...
-    
+
     def __getattr__(self, attr: str) -> Any:
         """Fetch an attribute."""
         ...
-    
-
 
 class Components:
     """Helper to load components."""
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the Components class."""
         ...
-    
+
     def __getattr__(self, comp_name: str) -> ModuleWrapper:
         """Fetch a component."""
         ...
-    
-
 
 class Helpers:
     """Helper to load helpers."""
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the Helpers class."""
         ...
-    
+
     def __getattr__(self, helper_name: str) -> ModuleWrapper:
         """Fetch a helper."""
         ...
-    
-
 
 def bind_hass(func: _CallableT) -> _CallableT:
     """Decorate function to indicate that first argument is hass.
@@ -476,12 +497,21 @@ def is_component_module_loaded(hass: HomeAssistant, module: str) -> bool:
     ...
 
 @callback
-def async_get_issue_tracker(hass: HomeAssistant | None, *, integration_domain: str | None = ..., module: str | None = ...) -> str | None:
+def async_get_issue_tracker(
+    hass: HomeAssistant | None,
+    *,
+    integration_domain: str | None = ...,
+    module: str | None = ...,
+) -> str | None:
     """Return a URL for an integration's issue tracker."""
     ...
 
 @callback
-def async_suggest_report_issue(hass: HomeAssistant | None, *, integration_domain: str | None = ..., module: str | None = ...) -> str:
+def async_suggest_report_issue(
+    hass: HomeAssistant | None,
+    *,
+    integration_domain: str | None = ...,
+    module: str | None = ...,
+) -> str:
     """Generate a blurb asking the user to file a bug report."""
     ...
-

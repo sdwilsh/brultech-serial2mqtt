@@ -17,17 +17,18 @@ ServiceDataType = dict[str, Any]
 StateType = str | int | float | None
 TemplateVarsType = Mapping[str, Any] | None
 QueryType = Any
+
 class UndefinedType(Enum):
     """Singleton type for use with not set sentinel values."""
-    _singleton = ...
 
+    _singleton = ...
 
 UNDEFINED = ...
 HomeAssistantType = homeassistant.core.HomeAssistant
 ServiceCallType = homeassistant.core.ServiceCall
+
 class EventType(homeassistant.core.Event, Generic[_DataT]):
     """Generic Event class to better type data."""
+
     data: _DataT
     ...
-
-

@@ -16,8 +16,7 @@ from .typing import UndefinedType
 from homeassistant.config_entries import ConfigEntry
 
 """Provide a way to connect entities belonging to one device."""
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
 _LOGGER = ...
 DATA_REGISTRY = ...
 EVENT_DEVICE_REGISTRY_UPDATED = ...
@@ -33,18 +32,21 @@ CONNECTION_ZIGBEE = ...
 ORPHANED_DEVICE_KEEP_SECONDS = ...
 RUNTIME_ONLY_ATTRS = ...
 CONFIGURATION_URL_SCHEMES = ...
+
 class DeviceEntryDisabler(StrEnum):
     """What disabled a device entry."""
+
     CONFIG_ENTRY = ...
     INTEGRATION = ...
     USER = ...
 
-
 DISABLED_CONFIG_ENTRY = ...
 DISABLED_INTEGRATION = ...
 DISABLED_USER = ...
+
 class DeviceInfo(TypedDict, total=False):
     """Entity device information for device registry."""
+
     configuration_url: str | URL | None
     connections: set[tuple[str, str]]
     default_manufacturer: str
@@ -62,41 +64,44 @@ class DeviceInfo(TypedDict, total=False):
     via_device: tuple[str, str]
     ...
 
-
 DEVICE_INFO_TYPES = ...
 DEVICE_INFO_KEYS = ...
+
 class _EventDeviceRegistryUpdatedData_CreateRemove(TypedDict):
     """EventDeviceRegistryUpdated data for action type 'create' and 'remove'."""
+
     action: Literal["create", "remove"]
     device_id: str
     ...
 
-
 class _EventDeviceRegistryUpdatedData_Update(TypedDict):
     """EventDeviceRegistryUpdated data for action type 'update'."""
+
     action: Literal["update"]
     device_id: str
     changes: dict[str, Any]
     ...
 
+EventDeviceRegistryUpdatedData = (
+    _EventDeviceRegistryUpdatedData_CreateRemove
+    | _EventDeviceRegistryUpdatedData_Update
+)
 
-EventDeviceRegistryUpdatedData = (_EventDeviceRegistryUpdatedData_CreateRemove | _EventDeviceRegistryUpdatedData_Update)
 class DeviceEntryType(StrEnum):
     """Device entry type."""
-    SERVICE = ...
 
+    SERVICE = ...
 
 class DeviceInfoError(HomeAssistantError):
     """Raised when device info is invalid."""
     def __init__(self, domain: str, device_info: DeviceInfo, message: str) -> None:
         """Initialize error."""
         ...
-    
-
 
 @attr.s(frozen=True)
 class DeviceEntry:
     """Device Registry Entry."""
+
     area_id: str | None = ...
     config_entries: set[str] = ...
     configuration_url: str | None = ...
@@ -119,32 +124,34 @@ class DeviceEntry:
     def disabled(self) -> bool:
         """Return if entry is disabled."""
         ...
-    
+
     @property
     def dict_repr(self) -> dict[str, Any]:
         """Return a dict representation of the entry."""
         ...
-    
+
     @cached_property
     def json_repr(self) -> str | None:
         """Return a cached JSON representation of the entry."""
         ...
-    
-
 
 @attr.s(slots=True, frozen=True)
 class DeletedDeviceEntry:
     """Deleted Device Registry Entry."""
+
     config_entries: set[str] = ...
     connections: set[tuple[str, str]] = ...
     identifiers: set[tuple[str, str]] = ...
     id: str = ...
     orphaned_timestamp: float | None = ...
-    def to_device_entry(self, config_entry_id: str, connections: set[tuple[str, str]], identifiers: set[tuple[str, str]]) -> DeviceEntry:
+    def to_device_entry(
+        self,
+        config_entry_id: str,
+        connections: set[tuple[str, str]],
+        identifiers: set[tuple[str, str]],
+    ) -> DeviceEntry:
         """Create DeviceEntry from DeletedDeviceEntry."""
         ...
-    
-
 
 def format_mac(mac: str) -> str:
     """Format the mac address string for entry into dev reg."""
@@ -152,10 +159,11 @@ def format_mac(mac: str) -> str:
 
 class DeviceRegistryStore(storage.Store[dict[str, list[dict[str, Any]]]]):
     """Store entity registry data."""
+
     ...
 
-
 _EntryTypeT = TypeVar("_EntryTypeT", DeviceEntry, DeletedDeviceEntry)
+
 class DeviceRegistryItems(UserDict[str, _EntryTypeT]):
     """Container for device registry items, maps device id -> entry.
 
@@ -166,34 +174,37 @@ class DeviceRegistryItems(UserDict[str, _EntryTypeT]):
     def __init__(self) -> None:
         """Initialize the container."""
         ...
-    
+
     def values(self) -> ValuesView[_EntryTypeT]:
         """Return the underlying values to avoid __iter__ overhead."""
         ...
-    
+
     def __setitem__(self, key: str, entry: _EntryTypeT) -> None:
         """Add an item."""
         ...
-    
+
     def __delitem__(self, key: str) -> None:
         """Remove an item."""
         ...
-    
-    def get_entry(self, identifiers: set[tuple[str, str]] | None, connections: set[tuple[str, str]] | None) -> _EntryTypeT | None:
+
+    def get_entry(
+        self,
+        identifiers: set[tuple[str, str]] | None,
+        connections: set[tuple[str, str]] | None,
+    ) -> _EntryTypeT | None:
         """Get entry from identifiers or connections."""
         ...
-    
-
 
 class DeviceRegistry:
     """Class to hold a registry of devices."""
+
     devices: DeviceRegistryItems[DeviceEntry]
     deleted_devices: DeviceRegistryItems[DeletedDeviceEntry]
     _device_data: dict[str, DeviceEntry]
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the device registry."""
         ...
-    
+
     @callback
     def async_get(self, device_id: str) -> DeviceEntry | None:
         """Get device.
@@ -202,41 +213,87 @@ class DeviceRegistry:
         the overhead of the UserDict __getitem__.
         """
         ...
-    
+
     @callback
-    def async_get_device(self, identifiers: set[tuple[str, str]] | None = ..., connections: set[tuple[str, str]] | None = ...) -> DeviceEntry | None:
+    def async_get_device(
+        self,
+        identifiers: set[tuple[str, str]] | None = ...,
+        connections: set[tuple[str, str]] | None = ...,
+    ) -> DeviceEntry | None:
         """Check if device is registered."""
         ...
-    
+
     @callback
-    def async_get_or_create(self, *, config_entry_id: str, configuration_url: str | URL | None | UndefinedType = ..., connections: set[tuple[str, str]] | None | UndefinedType = ..., default_manufacturer: str | None | UndefinedType = ..., default_model: str | None | UndefinedType = ..., default_name: str | None | UndefinedType = ..., disabled_by: DeviceEntryDisabler | None | UndefinedType = ..., entry_type: DeviceEntryType | None | UndefinedType = ..., hw_version: str | None | UndefinedType = ..., identifiers: set[tuple[str, str]] | None | UndefinedType = ..., manufacturer: str | None | UndefinedType = ..., model: str | None | UndefinedType = ..., name: str | None | UndefinedType = ..., serial_number: str | None | UndefinedType = ..., suggested_area: str | None | UndefinedType = ..., sw_version: str | None | UndefinedType = ..., via_device: tuple[str, str] | None | UndefinedType = ...) -> DeviceEntry:
+    def async_get_or_create(
+        self,
+        *,
+        config_entry_id: str,
+        configuration_url: str | URL | None | UndefinedType = ...,
+        connections: set[tuple[str, str]] | None | UndefinedType = ...,
+        default_manufacturer: str | None | UndefinedType = ...,
+        default_model: str | None | UndefinedType = ...,
+        default_name: str | None | UndefinedType = ...,
+        disabled_by: DeviceEntryDisabler | None | UndefinedType = ...,
+        entry_type: DeviceEntryType | None | UndefinedType = ...,
+        hw_version: str | None | UndefinedType = ...,
+        identifiers: set[tuple[str, str]] | None | UndefinedType = ...,
+        manufacturer: str | None | UndefinedType = ...,
+        model: str | None | UndefinedType = ...,
+        name: str | None | UndefinedType = ...,
+        serial_number: str | None | UndefinedType = ...,
+        suggested_area: str | None | UndefinedType = ...,
+        sw_version: str | None | UndefinedType = ...,
+        via_device: tuple[str, str] | None | UndefinedType = ...,
+    ) -> DeviceEntry:
         """Get device. Create if it doesn't exist."""
         ...
-    
+
     @callback
-    def async_update_device(self, device_id: str, *, add_config_entry_id: str | UndefinedType = ..., area_id: str | None | UndefinedType = ..., configuration_url: str | URL | None | UndefinedType = ..., disabled_by: DeviceEntryDisabler | None | UndefinedType = ..., entry_type: DeviceEntryType | None | UndefinedType = ..., hw_version: str | None | UndefinedType = ..., manufacturer: str | None | UndefinedType = ..., merge_connections: set[tuple[str, str]] | UndefinedType = ..., merge_identifiers: set[tuple[str, str]] | UndefinedType = ..., model: str | None | UndefinedType = ..., name_by_user: str | None | UndefinedType = ..., name: str | None | UndefinedType = ..., new_identifiers: set[tuple[str, str]] | UndefinedType = ..., remove_config_entry_id: str | UndefinedType = ..., serial_number: str | None | UndefinedType = ..., suggested_area: str | None | UndefinedType = ..., sw_version: str | None | UndefinedType = ..., via_device_id: str | None | UndefinedType = ...) -> DeviceEntry | None:
+    def async_update_device(
+        self,
+        device_id: str,
+        *,
+        add_config_entry_id: str | UndefinedType = ...,
+        area_id: str | None | UndefinedType = ...,
+        configuration_url: str | URL | None | UndefinedType = ...,
+        disabled_by: DeviceEntryDisabler | None | UndefinedType = ...,
+        entry_type: DeviceEntryType | None | UndefinedType = ...,
+        hw_version: str | None | UndefinedType = ...,
+        manufacturer: str | None | UndefinedType = ...,
+        merge_connections: set[tuple[str, str]] | UndefinedType = ...,
+        merge_identifiers: set[tuple[str, str]] | UndefinedType = ...,
+        model: str | None | UndefinedType = ...,
+        name_by_user: str | None | UndefinedType = ...,
+        name: str | None | UndefinedType = ...,
+        new_identifiers: set[tuple[str, str]] | UndefinedType = ...,
+        remove_config_entry_id: str | UndefinedType = ...,
+        serial_number: str | None | UndefinedType = ...,
+        suggested_area: str | None | UndefinedType = ...,
+        sw_version: str | None | UndefinedType = ...,
+        via_device_id: str | None | UndefinedType = ...,
+    ) -> DeviceEntry | None:
         """Update device attributes."""
         ...
-    
+
     @callback
     def async_remove_device(self, device_id: str) -> None:
         """Remove a device from the device registry."""
         ...
-    
+
     async def async_load(self) -> None:
         """Load the device registry."""
         ...
-    
+
     @callback
     def async_schedule_save(self) -> None:
         """Schedule saving the device registry."""
         ...
-    
+
     @callback
     def async_clear_config_entry(self, config_entry_id: str) -> None:
         """Clear config entry from registry entries."""
         ...
-    
+
     @callback
     def async_purge_expired_orphaned_devices(self) -> None:
         """Purge expired orphaned devices from the registry.
@@ -245,13 +302,11 @@ class DeviceRegistry:
         growing without bound.
         """
         ...
-    
+
     @callback
     def async_clear_area_id(self, area_id: str) -> None:
         """Clear area id from registry entries."""
         ...
-    
-
 
 @callback
 def async_get(hass: HomeAssistant) -> DeviceRegistry:
@@ -268,12 +323,16 @@ def async_entries_for_area(registry: DeviceRegistry, area_id: str) -> list[Devic
     ...
 
 @callback
-def async_entries_for_config_entry(registry: DeviceRegistry, config_entry_id: str) -> list[DeviceEntry]:
+def async_entries_for_config_entry(
+    registry: DeviceRegistry, config_entry_id: str
+) -> list[DeviceEntry]:
     """Return entries that match a config entry."""
     ...
 
 @callback
-def async_config_entry_disabled_by_changed(registry: DeviceRegistry, config_entry: ConfigEntry) -> None:
+def async_config_entry_disabled_by_changed(
+    registry: DeviceRegistry, config_entry: ConfigEntry
+) -> None:
     """Handle a config entry being disabled or enabled.
 
     Disable devices in the registry that are associated with a config entry when
@@ -285,7 +344,11 @@ def async_config_entry_disabled_by_changed(registry: DeviceRegistry, config_entr
     ...
 
 @callback
-def async_cleanup(hass: HomeAssistant, dev_reg: DeviceRegistry, ent_reg: entity_registry.EntityRegistry) -> None:
+def async_cleanup(
+    hass: HomeAssistant,
+    dev_reg: DeviceRegistry,
+    ent_reg: entity_registry.EntityRegistry,
+) -> None:
     """Clean up device registry."""
     ...
 
@@ -293,4 +356,3 @@ def async_cleanup(hass: HomeAssistant, dev_reg: DeviceRegistry, ent_reg: entity_
 def async_setup_cleanup(hass: HomeAssistant, dev_reg: DeviceRegistry) -> None:
     """Clean up device registry when entities removed."""
     ...
-

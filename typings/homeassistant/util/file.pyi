@@ -6,10 +6,11 @@ from homeassistant.exceptions import HomeAssistantError
 
 """File utility functions."""
 _LOGGER = ...
+
 class WriteError(HomeAssistantError):
     """Error writing the data."""
-    ...
 
+    ...
 
 def write_utf8_file_atomic(filename: str, utf8_data: str, private: bool = ...) -> None:
     """Write a file and rename it into place using atomicwrites.
@@ -32,4 +33,3 @@ def write_utf8_file(filename: str, utf8_data: str, private: bool = ...) -> None:
     Writes all or nothing.
     """
     ...
-

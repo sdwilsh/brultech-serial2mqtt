@@ -12,9 +12,11 @@ from homeassistant.exceptions import HomeAssistantError
 _LOGGER = ...
 _REPORTED_INTEGRATIONS: set[str] = ...
 _CallableT = TypeVar("_CallableT", bound=Callable)
+
 @dataclass(kw_only=True)
 class IntegrationFrame:
     """Integration frame container."""
+
     custom_integration: bool
     frame: FrameSummary
     integration: str
@@ -22,17 +24,21 @@ class IntegrationFrame:
     relative_filename: str
     ...
 
-
 def get_integration_frame(exclude_integrations: set | None = ...) -> IntegrationFrame:
     """Return the frame, integration and integration path of the current stack frame."""
     ...
 
 class MissingIntegrationFrame(HomeAssistantError):
     """Raised when no integration is found in the frame."""
+
     ...
 
-
-def report(what: str, exclude_integrations: set | None = ..., error_if_core: bool = ..., level: int = ...) -> None:
+def report(
+    what: str,
+    exclude_integrations: set | None = ...,
+    error_if_core: bool = ...,
+    level: int = ...,
+) -> None:
     """Report incorrect usage.
 
     Async friendly.
@@ -42,4 +48,3 @@ def report(what: str, exclude_integrations: set | None = ..., error_if_core: boo
 def warn_use(func: _CallableT, what: str) -> _CallableT:
     """Mock a function to warn when it was about to be used."""
     ...
-

@@ -8,8 +8,11 @@ from .models import BluetoothServiceInfoBleak
 from .storage import BluetoothStorage
 
 """The bluetooth integration utilities."""
+
 @callback
-def async_load_history_from_system(adapters: BluetoothAdapters, storage: BluetoothStorage) -> tuple[dict[str, BluetoothServiceInfoBleak], dict[str, BluetoothServiceInfoBleak]]:
+def async_load_history_from_system(
+    adapters: BluetoothAdapters, storage: BluetoothStorage
+) -> tuple[dict[str, BluetoothServiceInfoBleak], dict[str, BluetoothServiceInfoBleak]]:
     """Load the device and advertisement_data history.
 
     Only loads if available on the current system.
@@ -19,4 +22,3 @@ def async_load_history_from_system(adapters: BluetoothAdapters, storage: Bluetoo
 async def async_reset_adapter(adapter: str | None, mac_address: str) -> bool | None:
     """Reset the adapter."""
     ...
-

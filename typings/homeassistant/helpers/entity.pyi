@@ -8,7 +8,16 @@ from collections.abc import Coroutine, Iterable, Mapping, MutableMapping
 from dataclasses import dataclass
 from datetime import timedelta
 from enum import Enum
-from typing import Any, Final, Literal, NotRequired, TYPE_CHECKING, TypeVar, TypedDict, final
+from typing import (
+    Any,
+    Final,
+    Literal,
+    NotRequired,
+    TYPE_CHECKING,
+    TypeVar,
+    TypedDict,
+    final,
+)
 from homeassistant.const import EntityCategory
 from homeassistant.core import CALLBACK_TYPE, Context, HomeAssistant, callback
 from homeassistant.loader import bind_hass
@@ -18,13 +27,13 @@ from .typing import StateType, UndefinedType
 from .entity_platform import EntityPlatform
 
 """An abstract class for entities."""
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
 _T = TypeVar("_T")
 _LOGGER = ...
 SLOW_UPDATE_WARNING = ...
 DATA_ENTITY_SOURCE = ...
 FLOAT_PRECISION = ...
+
 @callback
 def async_setup(hass: HomeAssistant) -> None:
     """Set up entity sources."""
@@ -36,12 +45,22 @@ def entity_sources(hass: HomeAssistant) -> dict[str, EntityInfo]:
     """Get the entity sources."""
     ...
 
-def generate_entity_id(entity_id_format: str, name: str | None, current_ids: list[str] | None = ..., hass: HomeAssistant | None = ...) -> str:
+def generate_entity_id(
+    entity_id_format: str,
+    name: str | None,
+    current_ids: list[str] | None = ...,
+    hass: HomeAssistant | None = ...,
+) -> str:
     """Generate a unique entity ID based on given entity IDs or used IDs."""
     ...
 
 @callback
-def async_generate_entity_id(entity_id_format: str, name: str | None, current_ids: Iterable[str] | None = ..., hass: HomeAssistant | None = ...) -> str:
+def async_generate_entity_id(
+    entity_id_format: str,
+    name: str | None,
+    current_ids: Iterable[str] | None = ...,
+    hass: HomeAssistant | None = ...,
+) -> str:
     """Generate a unique entity ID based on given entity IDs or used IDs."""
     ...
 
@@ -74,30 +93,32 @@ def get_unit_of_measurement(hass: HomeAssistant, entity_id: str) -> str | None:
     ...
 
 ENTITY_CATEGORIES_SCHEMA: Final = ...
+
 class EntityInfo(TypedDict):
     """Entity info."""
+
     domain: str
     custom_component: bool
     config_entry: NotRequired[str]
     ...
 
-
 class StateInfo(TypedDict):
     """State info."""
+
     unrecorded_attributes: frozenset[str]
     ...
 
-
 class EntityPlatformState(Enum):
     """The platform state of an entity."""
+
     NOT_ADDED = ...
     ADDED = ...
     REMOVED = ...
 
-
 @dataclass(slots=True)
 class EntityDescription:
     """A class that describes Home Assistant entities."""
+
     key: str
     device_class: str | None = ...
     entity_category: EntityCategory | None = ...
@@ -110,9 +131,9 @@ class EntityDescription:
     translation_key: str | None = ...
     unit_of_measurement: str | None = ...
 
-
 class Entity(ABC):
     """An abstract class for Home Assistant entities."""
+
     entity_id: str = ...
     hass: HomeAssistant = ...
     platform: EntityPlatform = ...
@@ -160,7 +181,7 @@ class Entity(ABC):
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Initialize an Entity subclass."""
         ...
-    
+
     @property
     def should_poll(self) -> bool:
         """Return True if entity has to be polled for state.
@@ -168,12 +189,12 @@ class Entity(ABC):
         False if entity pushes its state to HA.
         """
         ...
-    
+
     @property
     def unique_id(self) -> str | None:
         """Return a unique ID."""
         ...
-    
+
     @property
     def use_device_name(self) -> bool:
         """Return if this entity does not have its own name.
@@ -181,27 +202,27 @@ class Entity(ABC):
         Should be True if the entity represents the single main feature of a device.
         """
         ...
-    
+
     @property
     def has_entity_name(self) -> bool:
         """Return if the name of the entity is describing only the entity itself."""
         ...
-    
+
     @property
     def suggested_object_id(self) -> str | None:
         """Return input for object id."""
         ...
-    
+
     @property
     def name(self) -> str | UndefinedType | None:
         """Return the name of the entity."""
         ...
-    
+
     @property
     def state(self) -> StateType:
         """Return the state of the entity."""
         ...
-    
+
     @property
     def capability_attributes(self) -> Mapping[str, Any] | None:
         """Return the capability attributes.
@@ -212,7 +233,7 @@ class Entity(ABC):
         is lowercase snake_case.
         """
         ...
-    
+
     def get_initial_entity_options(self) -> er.EntityOptionsType | None:
         """Return initial entity options.
 
@@ -224,7 +245,7 @@ class Entity(ABC):
         Note: Not a property to avoid calculating unless needed.
         """
         ...
-    
+
     @property
     def state_attributes(self) -> dict[str, Any] | None:
         """Return the state attributes.
@@ -233,7 +254,7 @@ class Entity(ABC):
         Convention for attribute names is lowercase snake_case.
         """
         ...
-    
+
     @property
     def device_state_attributes(self) -> Mapping[str, Any] | None:
         """Return entity specific state attributes.
@@ -242,7 +263,7 @@ class Entity(ABC):
         extra_state_attributes instead.
         """
         ...
-    
+
     @property
     def extra_state_attributes(self) -> Mapping[str, Any] | None:
         """Return entity specific state attributes.
@@ -251,7 +272,7 @@ class Entity(ABC):
         is lowercase snake_case.
         """
         ...
-    
+
     @property
     def device_info(self) -> DeviceInfo | None:
         """Return device specific attributes.
@@ -259,37 +280,37 @@ class Entity(ABC):
         Implemented by platform classes.
         """
         ...
-    
+
     @property
     def device_class(self) -> str | None:
         """Return the class of this device, from component DEVICE_CLASSES."""
         ...
-    
+
     @property
     def unit_of_measurement(self) -> str | None:
         """Return the unit of measurement of this entity, if any."""
         ...
-    
+
     @property
     def icon(self) -> str | None:
         """Return the icon to use in the frontend, if any."""
         ...
-    
+
     @property
     def entity_picture(self) -> str | None:
         """Return the entity picture to use in the frontend, if any."""
         ...
-    
+
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
         ...
-    
+
     @property
     def assumed_state(self) -> bool:
         """Return True if unable to access real state of the entity."""
         ...
-    
+
     @property
     def force_update(self) -> bool:
         """Return True if state updates should be forced.
@@ -298,17 +319,17 @@ class Entity(ABC):
         updated, not just when the value changes.
         """
         ...
-    
+
     @property
     def supported_features(self) -> int | None:
         """Flag supported features."""
         ...
-    
+
     @property
     def context_recent_time(self) -> timedelta:
         """Time that a context is considered recent."""
         ...
-    
+
     @property
     def entity_registry_enabled_default(self) -> bool:
         """Return if the entity should be enabled when first added.
@@ -316,7 +337,7 @@ class Entity(ABC):
         This only applies when fist added to the entity registry.
         """
         ...
-    
+
     @property
     def entity_registry_visible_default(self) -> bool:
         """Return if the entity should be visible when first added.
@@ -324,22 +345,22 @@ class Entity(ABC):
         This only applies when fist added to the entity registry.
         """
         ...
-    
+
     @property
     def attribution(self) -> str | None:
         """Return the attribution."""
         ...
-    
+
     @property
     def entity_category(self) -> EntityCategory | None:
         """Return the category of the entity, if any."""
         ...
-    
+
     @property
     def translation_key(self) -> str | None:
         """Return the translation key to translate the entity's states."""
         ...
-    
+
     @property
     def enabled(self) -> bool:
         """Return if the entity is enabled in the entity registry.
@@ -348,12 +369,12 @@ class Entity(ABC):
         and will therefore always be enabled.
         """
         ...
-    
+
     @callback
     def async_set_context(self, context: Context) -> None:
         """Set the context the entity currently operates under."""
         ...
-    
+
     async def async_update_ha_state(self, force_refresh: bool = ...) -> None:
         """Update Home Assistant with current state of entity.
 
@@ -362,12 +383,12 @@ class Entity(ABC):
         This method must be run in the event loop.
         """
         ...
-    
+
     @callback
     def async_write_ha_state(self) -> None:
         """Write the state to the state machine."""
         ...
-    
+
     def schedule_update_ha_state(self, force_refresh: bool = ...) -> None:
         """Schedule an update ha state change task.
 
@@ -379,7 +400,7 @@ class Entity(ABC):
         been executed, the intermediate state transitions will be missed.
         """
         ...
-    
+
     @callback
     def async_schedule_update_ha_state(self, force_refresh: bool = ...) -> None:
         """Schedule an update ha state change task.
@@ -393,40 +414,45 @@ class Entity(ABC):
         been executed, the intermediate state transitions will be missed.
         """
         ...
-    
+
     async def async_device_update(self, warning: bool = ...) -> None:
         """Process 'update' or 'async_update' from entity.
 
         This method is a coroutine.
         """
         ...
-    
+
     @callback
     def async_on_remove(self, func: CALLBACK_TYPE) -> None:
         """Add a function to call when entity is removed or not added."""
         ...
-    
+
     async def async_removed_from_registry(self) -> None:
         """Run when entity has been removed from entity registry.
 
         To be extended by integrations.
         """
         ...
-    
+
     @callback
-    def add_to_platform_start(self, hass: HomeAssistant, platform: EntityPlatform, parallel_updates: asyncio.Semaphore | None) -> None:
+    def add_to_platform_start(
+        self,
+        hass: HomeAssistant,
+        platform: EntityPlatform,
+        parallel_updates: asyncio.Semaphore | None,
+    ) -> None:
         """Start adding an entity to a platform."""
         ...
-    
+
     @callback
     def add_to_platform_abort(self) -> None:
         """Abort adding an entity to a platform."""
         ...
-    
+
     async def add_to_platform_finish(self) -> None:
         """Finish adding an entity to a platform."""
         ...
-    
+
     @final
     async def async_remove(self, *, force_remove: bool = ...) -> None:
         """Remove entity from Home Assistant.
@@ -439,21 +465,21 @@ class Entity(ABC):
         or if force_remove=True, its state will be removed.
         """
         ...
-    
+
     async def async_added_to_hass(self) -> None:
         """Run when entity about to be added to hass.
 
         To be extended by integrations.
         """
         ...
-    
+
     async def async_will_remove_from_hass(self) -> None:
         """Run when entity will be removed from hass.
 
         To be extended by integrations.
         """
         ...
-    
+
     @callback
     def async_registry_entry_updated(self) -> None:
         """Run when the entity registry entry has been updated.
@@ -461,39 +487,38 @@ class Entity(ABC):
         To be extended by integrations.
         """
         ...
-    
+
     async def async_internal_added_to_hass(self) -> None:
         """Run when entity about to be added to hass.
 
         Not to be extended by integrations.
         """
         ...
-    
+
     async def async_internal_will_remove_from_hass(self) -> None:
         """Run when entity will be removed from hass.
 
         Not to be extended by integrations.
         """
         ...
-    
+
     def __repr__(self) -> str:
         """Return the representation."""
         ...
-    
+
     async def async_request_call(self, coro: Coroutine[Any, Any, _T]) -> _T:
         """Process request batched."""
         ...
-    
-
 
 @dataclass(slots=True)
 class ToggleEntityDescription(EntityDescription):
     """A class that describes toggle entities."""
-    ...
 
+    ...
 
 class ToggleEntity(Entity):
     """An abstract class for entities that can be turned on and off."""
+
     entity_description: ToggleEntityDescription
     _attr_is_on: bool | None = ...
     _attr_state: None = ...
@@ -502,28 +527,28 @@ class ToggleEntity(Entity):
     def state(self) -> Literal["on", "off"] | None:
         """Return the state."""
         ...
-    
+
     @property
     def is_on(self) -> bool | None:
         """Return True if entity is on."""
         ...
-    
+
     def turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
         ...
-    
+
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
         ...
-    
+
     def turn_off(self, **kwargs: Any) -> None:
         """Turn the entity off."""
         ...
-    
+
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the entity off."""
         ...
-    
+
     @final
     def toggle(self, **kwargs: Any) -> None:
         """Toggle the entity.
@@ -532,7 +557,7 @@ class ToggleEntity(Entity):
         by integrations.
         """
         ...
-    
+
     async def async_toggle(self, **kwargs: Any) -> None:
         """Toggle the entity.
 
@@ -540,6 +565,3 @@ class ToggleEntity(Entity):
         implement async_turn_on + async_turn_off or turn_on + turn_off.
         """
         ...
-    
-
-

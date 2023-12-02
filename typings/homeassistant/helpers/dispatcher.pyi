@@ -10,15 +10,26 @@ from homeassistant.loader import bind_hass
 """Helpers for Home Assistant dispatcher & internal component/platform."""
 _LOGGER = ...
 DATA_DISPATCHER = ...
-_DispatcherDataType = dict[str, dict[Callable[..., Any], HassJob[..., None | Coroutine[Any, Any, None]] | None,],]
+_DispatcherDataType = dict[
+    str,
+    dict[
+        Callable[..., Any],
+        HassJob[..., None | Coroutine[Any, Any, None]] | None,
+    ],
+]
+
 @bind_hass
-def dispatcher_connect(hass: HomeAssistant, signal: str, target: Callable[..., None]) -> Callable[[], None]:
+def dispatcher_connect(
+    hass: HomeAssistant, signal: str, target: Callable[..., None]
+) -> Callable[[], None]:
     """Connect a callable function to a signal."""
     ...
 
 @callback
 @bind_hass
-def async_dispatcher_connect(hass: HomeAssistant, signal: str, target: Callable[..., Any]) -> Callable[[], None]:
+def async_dispatcher_connect(
+    hass: HomeAssistant, signal: str, target: Callable[..., Any]
+) -> Callable[[], None]:
     """Connect a callable function to a signal.
 
     This method must be run in the event loop.
@@ -38,4 +49,3 @@ def async_dispatcher_send(hass: HomeAssistant, signal: str, *args: Any) -> None:
     This method must be run in the event loop.
     """
     ...
-

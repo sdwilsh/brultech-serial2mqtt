@@ -31,8 +31,10 @@ DEFAULT_CONFIG = ...
 DEFAULT_SECRETS = ...
 TTS_PRE_92 = ...
 TTS_92 = ...
+
 class ConfigErrorTranslationKey(StrEnum):
     """Config error translation keys for config errors."""
+
     CONFIG_VALIDATION_ERR = ...
     PLATFORM_CONFIG_VALIDATION_ERR = ...
     COMPONENT_IMPORT_ERR = ...
@@ -45,10 +47,10 @@ class ConfigErrorTranslationKey(StrEnum):
     PLATFORM_SCHEMA_VALIDATOR_ERR = ...
     INTEGRATION_CONFIG_ERROR = ...
 
-
 @dataclass
 class ConfigExceptionInfo:
     """Configuration exception info class."""
+
     exception: Exception
     translation_key: ConfigErrorTranslationKey
     platform_name: str
@@ -56,19 +58,19 @@ class ConfigExceptionInfo:
     integration_link: str | None
     ...
 
-
 @dataclass
 class IntegrationConfigInfo:
     """Configuration for an integration and exception information."""
+
     config: ConfigType | None
     exception_info_list: list[ConfigExceptionInfo]
     ...
-
 
 PACKAGES_CONFIG_SCHEMA = ...
 CUSTOMIZE_DICT_SCHEMA = ...
 CUSTOMIZE_CONFIG_SCHEMA = ...
 CORE_CONFIG_SCHEMA = ...
+
 def get_default_config_dir() -> str:
     """Put together the default configuration directory based on the OS."""
     ...
@@ -96,7 +98,9 @@ async def async_hass_config_yaml(hass: HomeAssistant) -> dict:
     """
     ...
 
-def load_yaml_config_file(config_path: str, secrets: Secrets | None = ...) -> dict[Any, Any]:
+def load_yaml_config_file(
+    config_path: str, secrets: Secrets | None = ...
+) -> dict[Any, Any]:
     """Parse a YAML configuration file.
 
     Raises FileNotFoundError or HomeAssistantError.
@@ -113,16 +117,30 @@ def process_ha_config_upgrade(hass: HomeAssistant) -> None:
     ...
 
 @callback
-def async_log_schema_error(exc: vol.Invalid, domain: str, config: dict, hass: HomeAssistant, link: str | None = ...) -> None:
+def async_log_schema_error(
+    exc: vol.Invalid,
+    domain: str,
+    config: dict,
+    hass: HomeAssistant,
+    link: str | None = ...,
+) -> None:
     """Log a schema validation error."""
     ...
 
 @callback
-def async_log_config_validator_error(exc: vol.Invalid | HomeAssistantError, domain: str, config: dict, hass: HomeAssistant, link: str | None = ...) -> None:
+def async_log_config_validator_error(
+    exc: vol.Invalid | HomeAssistantError,
+    domain: str,
+    config: dict,
+    hass: HomeAssistant,
+    link: str | None = ...,
+) -> None:
     """Log an error from a custom config validator."""
     ...
 
-def find_annotation(config: dict | list, path: list[str | int]) -> tuple[str, int | str] | None:
+def find_annotation(
+    config: dict | list, path: list[str | int]
+) -> tuple[str, int | str] | None:
     """Find file/line annotation for a node in config pointed to by path.
 
     If the node pointed to is a dict or list, prefer the annotation for the key in
@@ -131,7 +149,14 @@ def find_annotation(config: dict | list, path: list[str | int]) -> tuple[str, in
     """
     ...
 
-def stringify_invalid(hass: HomeAssistant, exc: vol.Invalid, domain: str, config: dict, link: str | None, max_sub_error_length: int) -> str:
+def stringify_invalid(
+    hass: HomeAssistant,
+    exc: vol.Invalid,
+    domain: str,
+    config: dict,
+    link: str | None,
+    max_sub_error_length: int,
+) -> str:
     """Stringify voluptuous.Invalid.
 
     This is an alternative to the custom __str__ implemented in
@@ -144,7 +169,14 @@ def stringify_invalid(hass: HomeAssistant, exc: vol.Invalid, domain: str, config
     """
     ...
 
-def humanize_error(hass: HomeAssistant, validation_error: vol.Invalid, domain: str, config: dict, link: str | None, max_sub_error_length: int = ...) -> str:
+def humanize_error(
+    hass: HomeAssistant,
+    validation_error: vol.Invalid,
+    domain: str,
+    config: dict,
+    link: str | None,
+    max_sub_error_length: int = ...,
+) -> str:
     """Provide a more helpful + complete validation error message.
 
     This is a modified version of voluptuous.error.Invalid.__str__,
@@ -153,12 +185,24 @@ def humanize_error(hass: HomeAssistant, validation_error: vol.Invalid, domain: s
     ...
 
 @callback
-def format_homeassistant_error(hass: HomeAssistant, exc: HomeAssistantError, domain: str, config: dict, link: str | None = ...) -> str:
+def format_homeassistant_error(
+    hass: HomeAssistant,
+    exc: HomeAssistantError,
+    domain: str,
+    config: dict,
+    link: str | None = ...,
+) -> str:
     """Format HomeAssistantError thrown by a custom config validator."""
     ...
 
 @callback
-def format_schema_error(hass: HomeAssistant, exc: vol.Invalid, domain: str, config: dict, link: str | None = ...) -> str:
+def format_schema_error(
+    hass: HomeAssistant,
+    exc: vol.Invalid,
+    domain: str,
+    config: dict,
+    link: str | None = ...,
+) -> str:
     """Format configuration validation error."""
     ...
 
@@ -169,11 +213,21 @@ async def async_process_ha_core_config(hass: HomeAssistant, config: dict) -> Non
     """
     ...
 
-async def merge_packages_config(hass: HomeAssistant, config: dict, packages: dict[str, Any], _log_pkg_error: Callable[[HomeAssistant, str, str, dict, str], None] = ...) -> dict:
+async def merge_packages_config(
+    hass: HomeAssistant,
+    config: dict,
+    packages: dict[str, Any],
+    _log_pkg_error: Callable[[HomeAssistant, str, str, dict, str], None] = ...,
+) -> dict:
     """Merge packages into the top-level configuration. Mutate config."""
     ...
 
-async def async_process_component_and_handle_errors(hass: HomeAssistant, config: ConfigType, integration: Integration, raise_on_failure: bool = ...) -> ConfigType | None:
+async def async_process_component_and_handle_errors(
+    hass: HomeAssistant,
+    config: ConfigType,
+    integration: Integration,
+    raise_on_failure: bool = ...,
+) -> ConfigType | None:
     """Process and component configuration and handle errors.
 
     In case of errors:
@@ -185,7 +239,12 @@ async def async_process_component_and_handle_errors(hass: HomeAssistant, config:
     ...
 
 @callback
-def async_handle_component_errors(hass: HomeAssistant, integration_config_info: IntegrationConfigInfo, integration: Integration, raise_on_failure: bool = ...) -> ConfigType | None:
+def async_handle_component_errors(
+    hass: HomeAssistant,
+    integration_config_info: IntegrationConfigInfo,
+    integration: Integration,
+    raise_on_failure: bool = ...,
+) -> ConfigType | None:
     """Handle component configuration errors from async_process_component_config.
 
     In case of errors:
@@ -196,7 +255,9 @@ def async_handle_component_errors(hass: HomeAssistant, integration_config_info: 
     """
     ...
 
-async def async_process_component_config(hass: HomeAssistant, config: ConfigType, integration: Integration) -> IntegrationConfigInfo:
+async def async_process_component_config(
+    hass: HomeAssistant, config: ConfigType, integration: Integration
+) -> IntegrationConfigInfo:
     """Check component configuration.
 
     Returns processed configuration and exception information.
@@ -227,4 +288,3 @@ def safe_mode_enabled(config_dir: str) -> bool:
 async def async_enable_safe_mode(hass: HomeAssistant) -> None:
     """Enable safe mode."""
     ...
-

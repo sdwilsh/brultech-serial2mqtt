@@ -6,6 +6,7 @@ from functools import lru_cache
 
 """A class to hold entity values."""
 _MAX_EXPECTED_ENTITIES = ...
+
 class EntityValues:
     """Class to store entity id based values.
 
@@ -15,14 +16,16 @@ class EntityValues:
     The cache includes `self` so it is important to
     only use this in places where usage of `EntityValues` is immortal.
     """
-    def __init__(self, exact: dict[str, dict[str, str]] | None = ..., domain: dict[str, dict[str, str]] | None = ..., glob: dict[str, dict[str, str]] | None = ...) -> None:
+    def __init__(
+        self,
+        exact: dict[str, dict[str, str]] | None = ...,
+        domain: dict[str, dict[str, str]] | None = ...,
+        glob: dict[str, dict[str, str]] | None = ...,
+    ) -> None:
         """Initialize an EntityConfigDict."""
         ...
-    
+
     @lru_cache(maxsize=_MAX_EXPECTED_ENTITIES)
     def get(self, entity_id: str) -> dict[str, str]:
         """Get config for an entity id."""
         ...
-    
-
-

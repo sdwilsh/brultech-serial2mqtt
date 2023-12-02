@@ -22,12 +22,17 @@ ADAPTER_INIT_TIME = ...
 START_ATTEMPTS = ...
 SCANNING_MODE_TO_BLEAK = ...
 SCANNER_WATCHDOG_MULTIPLE = ...
+
 class ScannerStartError(HomeAssistantError):
     """Error to indicate that the scanner failed to start."""
+
     ...
 
-
-def create_bleak_scanner(detection_callback: AdvertisementDataCallback, scanning_mode: BluetoothScanningMode, adapter: str | None) -> bleak.BleakScanner:
+def create_bleak_scanner(
+    detection_callback: AdvertisementDataCallback,
+    scanning_mode: BluetoothScanningMode,
+    adapter: str | None,
+) -> bleak.BleakScanner:
     """Create a Bleak scanner."""
     ...
 
@@ -41,37 +46,44 @@ class HaScanner(BaseHaScanner):
     Example use cases are usbip, a long extension cable, usb to bluetooth
     over ethernet, usb over ethernet, etc.
     """
+
     scanner: bleak.BleakScanner
-    def __init__(self, hass: HomeAssistant, mode: BluetoothScanningMode, adapter: str, address: str, new_info_callback: Callable[[BluetoothServiceInfoBleak], None]) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        mode: BluetoothScanningMode,
+        adapter: str,
+        address: str,
+        new_info_callback: Callable[[BluetoothServiceInfoBleak], None],
+    ) -> None:
         """Init bluetooth discovery."""
         ...
-    
+
     @property
     def discovered_devices(self) -> list[BLEDevice]:
         """Return a list of discovered devices."""
         ...
-    
+
     @property
-    def discovered_devices_and_advertisement_data(self) -> dict[str, tuple[BLEDevice, AdvertisementData]]:
+    def discovered_devices_and_advertisement_data(
+        self
+    ) -> dict[str, tuple[BLEDevice, AdvertisementData]]:
         """Return a list of discovered devices and advertisement data."""
         ...
-    
+
     @hass_callback
     def async_setup(self) -> None:
         """Set up the scanner."""
         ...
-    
+
     async def async_diagnostics(self) -> dict[str, Any]:
         """Return diagnostic information about the scanner."""
         ...
-    
+
     async def async_start(self) -> None:
         """Start bluetooth scanner."""
         ...
-    
+
     async def async_stop(self) -> None:
         """Stop bluetooth scanner."""
         ...
-    
-
-

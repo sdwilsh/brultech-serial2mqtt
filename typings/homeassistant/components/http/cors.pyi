@@ -9,8 +9,8 @@ from homeassistant.core import callback
 """Provide CORS support for the HTTP component."""
 ALLOWED_CORS_HEADERS: Final[list[str]] = ...
 VALID_CORS_TYPES: Final = ...
+
 @callback
 def setup_cors(app: Application, origins: list[str]) -> None:
     """Set up CORS."""
     ...
-

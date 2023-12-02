@@ -9,18 +9,20 @@ from .models import BluetoothServiceInfoBleak
 """The bluetooth integration advertisement tracker."""
 ADVERTISING_TIMES_NEEDED = ...
 TRACKER_BUFFERING_WOBBLE_SECONDS = ...
+
 class AdvertisementTracker:
     """Tracker to determine the interval that a device is advertising."""
+
     __slots__ = ...
     def __init__(self) -> None:
         """Initialize the tracker."""
         ...
-    
+
     @callback
     def async_diagnostics(self) -> dict[str, dict[str, Any]]:
         """Return diagnostics."""
         ...
-    
+
     @callback
     def async_collect(self, service_info: BluetoothServiceInfoBleak) -> None:
         """Collect timings for the tracker.
@@ -30,21 +32,18 @@ class AdvertisementTracker:
         the source has changed before calling this function.
         """
         ...
-    
+
     @callback
     def async_remove_address(self, address: str) -> None:
         """Remove the tracker."""
         ...
-    
+
     @callback
     def async_remove_fallback_interval(self, address: str) -> None:
         """Remove fallback interval."""
         ...
-    
+
     @callback
     def async_remove_source(self, source: str) -> None:
         """Remove the tracker."""
         ...
-    
-
-

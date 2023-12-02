@@ -8,7 +8,11 @@ from home_assistant_bluetooth import BluetoothServiceInfoBleak
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback as hass_callback
 from .base_scanner import BaseHaScanner, BluetoothScannerDevice
 from .match import BluetoothCallbackMatcher
-from .models import BluetoothCallback, BluetoothScanningMode, ProcessAdvertisementCallback
+from .models import (
+    BluetoothCallback,
+    BluetoothScanningMode,
+    ProcessAdvertisementCallback,
+)
 from .wrappers import HaBleakScannerWrapper
 from bleak.backends.device import BLEDevice
 
@@ -16,8 +20,8 @@ from bleak.backends.device import BLEDevice
 
 These APIs are the only documented way to interact with the bluetooth integration.
 """
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
+
 @hass_callback
 def async_get_scanner(hass: HomeAssistant) -> HaBleakScannerWrapper:
     """Return a HaBleakScannerWrapper.
@@ -45,32 +49,47 @@ def async_scanner_count(hass: HomeAssistant, connectable: bool = ...) -> int:
     ...
 
 @hass_callback
-def async_discovered_service_info(hass: HomeAssistant, connectable: bool = ...) -> Iterable[BluetoothServiceInfoBleak]:
+def async_discovered_service_info(
+    hass: HomeAssistant, connectable: bool = ...
+) -> Iterable[BluetoothServiceInfoBleak]:
     """Return the discovered devices list."""
     ...
 
 @hass_callback
-def async_last_service_info(hass: HomeAssistant, address: str, connectable: bool = ...) -> BluetoothServiceInfoBleak | None:
+def async_last_service_info(
+    hass: HomeAssistant, address: str, connectable: bool = ...
+) -> BluetoothServiceInfoBleak | None:
     """Return the last service info for an address."""
     ...
 
 @hass_callback
-def async_ble_device_from_address(hass: HomeAssistant, address: str, connectable: bool = ...) -> BLEDevice | None:
+def async_ble_device_from_address(
+    hass: HomeAssistant, address: str, connectable: bool = ...
+) -> BLEDevice | None:
     """Return BLEDevice for an address if its present."""
     ...
 
 @hass_callback
-def async_scanner_devices_by_address(hass: HomeAssistant, address: str, connectable: bool = ...) -> list[BluetoothScannerDevice]:
+def async_scanner_devices_by_address(
+    hass: HomeAssistant, address: str, connectable: bool = ...
+) -> list[BluetoothScannerDevice]:
     """Return all discovered BluetoothScannerDevice for an address."""
     ...
 
 @hass_callback
-def async_address_present(hass: HomeAssistant, address: str, connectable: bool = ...) -> bool:
+def async_address_present(
+    hass: HomeAssistant, address: str, connectable: bool = ...
+) -> bool:
     """Check if an address is present in the bluetooth device list."""
     ...
 
 @hass_callback
-def async_register_callback(hass: HomeAssistant, callback: BluetoothCallback, match_dict: BluetoothCallbackMatcher | None, mode: BluetoothScanningMode) -> Callable[[], None]:
+def async_register_callback(
+    hass: HomeAssistant,
+    callback: BluetoothCallback,
+    match_dict: BluetoothCallbackMatcher | None,
+    mode: BluetoothScanningMode,
+) -> Callable[[], None]:
     """Register to receive a callback on bluetooth change.
 
     mode is currently not used as we only support active scanning.
@@ -82,12 +101,23 @@ def async_register_callback(hass: HomeAssistant, callback: BluetoothCallback, ma
     """
     ...
 
-async def async_process_advertisements(hass: HomeAssistant, callback: ProcessAdvertisementCallback, match_dict: BluetoothCallbackMatcher, mode: BluetoothScanningMode, timeout: int) -> BluetoothServiceInfoBleak:
+async def async_process_advertisements(
+    hass: HomeAssistant,
+    callback: ProcessAdvertisementCallback,
+    match_dict: BluetoothCallbackMatcher,
+    mode: BluetoothScanningMode,
+    timeout: int,
+) -> BluetoothServiceInfoBleak:
     """Process advertisements until callback returns true or timeout expires."""
     ...
 
 @hass_callback
-def async_track_unavailable(hass: HomeAssistant, callback: Callable[[BluetoothServiceInfoBleak], None], address: str, connectable: bool = ...) -> Callable[[], None]:
+def async_track_unavailable(
+    hass: HomeAssistant,
+    callback: Callable[[BluetoothServiceInfoBleak], None],
+    address: str,
+    connectable: bool = ...,
+) -> Callable[[], None]:
     """Register to receive a callback when an address is unavailable.
 
     Returns a callback that can be used to cancel the registration.
@@ -100,27 +130,39 @@ def async_rediscover_address(hass: HomeAssistant, address: str) -> None:
     ...
 
 @hass_callback
-def async_register_scanner(hass: HomeAssistant, scanner: BaseHaScanner, connectable: bool, connection_slots: int | None = ...) -> CALLBACK_TYPE:
+def async_register_scanner(
+    hass: HomeAssistant,
+    scanner: BaseHaScanner,
+    connectable: bool,
+    connection_slots: int | None = ...,
+) -> CALLBACK_TYPE:
     """Register a BleakScanner."""
     ...
 
 @hass_callback
-def async_get_advertisement_callback(hass: HomeAssistant) -> Callable[[BluetoothServiceInfoBleak], None]:
+def async_get_advertisement_callback(
+    hass: HomeAssistant
+) -> Callable[[BluetoothServiceInfoBleak], None]:
     """Get the advertisement callback."""
     ...
 
 @hass_callback
-def async_get_learned_advertising_interval(hass: HomeAssistant, address: str) -> float | None:
+def async_get_learned_advertising_interval(
+    hass: HomeAssistant, address: str
+) -> float | None:
     """Get the learned advertising interval for a MAC address."""
     ...
 
 @hass_callback
-def async_get_fallback_availability_interval(hass: HomeAssistant, address: str) -> float | None:
+def async_get_fallback_availability_interval(
+    hass: HomeAssistant, address: str
+) -> float | None:
     """Get the fallback availability timeout for a MAC address."""
     ...
 
 @hass_callback
-def async_set_fallback_availability_interval(hass: HomeAssistant, address: str, interval: float) -> None:
+def async_set_fallback_availability_interval(
+    hass: HomeAssistant, address: str, interval: float
+) -> None:
     """Override the fallback availability timeout for a MAC address."""
     ...
-
