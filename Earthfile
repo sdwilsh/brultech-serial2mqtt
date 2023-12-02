@@ -24,9 +24,9 @@ pyright-validate:
     RUN pip install --no-cache-dir pyright==$PYRIGHT_VERSION
     WORKDIR /usr/src/app
     COPY pyproject.toml .
-    COPY brultech_serial2mqtt/ brultech_serial2mqtt/
-    COPY tests/ tests/
-    COPY typings/ typings/
+    COPY --dir brultech_serial2mqtt/ .
+    COPY --dir tests/ .
+    COPY --dir typings/ .
     RUN pyright
 
 renovate-validate:
@@ -41,8 +41,8 @@ ruff-validate:
     FROM +python-dev-requirements
     WORKDIR /usr/src/app
     COPY pyproject.toml .
-    COPY brultech_serial2mqtt .
-    COPY tests .
+    COPY --dir brultech_serial2mqtt .
+    COPY --dir tests .
     RUN ruff check . --diff
 
 lint:
