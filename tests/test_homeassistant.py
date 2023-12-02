@@ -3,7 +3,7 @@ from typing import Any, AsyncGenerator, Dict, Generator, Union
 from unittest.mock import MagicMock
 
 import pytest
-from homeassistant.components.mqtt.sensor import DISCOVERY_SCHEMA  # type: ignore
+from homeassistant.components.mqtt.sensor import DISCOVERY_SCHEMA
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.template import Template
 from siobrultech_protocols.gem.packets import BIN48_NET_TIME, Packet
