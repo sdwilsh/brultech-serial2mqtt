@@ -2,6 +2,11 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 
 LABEL maintainer="sdwilsh"
 
+# renovate: datasource=docker depName=python
+ARG PYTHON_VERSION=3.11
+
+ENV PYTHON=python${PYTHON_VERSION}
+
 ENV DEBIAN_FRONTEND="noninteractive"
 RUN \
     echo "########## Install Packages ##########" && \
@@ -10,14 +15,14 @@ RUN \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y --no-install-recommends -q \
-    python3.11=3.11.* \
-    python3.11-venv=3.11.* \
+    python${PYTHON_VERSION}=${PYTHON_VERSION}.* \
+    python${PYTHON_VERSION}-venv=${PYTHON_VERSION}.* \
     && \
     apt-get autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     echo "########## Install Pip ##########" && \
-    python3.11 -m ensurepip
+    ${PYTHON} -m ensurepip
 
 COPY LICENSE /src/brultech_serial2mqtt/LICENSE
 COPY pyproject.toml /src/brultech_serial2mqtt/pyproject.toml
@@ -28,7 +33,7 @@ COPY brultech_serial2mqtt /src/brultech_serial2mqtt/brultech_serial2mqtt
 WORKDIR /src/brultech_serial2mqtt
 RUN \
     echo "########## Install Python Package and Deps ##########" && \
-    python3.11 -m pip install --no-cache-dir -r requirements.txt && \
+    ${PYTHON} -m pip install --no-cache-dir -r requirements.txt && \
     echo "########## Add User to Dialout Group ##########" && \
     usermod abc -a -G dialout
 RUN \

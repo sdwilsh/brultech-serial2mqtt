@@ -4,7 +4,7 @@
     {
       "customType": "regex",
       "fileMatch": [
-        "^.pre-commit-config.yaml$"
+        "^\\.pre-commit-config.yaml$"
       ],
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)\\s+rev:\\s+v?(?<currentValue>.*?)\\s"
@@ -13,6 +13,16 @@
     {
       "customType": "regex",
       "fileMatch": [
+        "^\\.github/workflows/test\\.yml$"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)\\s+(?:[a-z\\-_]+)?version:\\s+\"(?<currentValue>.*?)\""
+      ]
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/|\\.)Dockerfile$",
         "(^|/|\\.)Earthfile$"
       ],
       "matchStrings": [

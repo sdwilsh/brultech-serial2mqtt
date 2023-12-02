@@ -59,6 +59,7 @@ jobs:
       - uses: getsentry/action-setup-venv@v1.0.5
         with:
           install-cmd: pip install -r requirements.txt -r requirements-dev.txt
+          # renovate: datasource=docker depName=python
           python-version: "3.11"
 
   earthly-lint:
@@ -88,6 +89,7 @@ jobs:
       - uses: getsentry/action-setup-venv@v1.0.5
         with:
           install-cmd: pip install -r requirements.txt -r requirements-dev.txt
+          # renovate: datasource=docker depName=python
           python-version: "3.11"
       - uses: "pre-commit/action@v3.0.0"
 
@@ -102,6 +104,7 @@ jobs:
       - uses: getsentry/action-setup-venv@v1.0.5
         with:
           install-cmd: pip install -r requirements.txt -r requirements-dev.txt
+          # renovate: datasource=docker depName=python
           python-version: "3.11"
       - name: Test with pytest
         run: |
