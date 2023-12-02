@@ -60,7 +60,7 @@ jobs:
         with:
           install-cmd: pip install -r requirements.txt -r requirements-dev.txt
           # renovate: datasource=docker depName=python
-          python-version: "3.11"
+          python-version: "3.12"
 
   earthly-lint:
     runs-on: ubuntu-latest
@@ -90,7 +90,7 @@ jobs:
         with:
           install-cmd: pip install -r requirements.txt -r requirements-dev.txt
           # renovate: datasource=docker depName=python
-          python-version: "3.11"
+          python-version: "3.12"
       - uses: "pre-commit/action@v3.0.0"
 
   pytest:
@@ -105,7 +105,7 @@ jobs:
         with:
           install-cmd: pip install -r requirements.txt -r requirements-dev.txt
           # renovate: datasource=docker depName=python
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Test with pytest
         run: |
           pytest
