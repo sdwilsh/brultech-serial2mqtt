@@ -7,35 +7,42 @@ from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Any
-
-from homeassistant.helpers.typing import TemplateVarsType
+from homeassistant.core import ServiceResponse
+from .typing import TemplateVarsType
 
 """Helpers for script and condition tracing."""
-
 class TraceElement:
     """Container for trace data."""
-
+    __slots__ = ...
     def __init__(self, variables: TemplateVarsType, path: str) -> None:
         """Container for trace data."""
         ...
+    
     def __repr__(self) -> str:
         """Container for trace data."""
         ...
+    
     def set_child_id(self, child_key: str, child_run_id: str) -> None:
         """Set trace id of a nested script run."""
         ...
+    
     def set_error(self, ex: Exception) -> None:
         """Set error."""
         ...
+    
     def set_result(self, **kwargs: Any) -> None:
         """Set result."""
         ...
+    
     def update_result(self, **kwargs: Any) -> None:
         """Set result."""
         ...
+    
     def as_dict(self) -> dict[str, Any]:
         """Return dictionary version of this TraceElement."""
         ...
+    
+
 
 trace_cv: ContextVar[dict[str, deque[TraceElement]] | None] = ...
 trace_stack_cv: ContextVar[list[TraceElement] | None] = ...
@@ -43,7 +50,6 @@ trace_path_stack_cv: ContextVar[list[str] | None] = ...
 variables_cv: ContextVar[Any | None] = ...
 trace_id_cv: ContextVar[tuple[str, str] | None] = ...
 script_execution_cv: ContextVar[StopReason | None] = ...
-
 def trace_id_set(trace_id: tuple[str, str]) -> None:
     """Set id of the current trace."""
     ...
@@ -102,15 +108,16 @@ def trace_update_result(**kwargs: Any) -> None:
 
 class StopReason:
     """Mutable container class for script_execution."""
-
     script_execution: str | None = ...
+    response: ServiceResponse = ...
 
-def script_execution_set(reason: str) -> None:
+
+def script_execution_set(reason: str, response: ServiceResponse = ...) -> None:
     """Set stop reason."""
     ...
 
 def script_execution_get() -> str | None:
-    """Return the current trace."""
+    """Return the stop reason."""
     ...
 
 @contextmanager
@@ -127,3 +134,4 @@ def async_trace_path(suffix: str | list[str]) -> Callable:
     To be used as a decorator on coroutine functions.
     """
     ...
+

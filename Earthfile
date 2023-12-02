@@ -17,17 +17,29 @@ python-dev-requirements:
     COPY requirements-dev.txt .
     RUN pip install --no-cache-dir -r requirements-dev.txt
 
-pyright-validate:
-    # renovate: datasource=pypi depName=pyright
-    ARG PYRIGHT_VERSION=1.1.296
+pyright-image:
     FROM +python-dev-requirements
-    RUN pip install --no-cache-dir pyright==$PYRIGHT_VERSION
+    RUN nodeenv /.cache/nodeenv
+    ENV PYRIGHT_PYTHON_ENV_DIR=/.cache/nodeenv
     WORKDIR /usr/src/app
     COPY pyproject.toml .
+
+pyright-validate:
+    FROM +pyright-image
     COPY --dir brultech_serial2mqtt/ .
     COPY --dir tests/ .
     COPY --dir typings/ .
     RUN pyright
+
+pyright-verify-stubs:
+    FROM +pyright-image
+    COPY --dir typings git-typings
+    RUN pyright --createstub homeassistant
+    RUN pyright --createstub voluptuous
+    # If this fails, delete and regenerate with `pyright --createstub {library}`.
+    RUN find typings -name "*.pyi" -type f -print \
+        | awk '{print "git-"$1" "$1}' \
+        | xargs -n 2 diff -U8 -p
 
 renovate-validate:
     # renovate: datasource=docker depName=renovate/renovate versioning=docker
@@ -47,5 +59,6 @@ ruff-validate:
 
 lint:
     BUILD +pyright-validate
+    BUILD +pyright-verify-stubs
     BUILD +renovate-validate
     BUILD +ruff-validate

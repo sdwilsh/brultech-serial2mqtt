@@ -8,7 +8,6 @@ from typing import Any
 """Threading util helpers."""
 THREADING_SHUTDOWN_TIMEOUT = ...
 _LOGGER = ...
-
 def deadlock_safe_shutdown() -> None:
     """Shutdown that will not deadlock."""
     ...
@@ -24,7 +23,9 @@ class ThreadWithException(threading.Thread):
     https://stackoverflow.com/questions/323972/is-there-any-way-to-kill-a-thread/49877671
 
     """
-
     def raise_exc(self, exctype: Any) -> None:
         """Raise the given exception type in the context of this thread."""
         ...
+    
+
+

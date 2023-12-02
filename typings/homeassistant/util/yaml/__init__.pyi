@@ -9,16 +9,4 @@ from .loader import Secrets, load_yaml, parse_yaml, secret_yaml
 from .objects import Input
 
 """YAML utility functions."""
-__all__ = [
-    "SECRET_YAML",
-    "Input",
-    "dump",
-    "save_yaml",
-    "Secrets",
-    "load_yaml",
-    "secret_yaml",
-    "parse_yaml",
-    "UndefinedSubstitution",
-    "extract_inputs",
-    "substitute",
-]
+__all__ = ["SECRET_YAML", "Input", "dump", "save_yaml", "Secrets", "load_yaml", "secret_yaml", "parse_yaml", "UndefinedSubstitution", "extract_inputs", "substitute"]
