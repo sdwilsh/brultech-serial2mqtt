@@ -30,7 +30,7 @@ class LogLevel(Enum):
         if value.upper() == "DEBUG":
             return LogLevel.DEBUG
         raise Invalid(
-            f"Must be a valid, named logging level ({', '.join([l.name for l in LogLevel])})"
+            f"Must be a valid, named logging level ({', '.join([level.name for level in LogLevel])})"
         )
 
 

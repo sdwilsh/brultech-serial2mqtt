@@ -35,7 +35,7 @@ class Voltage(SensorMixin):
                     "state_class": "measurement",
                     "unique_id": self._unique_id,
                     "unit_of_measurement": "V",
-                    "value_template": (f"{{{{ value_json.voltage }}}}"),
+                    "value_template": ("{{ value_json.voltage }}"),
                 },
             ),
         }
