@@ -15,7 +15,7 @@ from asyncio_mqtt.error import MqttError
 from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFormatType
 
 from brultech_serial2mqtt.config import load_config
-from brultech_serial2mqtt.config.config_device import DeviceCOM
+from brultech_serial2mqtt.config.config_device import DeviceCOM, DeviceType
 from brultech_serial2mqtt.config.config_logging import LoggingConfig
 from brultech_serial2mqtt.device import DeviceManager
 
@@ -45,13 +45,14 @@ class BrultechSerial2MQTT:
     async def start(self) -> None:
         """Starts listening to the serial connection and publishes packets to MQTT"""
         async with DeviceConnection(
-            port=self._config.device.url,
+            api_type=self._config.device.type,
             baudrate=self._config.device.baud,
             packet_delay_clear_time=timedelta(
                 seconds=self._config.device.packet_delay_clear_seconds
             ),
+            port=self._config.device.url,
         ) as device_connection:
-            await self._setup_gem(device_connection)
+            await self._setup_device(device_connection)
 
             packets = device_connection.packets()
 
@@ -113,22 +114,30 @@ class BrultechSerial2MQTT:
                         )
                         break
 
-    async def _setup_gem(self, connection: DeviceConnection) -> None:
-        logger.info("Setting up GEM device...")
-        logger.debug("Synchronizing GEM clock with local device")
-        await connection.synchronize_time()
-        logger.debug("Setting the correct packet format on the GEM device")
-        if self._config.device.device_com == DeviceCOM.COM1:
-            await connection.set_packet_format(DevicePacketFormatType.BIN48_NET_TIME)
-        else:
-            await connection.set_secondary_packet_format(
-                DevicePacketFormatType.BIN48_NET_TIME
-            )
-        logger.debug("Setting the packet send interval on the GEM device")
+    async def _setup_device(self, connection: DeviceConnection) -> None:
+        logger.info(f"Setting up {0} device...".format(self._config.device.type.name))
+
+        if self._config.device.type == DeviceType.GEM:
+            logger.debug("Synchronizing device clock with machine")
+            await connection.synchronize_time()
+            logger.debug("Setting the correct packet format on the device")
+            if self._config.device.device_com == DeviceCOM.COM1:
+                await connection.set_packet_format(
+                    DevicePacketFormatType.BIN48_NET_TIME
+                )
+            else:
+                await connection.set_secondary_packet_format(
+                    DevicePacketFormatType.BIN48_NET_TIME
+                )
+
+        logger.debug("Setting the packet send interval on the device")
         await connection.set_packet_send_interval(
             self._config.device.send_interval_seconds
         )
-        logger.info("Setup of GEM device complete!")
+
+        logger.info(
+            f"Setup of {0} device complete!".format(self._config.device.type.name)
+        )
 
     async def _publish_home_assistant_discovery_config(
         self, mqtt_client: MQTTClient, device_manager: DeviceManager

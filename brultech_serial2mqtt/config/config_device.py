@@ -4,7 +4,10 @@ from enum import Enum, unique
 from typing import Any, Dict, Iterator, List
 
 from siobrultech_protocols.gem.const import PACKET_DELAY_CLEAR_TIME_DEFAULT
-from siobrultech_protocols.gem.protocol import API_RESPONSE_WAIT_TIME
+from siobrultech_protocols.gem.protocol import (
+    ApiType as DeviceType,
+    API_RESPONSE_WAIT_TIME,
+)
 from voluptuous import All, Invalid, Match
 from voluptuous import Optional as OptionalField
 from voluptuous import Range
@@ -60,6 +63,7 @@ SCHEMA = Schema(
             "send_interval_seconds",
             default=8,
         ): All(int, Range(min=5, max=256)),
+        OptionalField("type", default="GEM"): All(str, Match(r"^(ECM|GEM)$")),
         OptionalField("url", default="/dev/ttyUSB0"): str,
     },
 )
@@ -162,6 +166,7 @@ class DeviceConfig:
         self._name: str = device_config["name"]
         self._packet_delay_clear_seconds = device_config["packet_delay_clear_seconds"]
         self._send_interval_seconds = device_config["send_interval_seconds"]
+        self._type = DeviceType[device_config["type"]]
         self._url = device_config["url"]
 
     @property
@@ -190,6 +195,10 @@ class DeviceConfig:
     @property
     def send_interval_seconds(self) -> int:
         return self._send_interval_seconds
+
+    @property
+    def type(self) -> DeviceType:
+        return self._type
 
     @property
     def url(self) -> str:
