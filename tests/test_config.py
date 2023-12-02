@@ -11,7 +11,7 @@ from siobrultech_protocols.gem.const import PACKET_DELAY_CLEAR_TIME_DEFAULT
 from voluptuous.error import MultipleInvalid
 
 from brultech_serial2mqtt.config import load_config
-from brultech_serial2mqtt.config.config_device import ChannelType, DeviceCOM
+from brultech_serial2mqtt.config.config_device import ChannelType, DeviceCOM, DeviceType
 from brultech_serial2mqtt.config.config_logging import LogLevel
 from brultech_serial2mqtt.const import CONFIG_PATH
 
@@ -47,6 +47,7 @@ class TestSimpleConfig(unittest.TestCase):
             PACKET_DELAY_CLEAR_TIME_DEFAULT.seconds,
         )
         self.assertEqual(config.device.send_interval_seconds, 8)
+        self.assertEqual(config.device.type, DeviceType.GEM)
         self.assertEqual(config.device.url, "/dev/ttyUSB0")
 
         self.assertEqual(config.logging.level, LogLevel.INFO)
