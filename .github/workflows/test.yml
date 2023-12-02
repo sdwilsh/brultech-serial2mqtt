@@ -46,7 +46,10 @@ jobs:
           file: "docker/Dockerfile"
           labels: ${{ steps.metadata.outputs.labels }}
           platforms: "linux/arm64,linux/amd64"
-          push: ${{ github.event_name != 'pull_request' }}
+          push: "${{
+              github.event_name != 'pull_request' &&
+              github.ref == 'refs/heads/main'
+            }}"
           tags: ${{ steps.metadata.outputs.tags }}
 
   earthly-lint:
