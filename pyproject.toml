@@ -40,5 +40,8 @@ reportUnusedFunction = "error"
 reportUnusedImport = "error"
 reportUnusedVariable = "error"
 typeCheckingMode = "strict"
-venvPath = "."
-venv = ".venv"
+
+[tool.ruff]
+extend-exclude = [
+    "typings",
+]

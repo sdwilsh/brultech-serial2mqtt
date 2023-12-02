@@ -61,6 +61,22 @@ jobs:
           install-cmd: pip install -r requirements.txt -r requirements-dev.txt
           python-version: "3.10"
 
+  earthly-lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: earthly/actions-setup@v1.0.8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # renovate: datasource=docker depName=earthly/earthly
+          version: "v0.7.22"
+      - uses: actions/checkout@v4
+      - name: Run Earthly Lint
+        env:
+          EARTHLY_CI: true
+        run: earthly +lint
+
   lint:
     runs-on: ubuntu-latest
     needs: build-virtualenv

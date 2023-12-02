@@ -38,9 +38,9 @@ class BrultechSerial2MQTT:
         logger.addHandler(stream_handler)
         logger.setLevel(config.level.value)
         for logger_name, level in config.logs.items():
-            l = logging.getLogger(logger_name)
-            l.addHandler(stream_handler)
-            l.setLevel(level.value)
+            sub_logger = logging.getLogger(logger_name)
+            sub_logger.addHandler(stream_handler)
+            sub_logger.setLevel(level.value)
 
     async def start(self) -> None:
         """Starts listening to the serial connection and publishes packets to MQTT"""
@@ -51,7 +51,6 @@ class BrultechSerial2MQTT:
                 seconds=self._config.device.packet_delay_clear_seconds
             ),
         ) as device_connection:
-
             await self._setup_gem(device_connection)
 
             packets = device_connection.packets()
@@ -85,7 +84,7 @@ class BrultechSerial2MQTT:
                 task = await self._publish_home_assistant_discovery_config(
                     mqtt_client, device_manager
                 )
-                if not task is None:
+                if task is not None:
                     stack.callback(lambda: task.cancel())
 
                 await self._publish_birth_message(

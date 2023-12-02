@@ -45,7 +45,9 @@ class TestLoggingSetup(unittest.TestCase):
     def test_core_logging(self):
         logger = logging.getLogger("brultech_serial2mqtt")
         self.assertNotEqual(logger.level, logging.ERROR)
-        self.assertNotIn(logging.StreamHandler, [l.__class__ for l in logger.handlers])
+        self.assertNotIn(
+            logging.StreamHandler, [handler.__class__ for handler in logger.handlers]
+        )
 
         self._setLoggingConfig({"level": "error"})
         config = load_config(self.root.name).logging
@@ -53,12 +55,16 @@ class TestLoggingSetup(unittest.TestCase):
 
         logger = logging.getLogger("brultech_serial2mqtt")
         self.assertEqual(logger.level, logging.ERROR)
-        self.assertIn(logging.StreamHandler, [l.__class__ for l in logger.handlers])
+        self.assertIn(
+            logging.StreamHandler, [handler.__class__ for handler in logger.handlers]
+        )
 
     def test_additional_logging(self):
         logger = logging.getLogger("siobrultech_protocols")
         self.assertNotEqual(logger.level, logging.INFO)
-        self.assertNotIn(logging.StreamHandler, [l.__class__ for l in logger.handlers])
+        self.assertNotIn(
+            logging.StreamHandler, [handler.__class__ for handler in logger.handlers]
+        )
 
         self._setLoggingConfig({"logs": {"siobrultech_protocols": "info"}})
         config = load_config(self.root.name).logging
@@ -67,4 +73,6 @@ class TestLoggingSetup(unittest.TestCase):
         logger = logging.getLogger("siobrultech_protocols")
         self.addCleanup(self._resetLogger, logger)
         self.assertEqual(logger.level, logging.INFO)
-        self.assertIn(logging.StreamHandler, [l.__class__ for l in logger.handlers])
+        self.assertIn(
+            logging.StreamHandler, [handler.__class__ for handler in logger.handlers]
+        )
