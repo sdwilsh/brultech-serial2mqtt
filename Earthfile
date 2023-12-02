@@ -46,6 +46,7 @@ ruff-validate:
     COPY --dir brultech_serial2mqtt .
     COPY --dir tests .
     RUN ruff check . --diff
+    RUN ruff format . --diff
 
 lint:
     BUILD +pyright-validate
