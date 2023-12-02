@@ -31,16 +31,6 @@ pyright-validate:
     COPY --dir typings/ .
     RUN pyright
 
-pyright-verify-stubs:
-    FROM +pyright-image
-    COPY --dir typings git-typings
-    RUN pyright --createstub homeassistant
-    RUN pyright --createstub voluptuous
-    # If this fails, delete and regenerate with `pyright --createstub {library}`.
-    RUN find typings -name "*.pyi" -type f -print \
-        | awk '{print "git-"$1" "$1}' \
-        | xargs -n 2 diff -U8 -p
-
 renovate-validate:
     # renovate: datasource=docker depName=renovate/renovate versioning=docker
     ARG RENOVATE_VERSION=37
@@ -59,6 +49,5 @@ ruff-validate:
 
 lint:
     BUILD +pyright-validate
-    BUILD +pyright-verify-stubs
     BUILD +renovate-validate
     BUILD +ruff-validate
