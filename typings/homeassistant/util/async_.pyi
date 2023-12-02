@@ -14,18 +14,23 @@ _SHUTDOWN_RUN_CALLBACK_THREADSAFE = ...
 _T = TypeVar("_T")
 _R = TypeVar("_R")
 _P = ...
+
 def cancelling(task: Future[Any]) -> bool:
     """Return True if task is cancelling."""
     ...
 
-def run_callback_threadsafe(loop: AbstractEventLoop, callback: Callable[..., _T], *args: Any) -> concurrent.futures.Future[_T]:
+def run_callback_threadsafe(
+    loop: AbstractEventLoop, callback: Callable[..., _T], *args: Any
+) -> concurrent.futures.Future[_T]:
     """Submit a callback object to a given event loop.
 
     Return a concurrent.futures.Future to access the result.
     """
     ...
 
-def check_loop(func: Callable[..., Any], strict: bool = ..., advise_msg: str | None = ...) -> None:
+def check_loop(
+    func: Callable[..., Any], strict: bool = ..., advise_msg: str | None = ...
+) -> None:
     """Warn if called inside the event loop. Raise if `strict` is True.
 
     The default advisory message is 'Use `await hass.async_add_executor_job()'
@@ -37,7 +42,9 @@ def protect_loop(func: Callable[_P, _R], strict: bool = ...) -> Callable[_P, _R]
     """Protect function from running in event loop."""
     ...
 
-async def gather_with_limited_concurrency(limit: int, *tasks: Any, return_exceptions: bool = ...) -> Any:
+async def gather_with_limited_concurrency(
+    limit: int, *tasks: Any, return_exceptions: bool = ...
+) -> Any:
     """Wrap asyncio.gather to limit the number of concurrent tasks.
 
     From: https://stackoverflow.com/a/61478547/9127614
@@ -59,4 +66,3 @@ def shutdown_run_callback_threadsafe(loop: AbstractEventLoop) -> None:
     python is going to exit.
     """
     ...
-

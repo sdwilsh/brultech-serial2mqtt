@@ -7,7 +7,12 @@ from typing import Any, Final, TYPE_CHECKING
 from bleak.backends.scanner import AdvertisementDataCallback
 from bleak_retry_connector import BleakSlotManager
 from bluetooth_adapters import AdapterDetails, BluetoothAdapters
-from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback as hass_callback
+from homeassistant.core import (
+    CALLBACK_TYPE,
+    Event,
+    HomeAssistant,
+    callback as hass_callback,
+)
 from .base_scanner import BaseHaScanner, BluetoothScannerDevice
 from .match import BluetoothCallbackMatcher, IntegrationMatcher
 from .models import BluetoothCallback, BluetoothServiceInfoBleak
@@ -15,8 +20,7 @@ from .storage import BluetoothStorage
 from bleak.backends.device import BLEDevice
 
 """The bluetooth integration."""
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
 FILTER_UUIDS: Final = ...
 APPLE_MFR_ID: Final = ...
 APPLE_IBEACON_START_BYTE: Final = ...
@@ -26,63 +30,76 @@ APPLE_HOMEKIT_NOTIFY_START_BYTE: Final = ...
 APPLE_START_BYTES_WANTED: Final = ...
 MONOTONIC_TIME: Final = ...
 _LOGGER = ...
+
 class BluetoothManager:
     """Manage Bluetooth."""
+
     __slots__ = ...
-    def __init__(self, hass: HomeAssistant, integration_matcher: IntegrationMatcher, bluetooth_adapters: BluetoothAdapters, storage: BluetoothStorage, slot_manager: BleakSlotManager) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        integration_matcher: IntegrationMatcher,
+        bluetooth_adapters: BluetoothAdapters,
+        storage: BluetoothStorage,
+        slot_manager: BleakSlotManager,
+    ) -> None:
         """Init bluetooth manager."""
         ...
-    
+
     @property
     def supports_passive_scan(self) -> bool:
         """Return if passive scan is supported."""
         ...
-    
+
     def async_scanner_count(self, connectable: bool = ...) -> int:
         """Return the number of scanners."""
         ...
-    
+
     async def async_diagnostics(self) -> dict[str, Any]:
         """Diagnostics for the manager."""
         ...
-    
+
     @hass_callback
     def async_scanner_by_source(self, source: str) -> BaseHaScanner | None:
         """Return the scanner for a source."""
         ...
-    
-    async def async_get_bluetooth_adapters(self, cached: bool = ...) -> dict[str, AdapterDetails]:
+
+    async def async_get_bluetooth_adapters(
+        self, cached: bool = ...
+    ) -> dict[str, AdapterDetails]:
         """Get bluetooth adapters."""
         ...
-    
+
     async def async_get_adapter_from_address(self, address: str) -> str | None:
         """Get adapter from address."""
         ...
-    
+
     async def async_setup(self) -> None:
         """Set up the bluetooth manager."""
         ...
-    
+
     @hass_callback
     def async_stop(self, event: Event) -> None:
         """Stop the Bluetooth integration at shutdown."""
         ...
-    
+
     @hass_callback
-    def async_scanner_devices_by_address(self, address: str, connectable: bool) -> list[BluetoothScannerDevice]:
+    def async_scanner_devices_by_address(
+        self, address: str, connectable: bool
+    ) -> list[BluetoothScannerDevice]:
         """Get BluetoothScannerDevice by address."""
         ...
-    
+
     @hass_callback
     def async_discovered_devices(self, connectable: bool) -> list[BLEDevice]:
         """Return all of combined best path to discovered from all the scanners."""
         ...
-    
+
     @hass_callback
     def async_setup_unavailable_tracking(self) -> None:
         """Set up the unavailable tracking."""
         ...
-    
+
     @hass_callback
     def scanner_adv_received(self, service_info: BluetoothServiceInfoBleak) -> None:
         """Handle a new advertisement from any scanner.
@@ -90,75 +107,94 @@ class BluetoothManager:
         Callbacks from all the scanners arrive here.
         """
         ...
-    
+
     @hass_callback
-    def async_track_unavailable(self, callback: Callable[[BluetoothServiceInfoBleak], None], address: str, connectable: bool) -> Callable[[], None]:
+    def async_track_unavailable(
+        self,
+        callback: Callable[[BluetoothServiceInfoBleak], None],
+        address: str,
+        connectable: bool,
+    ) -> Callable[[], None]:
         """Register a callback."""
         ...
-    
+
     @hass_callback
-    def async_register_callback(self, callback: BluetoothCallback, matcher: BluetoothCallbackMatcher | None) -> Callable[[], None]:
+    def async_register_callback(
+        self, callback: BluetoothCallback, matcher: BluetoothCallbackMatcher | None
+    ) -> Callable[[], None]:
         """Register a callback."""
         ...
-    
+
     @hass_callback
-    def async_ble_device_from_address(self, address: str, connectable: bool) -> BLEDevice | None:
+    def async_ble_device_from_address(
+        self, address: str, connectable: bool
+    ) -> BLEDevice | None:
         """Return the BLEDevice if present."""
         ...
-    
+
     @hass_callback
     def async_address_present(self, address: str, connectable: bool) -> bool:
         """Return if the address is present."""
         ...
-    
+
     @hass_callback
-    def async_discovered_service_info(self, connectable: bool) -> Iterable[BluetoothServiceInfoBleak]:
+    def async_discovered_service_info(
+        self, connectable: bool
+    ) -> Iterable[BluetoothServiceInfoBleak]:
         """Return all the discovered services info."""
         ...
-    
+
     @hass_callback
-    def async_last_service_info(self, address: str, connectable: bool) -> BluetoothServiceInfoBleak | None:
+    def async_last_service_info(
+        self, address: str, connectable: bool
+    ) -> BluetoothServiceInfoBleak | None:
         """Return the last service info for an address."""
         ...
-    
+
     @hass_callback
     def async_rediscover_address(self, address: str) -> None:
         """Trigger discovery of devices which have already been seen."""
         ...
-    
-    def async_register_scanner(self, scanner: BaseHaScanner, connectable: bool, connection_slots: int | None = ...) -> CALLBACK_TYPE:
+
+    def async_register_scanner(
+        self,
+        scanner: BaseHaScanner,
+        connectable: bool,
+        connection_slots: int | None = ...,
+    ) -> CALLBACK_TYPE:
         """Register a new scanner."""
         ...
-    
+
     @hass_callback
-    def async_register_bleak_callback(self, callback: AdvertisementDataCallback, filters: dict[str, set[str]]) -> CALLBACK_TYPE:
+    def async_register_bleak_callback(
+        self, callback: AdvertisementDataCallback, filters: dict[str, set[str]]
+    ) -> CALLBACK_TYPE:
         """Register a callback."""
         ...
-    
+
     @hass_callback
     def async_release_connection_slot(self, device: BLEDevice) -> None:
         """Release a connection slot."""
         ...
-    
+
     @hass_callback
     def async_allocate_connection_slot(self, device: BLEDevice) -> bool:
         """Allocate a connection slot."""
         ...
-    
+
     @hass_callback
     def async_get_learned_advertising_interval(self, address: str) -> float | None:
         """Get the learned advertising interval for a MAC address."""
         ...
-    
+
     @hass_callback
     def async_get_fallback_availability_interval(self, address: str) -> float | None:
         """Get the fallback availability timeout for a MAC address."""
         ...
-    
+
     @hass_callback
-    def async_set_fallback_availability_interval(self, address: str, interval: float) -> None:
+    def async_set_fallback_availability_interval(
+        self, address: str, interval: float
+    ) -> None:
         """Override the fallback availability timeout for a MAC address."""
         ...
-    
-
-

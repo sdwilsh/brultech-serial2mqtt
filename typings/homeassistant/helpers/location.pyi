@@ -7,6 +7,7 @@ from homeassistant.core import HomeAssistant, State
 
 """Location helpers for Home Assistant."""
 _LOGGER = ...
+
 def has_location(state: State) -> bool:
     """Test if state contains a valid location.
 
@@ -21,7 +22,9 @@ def closest(latitude: float, longitude: float, states: Iterable[State]) -> State
     """
     ...
 
-def find_coordinates(hass: HomeAssistant, name: str, recursion_history: list | None = ...) -> str | None:
+def find_coordinates(
+    hass: HomeAssistant, name: str, recursion_history: list | None = ...
+) -> str | None:
     """Try to resolve the a location from a supplied name or entity_id.
 
     Will recursively resolve an entity if pointed to by the state of the supplied
@@ -38,4 +41,3 @@ def resolve_zone(hass: HomeAssistant, zone_name: str) -> str | None:
     None is returned if no zone is found by that friendly_name.
     """
     ...
-

@@ -8,8 +8,10 @@ from homeassistant.core import callback
 
 """Middleware to set the request context."""
 current_request: ContextVar[Request | None] = ...
+
 @callback
-def setup_request_context(app: Application, context: ContextVar[Request | None]) -> None:
+def setup_request_context(
+    app: Application, context: ContextVar[Request | None]
+) -> None:
     """Create request context middleware for the app."""
     ...
-

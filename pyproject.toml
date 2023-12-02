@@ -40,8 +40,3 @@ reportUnusedFunction = "error"
 reportUnusedImport = "error"
 reportUnusedVariable = "error"
 typeCheckingMode = "strict"
-
-[tool.ruff]
-extend-exclude = [
-    "typings",
-]

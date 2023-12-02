@@ -9,34 +9,42 @@ from homeassistant.core import HomeAssistant, callback
 
 """Ratelimit helper."""
 _LOGGER = ...
+
 class KeyedRateLimit:
     """Class to track rate limits."""
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize ratelimit tracker."""
         ...
-    
+
     @callback
     def async_has_timer(self, key: Hashable) -> bool:
         """Check if a rate limit timer is running."""
         ...
-    
+
     @callback
     def async_triggered(self, key: Hashable, now: datetime | None = ...) -> None:
         """Call when the action we are tracking was triggered."""
         ...
-    
+
     @callback
     def async_cancel_timer(self, key: Hashable) -> None:
         """Cancel a rate limit time that will call the action."""
         ...
-    
+
     @callback
     def async_remove(self) -> None:
         """Remove all timers."""
         ...
-    
+
     @callback
-    def async_schedule_action(self, key: Hashable, rate_limit: timedelta | None, now: datetime, action: Callable, *args: Any) -> datetime | None:
+    def async_schedule_action(
+        self,
+        key: Hashable,
+        rate_limit: timedelta | None,
+        now: datetime,
+        action: Callable,
+        *args: Any,
+    ) -> datetime | None:
         """Check rate limits and schedule an action if we hit the limit.
 
         If the rate limit is hit:
@@ -51,6 +59,3 @@ class KeyedRateLimit:
             Return None
         """
         ...
-    
-
-

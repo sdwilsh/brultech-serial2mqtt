@@ -54,6 +54,7 @@ ruff-validate:
     COPY pyproject.toml .
     COPY --dir brultech_serial2mqtt .
     COPY --dir tests .
+    COPY --dir typings/ .
     RUN ruff check . --diff
     RUN ruff format . --diff
 

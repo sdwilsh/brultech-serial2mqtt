@@ -6,6 +6,7 @@ from functools import cache
 
 """Helpers to install PyPi packages."""
 _LOGGER = ...
+
 def is_virtual_env() -> bool:
     """Return if we run in a virtual environment."""
     ...
@@ -23,7 +24,13 @@ def is_installed(package: str) -> bool:
     """
     ...
 
-def install_package(package: str, upgrade: bool = ..., target: str | None = ..., constraints: str | None = ..., timeout: int | None = ...) -> bool:
+def install_package(
+    package: str,
+    upgrade: bool = ...,
+    target: str | None = ...,
+    constraints: str | None = ...,
+    timeout: int | None = ...,
+) -> bool:
     """Install a package on PyPi. Accepts pip compatible package strings.
 
     Return boolean if install successful.
@@ -36,4 +43,3 @@ async def async_get_user_site(deps_dir: str) -> str:
     This function is a coroutine.
     """
     ...
-

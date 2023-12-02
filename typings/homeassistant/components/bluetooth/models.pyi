@@ -11,24 +11,24 @@ from home_assistant_bluetooth import BluetoothServiceInfoBleak
 from .manager import BluetoothManager
 
 """Models for bluetooth."""
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
 MANAGER: BluetoothManager | None = ...
 MONOTONIC_TIME: Final = ...
+
 @dataclass(slots=True)
 class HaBluetoothConnector:
     """Data for how to connect a BLEDevice from a given scanner."""
+
     client: type[BaseBleakClient]
     source: str
     can_connect: Callable[[], bool]
     ...
 
-
 class BluetoothScanningMode(Enum):
     """The mode of scanning for bluetooth devices."""
+
     PASSIVE = ...
     ACTIVE = ...
-
 
 BluetoothChange = ...
 BluetoothCallback = Callable[[BluetoothServiceInfoBleak, BluetoothChange], None]

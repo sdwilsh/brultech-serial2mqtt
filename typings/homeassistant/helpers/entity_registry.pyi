@@ -24,8 +24,7 @@ The Entity Registry will persist itself 10 seconds after a new entity is
 registered. Registering a new entity while a timer is in progress resets the
 timer.
 """
-if TYPE_CHECKING:
-    ...
+if TYPE_CHECKING: ...
 T = TypeVar("T")
 DATA_REGISTRY = ...
 EVENT_ENTITY_REGISTRY_UPDATED = ...
@@ -39,44 +38,50 @@ ORPHANED_ENTITY_KEEP_SECONDS = ...
 ENTITY_CATEGORY_VALUE_TO_INDEX: dict[EntityCategory | None, int] = ...
 ENTITY_CATEGORY_INDEX_TO_VALUE = ...
 ENTITY_DESCRIBING_ATTRIBUTES = ...
+
 class RegistryEntryDisabler(StrEnum):
     """What disabled a registry entry."""
+
     CONFIG_ENTRY = ...
     DEVICE = ...
     HASS = ...
     INTEGRATION = ...
     USER = ...
 
-
 class RegistryEntryHider(StrEnum):
     """What hid a registry entry."""
+
     INTEGRATION = ...
     USER = ...
 
-
 class _EventEntityRegistryUpdatedData_CreateRemove(TypedDict):
     """EventEntityRegistryUpdated data for action type 'create' and 'remove'."""
+
     action: Literal["create", "remove"]
     entity_id: str
     ...
 
-
 class _EventEntityRegistryUpdatedData_Update(TypedDict):
     """EventEntityRegistryUpdated data for action type 'update'."""
+
     action: Literal["update"]
     entity_id: str
     changes: dict[str, Any]
     old_entity_id: NotRequired[str]
     ...
 
-
-EventEntityRegistryUpdatedData = (_EventEntityRegistryUpdatedData_CreateRemove | _EventEntityRegistryUpdatedData_Update)
+EventEntityRegistryUpdatedData = (
+    _EventEntityRegistryUpdatedData_CreateRemove
+    | _EventEntityRegistryUpdatedData_Update
+)
 EntityOptionsType = Mapping[str, Mapping[str, Any]]
 ReadOnlyEntityOptionsType = ReadOnlyDict[str, ReadOnlyDict[str, Any]]
 DISLAY_DICT_OPTIONAL = ...
+
 @attr.s(frozen=True)
 class RegistryEntry:
     """Entity Registry Entry."""
+
     entity_id: str = ...
     unique_id: str = ...
     platform: str = ...
@@ -106,12 +111,12 @@ class RegistryEntry:
     def disabled(self) -> bool:
         """Return if entry is disabled."""
         ...
-    
+
     @property
     def hidden(self) -> bool:
         """Return if entry is hidden."""
         ...
-    
+
     @cached_property
     def display_json_repr(self) -> str | None:
         """Return a cached partial JSON representation of the entry.
@@ -119,32 +124,31 @@ class RegistryEntry:
         This version only includes what's needed for display.
         """
         ...
-    
+
     @cached_property
     def as_partial_dict(self) -> dict[str, Any]:
         """Return a partial dict representation of the entry."""
         ...
-    
+
     @cached_property
     def extended_dict(self) -> dict[str, Any]:
         """Return a extended dict representation of the entry."""
         ...
-    
+
     @cached_property
     def partial_json_repr(self) -> str | None:
         """Return a cached partial JSON representation of the entry."""
         ...
-    
+
     @callback
     def write_unavailable_state(self, hass: HomeAssistant) -> None:
         """Write the unavailable state to the state machine."""
         ...
-    
-
 
 @attr.s(slots=True, frozen=True)
 class DeletedRegistryEntry:
     """Deleted Entity Registry Entry."""
+
     entity_id: str = ...
     unique_id: str = ...
     platform: str = ...
@@ -153,11 +157,10 @@ class DeletedRegistryEntry:
     id: str = ...
     orphaned_timestamp: float | None = ...
 
-
 class EntityRegistryStore(storage.Store[dict[str, list[dict[str, Any]]]]):
     """Store entity registry data."""
-    ...
 
+    ...
 
 class EntityRegistryItems(UserDict[str, RegistryEntry]):
     """Container for entity registry items, maps entity_id -> entry.
@@ -169,52 +172,53 @@ class EntityRegistryItems(UserDict[str, RegistryEntry]):
     def __init__(self) -> None:
         """Initialize the container."""
         ...
-    
+
     def values(self) -> ValuesView[RegistryEntry]:
         """Return the underlying values to avoid __iter__ overhead."""
         ...
-    
+
     def __setitem__(self, key: str, entry: RegistryEntry) -> None:
         """Add an item."""
         ...
-    
+
     def __delitem__(self, key: str) -> None:
         """Remove an item."""
         ...
-    
+
     def get_entity_id(self, key: tuple[str, str, str]) -> str | None:
         """Get entity_id from (domain, platform, unique_id)."""
         ...
-    
+
     def get_entry(self, key: str) -> RegistryEntry | None:
         """Get entry from id."""
         ...
-    
-
 
 class EntityRegistry:
     """Class to hold a registry of entities."""
+
     deleted_entities: dict[tuple[str, str, str], DeletedRegistryEntry]
     entities: EntityRegistryItems
     _entities_data: dict[str, RegistryEntry]
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the registry."""
         ...
-    
+
     @callback
-    def async_get_device_class_lookup(self, domain_device_classes: set[tuple[str, str | None]]) -> dict[str, dict[tuple[str, str | None], str]]:
+    def async_get_device_class_lookup(
+        self, domain_device_classes: set[tuple[str, str | None]]
+    ) -> dict[str, dict[tuple[str, str | None], str]]:
         """Return a lookup of entity ids for devices which have matching entities.
 
         Entities must match a set of (domain, device_class) tuples.
         The result is indexed by device_id, then by the matching (domain, device_class)
         """
         ...
-    
+
     @callback
     def async_is_registered(self, entity_id: str) -> bool:
         """Check if an entity_id is currently registered."""
         ...
-    
+
     @callback
     def async_get(self, entity_id_or_uuid: str) -> RegistryEntry | None:
         """Get EntityEntry for an entity_id or entity entry id.
@@ -223,30 +227,59 @@ class EntityRegistry:
         the overhead of the UserDict __getitem__.
         """
         ...
-    
+
     @callback
-    def async_get_entity_id(self, domain: str, platform: str, unique_id: str) -> str | None:
+    def async_get_entity_id(
+        self, domain: str, platform: str, unique_id: str
+    ) -> str | None:
         """Check if an entity_id is currently registered."""
         ...
-    
+
     @callback
-    def async_generate_entity_id(self, domain: str, suggested_object_id: str, known_object_ids: Iterable[str] | None = ...) -> str:
+    def async_generate_entity_id(
+        self,
+        domain: str,
+        suggested_object_id: str,
+        known_object_ids: Iterable[str] | None = ...,
+    ) -> str:
         """Generate an entity ID that does not conflict.
 
         Conflicts checked against registered and currently existing entities.
         """
         ...
-    
+
     @callback
-    def async_get_or_create(self, domain: str, platform: str, unique_id: str, *, known_object_ids: Iterable[str] | None = ..., suggested_object_id: str | None = ..., disabled_by: RegistryEntryDisabler | None = ..., hidden_by: RegistryEntryHider | None = ..., get_initial_options: Callable[[], EntityOptionsType | None] | None = ..., capabilities: Mapping[str, Any] | None | UndefinedType = ..., config_entry: ConfigEntry | None | UndefinedType = ..., device_id: str | None | UndefinedType = ..., entity_category: EntityCategory | UndefinedType | None = ..., has_entity_name: bool | UndefinedType = ..., original_device_class: str | None | UndefinedType = ..., original_icon: str | None | UndefinedType = ..., original_name: str | None | UndefinedType = ..., supported_features: int | None | UndefinedType = ..., translation_key: str | None | UndefinedType = ..., unit_of_measurement: str | None | UndefinedType = ...) -> RegistryEntry:
+    def async_get_or_create(
+        self,
+        domain: str,
+        platform: str,
+        unique_id: str,
+        *,
+        known_object_ids: Iterable[str] | None = ...,
+        suggested_object_id: str | None = ...,
+        disabled_by: RegistryEntryDisabler | None = ...,
+        hidden_by: RegistryEntryHider | None = ...,
+        get_initial_options: Callable[[], EntityOptionsType | None] | None = ...,
+        capabilities: Mapping[str, Any] | None | UndefinedType = ...,
+        config_entry: ConfigEntry | None | UndefinedType = ...,
+        device_id: str | None | UndefinedType = ...,
+        entity_category: EntityCategory | UndefinedType | None = ...,
+        has_entity_name: bool | UndefinedType = ...,
+        original_device_class: str | None | UndefinedType = ...,
+        original_icon: str | None | UndefinedType = ...,
+        original_name: str | None | UndefinedType = ...,
+        supported_features: int | None | UndefinedType = ...,
+        translation_key: str | None | UndefinedType = ...,
+        unit_of_measurement: str | None | UndefinedType = ...,
+    ) -> RegistryEntry:
         """Get entity. Create if it doesn't exist."""
         ...
-    
+
     @callback
     def async_remove(self, entity_id: str) -> None:
         """Remove an entity from registry."""
         ...
-    
+
     @callback
     def async_device_modified(self, event: Event) -> None:
         """Handle the removal or update of a device.
@@ -258,43 +291,77 @@ class EntityRegistry:
         the device is disabled.
         """
         ...
-    
+
     @callback
-    def async_update_entity(self, entity_id: str, *, aliases: set[str] | UndefinedType = ..., area_id: str | None | UndefinedType = ..., capabilities: Mapping[str, Any] | None | UndefinedType = ..., config_entry_id: str | None | UndefinedType = ..., device_class: str | None | UndefinedType = ..., device_id: str | None | UndefinedType = ..., disabled_by: RegistryEntryDisabler | None | UndefinedType = ..., entity_category: EntityCategory | None | UndefinedType = ..., hidden_by: RegistryEntryHider | None | UndefinedType = ..., icon: str | None | UndefinedType = ..., has_entity_name: bool | UndefinedType = ..., name: str | None | UndefinedType = ..., new_entity_id: str | UndefinedType = ..., new_unique_id: str | UndefinedType = ..., original_device_class: str | None | UndefinedType = ..., original_icon: str | None | UndefinedType = ..., original_name: str | None | UndefinedType = ..., supported_features: int | UndefinedType = ..., translation_key: str | None | UndefinedType = ..., unit_of_measurement: str | None | UndefinedType = ...) -> RegistryEntry:
+    def async_update_entity(
+        self,
+        entity_id: str,
+        *,
+        aliases: set[str] | UndefinedType = ...,
+        area_id: str | None | UndefinedType = ...,
+        capabilities: Mapping[str, Any] | None | UndefinedType = ...,
+        config_entry_id: str | None | UndefinedType = ...,
+        device_class: str | None | UndefinedType = ...,
+        device_id: str | None | UndefinedType = ...,
+        disabled_by: RegistryEntryDisabler | None | UndefinedType = ...,
+        entity_category: EntityCategory | None | UndefinedType = ...,
+        hidden_by: RegistryEntryHider | None | UndefinedType = ...,
+        icon: str | None | UndefinedType = ...,
+        has_entity_name: bool | UndefinedType = ...,
+        name: str | None | UndefinedType = ...,
+        new_entity_id: str | UndefinedType = ...,
+        new_unique_id: str | UndefinedType = ...,
+        original_device_class: str | None | UndefinedType = ...,
+        original_icon: str | None | UndefinedType = ...,
+        original_name: str | None | UndefinedType = ...,
+        supported_features: int | UndefinedType = ...,
+        translation_key: str | None | UndefinedType = ...,
+        unit_of_measurement: str | None | UndefinedType = ...,
+    ) -> RegistryEntry:
         """Update properties of an entity."""
         ...
-    
+
     @callback
-    def async_update_entity_platform(self, entity_id: str, new_platform: str, *, new_config_entry_id: str | UndefinedType = ..., new_unique_id: str | UndefinedType = ..., new_device_id: str | None | UndefinedType = ...) -> RegistryEntry:
+    def async_update_entity_platform(
+        self,
+        entity_id: str,
+        new_platform: str,
+        *,
+        new_config_entry_id: str | UndefinedType = ...,
+        new_unique_id: str | UndefinedType = ...,
+        new_device_id: str | None | UndefinedType = ...,
+    ) -> RegistryEntry:
         """Update entity platform.
 
         This should only be used when an entity needs to be migrated between
         integrations.
         """
         ...
-    
+
     @callback
-    def async_update_entity_options(self, entity_id: str, domain: str, options: Mapping[str, Any] | None) -> RegistryEntry:
+    def async_update_entity_options(
+        self, entity_id: str, domain: str, options: Mapping[str, Any] | None
+    ) -> RegistryEntry:
         """Update entity options for a domain.
 
         If the domain options are set to None, they will be removed.
         """
         ...
-    
+
     async def async_load(self) -> None:
         """Load the entity registry."""
         ...
-    
+
     @callback
     def async_schedule_save(self) -> None:
         """Schedule saving the entity registry."""
         ...
-    
+
     @callback
     def async_clear_config_entry(self, config_entry_id: str) -> None:
         """Clear config entry from registry entries."""
         ...
-    
+
     @callback
     def async_purge_expired_orphaned_entities(self) -> None:
         """Purge expired orphaned entities from the registry.
@@ -303,13 +370,11 @@ class EntityRegistry:
         growing without bound.
         """
         ...
-    
+
     @callback
     def async_clear_area_id(self, area_id: str) -> None:
         """Clear area id from registry entries."""
         ...
-    
-
 
 @callback
 def async_get(hass: HomeAssistant) -> EntityRegistry:
@@ -321,22 +386,30 @@ async def async_load(hass: HomeAssistant) -> None:
     ...
 
 @callback
-def async_entries_for_device(registry: EntityRegistry, device_id: str, include_disabled_entities: bool = ...) -> list[RegistryEntry]:
+def async_entries_for_device(
+    registry: EntityRegistry, device_id: str, include_disabled_entities: bool = ...
+) -> list[RegistryEntry]:
     """Return entries that match a device."""
     ...
 
 @callback
-def async_entries_for_area(registry: EntityRegistry, area_id: str) -> list[RegistryEntry]:
+def async_entries_for_area(
+    registry: EntityRegistry, area_id: str
+) -> list[RegistryEntry]:
     """Return entries that match an area."""
     ...
 
 @callback
-def async_entries_for_config_entry(registry: EntityRegistry, config_entry_id: str) -> list[RegistryEntry]:
+def async_entries_for_config_entry(
+    registry: EntityRegistry, config_entry_id: str
+) -> list[RegistryEntry]:
     """Return entries that match a config entry."""
     ...
 
 @callback
-def async_config_entry_disabled_by_changed(registry: EntityRegistry, config_entry: ConfigEntry) -> None:
+def async_config_entry_disabled_by_changed(
+    registry: EntityRegistry, config_entry: ConfigEntry
+) -> None:
     """Handle a config entry being disabled or enabled.
 
     Disable entities in the registry that are associated with a config entry when
@@ -346,7 +419,11 @@ def async_config_entry_disabled_by_changed(registry: EntityRegistry, config_entr
     """
     ...
 
-async def async_migrate_entries(hass: HomeAssistant, config_entry_id: str, entry_callback: Callable[[RegistryEntry], dict[str, Any] | None]) -> None:
+async def async_migrate_entries(
+    hass: HomeAssistant,
+    config_entry_id: str,
+    entry_callback: Callable[[RegistryEntry], dict[str, Any] | None],
+) -> None:
     """Migrate entity registry entries which belong to a config entry.
 
     Can be used as a migrator of unique_ids or to update other entity registry data.
@@ -364,7 +441,9 @@ def async_validate_entity_id(registry: EntityRegistry, entity_id_or_uuid: str) -
     ...
 
 @callback
-def async_resolve_entity_id(registry: EntityRegistry, entity_id_or_uuid: str) -> str | None:
+def async_resolve_entity_id(
+    registry: EntityRegistry, entity_id_or_uuid: str
+) -> str | None:
     """Validate and resolve an entity id or UUID to an entity id.
 
     Returns None if the entity or UUID is invalid, or if the UUID is not
@@ -373,7 +452,9 @@ def async_resolve_entity_id(registry: EntityRegistry, entity_id_or_uuid: str) ->
     ...
 
 @callback
-def async_validate_entity_ids(registry: EntityRegistry, entity_ids_or_uuids: list[str]) -> list[str]:
+def async_validate_entity_ids(
+    registry: EntityRegistry, entity_ids_or_uuids: list[str]
+) -> list[str]:
     """Validate and resolve a list of entity ids or UUIDs to a list of entity ids.
 
     Returns a list with UUID resolved to entity_ids.
@@ -381,4 +462,3 @@ def async_validate_entity_ids(registry: EntityRegistry, entity_ids_or_uuids: lis
     an entity registry item.
     """
     ...
-

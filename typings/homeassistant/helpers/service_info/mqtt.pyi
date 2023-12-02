@@ -8,9 +8,11 @@ from homeassistant.data_entry_flow import BaseServiceInfo
 
 """MQTT Discovery data."""
 ReceivePayloadType = str | bytes
+
 @dataclass(slots=True)
 class MqttServiceInfo(BaseServiceInfo):
     """Prepared info from mqtt entries."""
+
     topic: str
     payload: ReceivePayloadType
     qos: int
@@ -18,5 +20,3 @@ class MqttServiceInfo(BaseServiceInfo):
     subscribed_topic: str
     timestamp: dt.datetime
     ...
-
-

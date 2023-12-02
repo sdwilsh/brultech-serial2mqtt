@@ -13,26 +13,44 @@ STORAGE_DIR = ...
 _LOGGER = ...
 STORAGE_SEMAPHORE = ...
 _T = TypeVar("_T", bound=Mapping[str, Any] | Sequence[Any])
+
 @bind_hass
-async def async_migrator(hass: HomeAssistant, old_path: str, store: Store[_T], *, old_conf_load_func: Callable | None = ..., old_conf_migrate_func: Callable | None = ...) -> _T | None:
+async def async_migrator(
+    hass: HomeAssistant,
+    old_path: str,
+    store: Store[_T],
+    *,
+    old_conf_load_func: Callable | None = ...,
+    old_conf_migrate_func: Callable | None = ...,
+) -> _T | None:
     """Migrate old data to a store and then load data.
 
     async def old_conf_migrate_func(old_data)
     """
     ...
-
 @bind_hass
 class Store(Generic[_T]):
     """Class to help storing data."""
-    def __init__(self, hass: HomeAssistant, version: int, key: str, private: bool = ..., *, atomic_writes: bool = ..., encoder: type[JSONEncoder] | None = ..., minor_version: int = ..., read_only: bool = ...) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        version: int,
+        key: str,
+        private: bool = ...,
+        *,
+        atomic_writes: bool = ...,
+        encoder: type[JSONEncoder] | None = ...,
+        minor_version: int = ...,
+        read_only: bool = ...,
+    ) -> None:
         """Initialize storage class."""
         ...
-    
+
     @property
-    def path(self): # -> str:
+    def path(self):  # -> str:
         """Return the config path."""
         ...
-    
+
     async def async_load(self) -> _T | None:
         """Load data.
 
@@ -44,19 +62,16 @@ class Store(Generic[_T]):
         the second call will wait and return the result of the first call.
         """
         ...
-    
+
     async def async_save(self, data: _T) -> None:
         """Save data."""
         ...
-    
+
     @callback
     def async_delay_save(self, data_func: Callable[[], _T], delay: float = ...) -> None:
         """Save data with an optional delay."""
         ...
-    
+
     async def async_remove(self) -> None:
         """Remove all data."""
         ...
-    
-
-
