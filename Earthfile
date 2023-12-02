@@ -1,6 +1,15 @@
 VERSION 0.7
 FROM alpine
 
+brultech-serial2mqtt:
+    ARG TARGETPLATFORM
+    FROM DOCKERFILE -f docker/Dockerfile --platform $TARGETPLATFORM .
+    SAVE IMAGE brultech_serial2mqtt:latest
+
+build:
+    BUILD --platform linux/amd64 +brultech-serial2mqtt
+    BUILD --platform linux/arm64 +brultech-serial2mqtt
+
 python-requirements:
     # renovate: datasource=docker depName=python versioning=docker
     ARG PYTHON_VERSION=3.11
