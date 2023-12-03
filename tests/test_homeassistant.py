@@ -56,11 +56,15 @@ async def device_manager(
     yield device_manager
 
 
+DiscoveryConfig = Dict[str, Any]
+DiscoveryConfigByUniqueId = Dict[str, DiscoveryConfig]
+
+
 @pytest.fixture()
-def parsed_values(
-    device_manager: DeviceManager, hass: HomeAssistant
-) -> Generator[Dict[str, Union[int, float]], None, None]:
-    discovery_configs_by_unique_id: Dict[str, Dict[str, Any]] = {}
+def discovery_configs(
+    device_manager: DeviceManager
+) -> Generator[DiscoveryConfigByUniqueId, None, None]:
+    discovery_configs_by_unique_id: DiscoveryConfigByUniqueId = {}
     for discovery_config in device_manager.home_assistant_discovery_configs:
         home_assistant_config = {"platform": "mqtt"}
         home_assistant_config.update(discovery_config.config)
@@ -68,9 +72,17 @@ def parsed_values(
         discovery_configs_by_unique_id[
             parsed_discover_config["unique_id"]
         ] = parsed_discover_config
+    yield discovery_configs_by_unique_id
 
+
+@pytest.fixture()
+def parsed_values(
+    device_manager: DeviceManager,
+    discovery_configs: DiscoveryConfigByUniqueId,
+    hass: HomeAssistant,
+) -> Generator[Dict[str, Union[int, float]], None, None]:
     values_by_unique_id: Dict[str, Union[int, float]] = {}
-    for unique_id, discovery_config in discovery_configs_by_unique_id.items():
+    for unique_id, discovery_config in discovery_configs.items():
         t = Template(
             discovery_config["value_template"].template,
             hass,
