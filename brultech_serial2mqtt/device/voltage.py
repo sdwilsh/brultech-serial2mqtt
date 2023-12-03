@@ -12,7 +12,6 @@ class Voltage(SensorMixin):
         super().__init__(config.device.name, config.mqtt)
         self._last_packet = previous_packet
         self._unique_id = f"gem_{previous_packet.serial_number}_voltage"
-        self._name = f"{config.device.name} Voltage"
 
     async def handle_new_packet(self, packet: Packet) -> None:
         self._last_packet = packet
@@ -30,7 +29,7 @@ class Voltage(SensorMixin):
                 component="sensor",
                 config={
                     "device_class": "voltage",
-                    "name": f"{self._name} Voltage",
+                    "name": "Voltage",
                     "qos": 1,
                     "state_class": "measurement",
                     "unique_id": self._unique_id,
