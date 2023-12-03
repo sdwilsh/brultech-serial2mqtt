@@ -21,9 +21,7 @@ class Channel(SensorMixin):
         self._unique_id_base = (
             f"gem_{previous_packet.serial_number}_channel_{channel_num}"
         )
-        self._name_root = (
-            f"{config.device.name} {config.device.channels[channel_num].name}"
-        )
+        self._name_root = config.device.channels[channel_num].name
 
     async def handle_new_packet(self, packet: Packet) -> None:
         self._average_power = self._last_packet.get_average_power(
@@ -175,7 +173,7 @@ class AggregatedEnergyChannel(SensorMixin):
         reference_packet: Packet,
     ):
         super().__init__(config.device.name, config.mqtt)
-        self._name_root = f"{config.device.name} {name_root}"
+        self._name_root = name_root
         self._unique_id_root = f"gem_{reference_packet.serial_number}_{unique_id_root}"
         self._channel_combination = channel_combination
         self._total_channels = functools.reduce(
