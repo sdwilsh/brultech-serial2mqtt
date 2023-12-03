@@ -115,7 +115,7 @@ class BrultechSerial2MQTT:
                         break
 
     async def _setup_device(self, connection: DeviceConnection) -> None:
-        logger.info(f"Setting up {0} device...".format(self._config.device.type.name))
+        logger.info(f"Setting up {self._config.device.type.name} device...")
 
         if self._config.device.type == DeviceType.GEM:
             logger.debug("Synchronizing device clock with machine")
@@ -135,9 +135,7 @@ class BrultechSerial2MQTT:
             self._config.device.send_interval_seconds
         )
 
-        logger.info(
-            f"Setup of {0} device complete!".format(self._config.device.type.name)
-        )
+        logger.info(f"Setup of {self._config.device.type.name} device complete!")
 
     async def _publish_home_assistant_discovery_config(
         self, mqtt_client: MQTTClient, device_manager: DeviceManager
