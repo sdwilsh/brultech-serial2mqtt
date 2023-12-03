@@ -21,7 +21,9 @@ class Channel(SensorMixin):
         self._unique_id_base = (
             f"gem_{previous_packet.serial_number}_channel_{channel_num}"
         )
-        self._name = f"{config.device.name} {config.device.channels[channel_num].name}"
+        self._name_root = (
+            f"{config.device.name} {config.device.channels[channel_num].name}"
+        )
 
     async def handle_new_packet(self, packet: Packet) -> None:
         self._average_power = self._last_packet.get_average_power(
@@ -73,7 +75,7 @@ class Channel(SensorMixin):
                 config={
                     "enabled_by_default": self.config.home_assistant,
                     "device_class": "power",
-                    "name": f"{self._name} Power",
+                    "name": f"{self._name_root} Power",
                     "qos": 1,
                     "state_class": "measurement",
                     "unique_id": f"{self._unique_id_base}_power",
@@ -91,7 +93,7 @@ class Channel(SensorMixin):
                     config={
                         "enabled_by_default": self.config.home_assistant,
                         "device_class": "energy",
-                        "name": f"{self._name} Absolute Energy",
+                        "name": f"{self._name_root} Absolute Energy",
                         "qos": 1,
                         "state_class": "total_increasing",
                         "unique_id": f"{self._unique_id_base}_absolute_energy",
@@ -108,7 +110,7 @@ class Channel(SensorMixin):
                     config={
                         "enabled_by_default": self.config.home_assistant,
                         "device_class": "energy",
-                        "name": f"{self._name} Polarized Energy",
+                        "name": f"{self._name_root} Polarized Energy",
                         "qos": 1,
                         "state_class": "total_increasing",
                         "unique_id": f"{self._unique_id_base}_polarized_energy",
@@ -126,7 +128,7 @@ class Channel(SensorMixin):
                     config={
                         "enabled_by_default": self.config.home_assistant,
                         "device_class": "energy",
-                        "name": f"{self._name} Energy",
+                        "name": f"{self._name_root} Energy",
                         "qos": 1,
                         "state_class": "total_increasing",
                         "unique_id": f"{self._unique_id_base}_energy",
@@ -145,7 +147,7 @@ class Channel(SensorMixin):
                     config={
                         "enabled_by_default": self.config.home_assistant,
                         "device_class": "current",
-                        "name": f"{self._name} Current",
+                        "name": f"{self._name_root} Current",
                         "qos": 1,
                         "state_class": "measurement",
                         "unique_id": f"{self._unique_id_base}_current",
