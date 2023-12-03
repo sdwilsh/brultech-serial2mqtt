@@ -1,7 +1,7 @@
 import ssl
 from typing import Any, Dict, Optional
 
-from asyncio_mqtt import TLSParameters as MqttTlsParams
+from aiomqtt import TLSParameters as MqttTlsParams
 from jinja2 import Template
 from voluptuous import All
 from voluptuous import Any as AnyValid

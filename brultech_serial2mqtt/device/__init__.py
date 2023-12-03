@@ -4,8 +4,8 @@ import logging
 import pprint
 from typing import Any, Dict, Set
 
-from asyncio_mqtt import Client as MQTTClient
-from asyncio_mqtt.error import MqttError
+from aiomqtt import Client as MQTTClient
+from aiomqtt.error import MqttError
 from siobrultech_protocols.gem.packets import Packet
 
 from brultech_serial2mqtt.config import Config

@@ -9,9 +9,9 @@ from datetime import timedelta
 from typing import Optional
 
 from aiobrultech_serial import Connection as DeviceConnection
-from asyncio_mqtt import Client as MQTTClient
-from asyncio_mqtt.client import Will
-from asyncio_mqtt.error import MqttError
+from aiomqtt import Client as MQTTClient
+from aiomqtt.client import Will
+from aiomqtt.error import MqttError
 from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFormatType
 
 from brultech_serial2mqtt.config import load_config
@@ -179,16 +179,17 @@ class BrultechSerial2MQTT:
 
         async def subscribe_to_home_assistant_birth() -> None:
             try:
-                async with mqtt_client.filtered_messages(
-                    self._config.mqtt.home_assistant.birth_message.topic
-                ) as messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/issues/100
+                async with mqtt_client.messages() as messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/issues/100
                     await mqtt_client.subscribe(
                         self._config.mqtt.home_assistant.birth_message.topic,
                         qos=self._config.mqtt.home_assistant.birth_message.qos,
                     )
                     async for message in messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/issues/100
                         if (
-                            message.payload.decode()
+                            message.topic.matches(
+                                self._config.mqtt.home_assistant.birth_message.topic
+                            )
+                            and message.payload
                             == self._config.mqtt.home_assistant.birth_message.payload
                         ):
                             logger.debug(

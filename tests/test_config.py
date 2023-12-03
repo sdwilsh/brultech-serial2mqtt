@@ -6,7 +6,7 @@ import unittest
 from typing import Any, Dict, List, Union
 
 import yaml
-from asyncio_mqtt import TLSParameters as MqttTlsParams
+from aiomqtt import TLSParameters as MqttTlsParams
 from siobrultech_protocols.gem.const import PACKET_DELAY_CLEAR_TIME_DEFAULT
 from voluptuous.error import MultipleInvalid
 
