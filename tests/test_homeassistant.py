@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 from homeassistant.components.mqtt.sensor import DISCOVERY_SCHEMA
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.template import Template
 from siobrultech_protocols.gem.packets import BIN48_NET_TIME, Packet
@@ -116,7 +117,165 @@ def assertParsedValues(parsed: Dict[str, Any], expected: Dict[str, Any]) -> None
         "mqtt": {"broker": "localhost"},
     }
 )
-def test_simple_config(parsed_values: Dict[str, Any]):
+def test_simple_config(
+    discovery_configs: DiscoveryConfigByUniqueId, parsed_values: Dict[str, Any]
+):
+    assert discovery_configs == {
+        "gem_3456_channel_1_current": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.CURRENT,
+            "enabled_by_default": True,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 1 Current",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_1_current",
+            "unit_of_measurement": "A",
+            "value_template": Template("{{ value_json.channel_1.current }}"),
+        },
+        "gem_3456_channel_1_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": True,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 1 Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_1_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ (value_json.channel_1.absolute_watt_seconds / 3600) | round }}"
+            ),
+        },
+        "gem_3456_channel_1_power": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.POWER,
+            "enabled_by_default": True,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 1 Power",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_1_power",
+            "unit_of_measurement": "W",
+            "value_template": Template("{{ value_json.channel_1.power }}"),
+        },
+        "gem_3456_voltage": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.VOLTAGE,
+            "enabled_by_default": True,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Voltage",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_voltage",
+            "unit_of_measurement": "V",
+            "value_template": Template("{{ value_json.voltage }}"),
+        },
+    }
     assertParsedValues(
         parsed_values,
         {
@@ -244,7 +403,637 @@ def test_solar_production_only_downstream_config(parsed_values: Dict[str, Any]):
         "mqtt": {"broker": "localhost"},
     }
 )
-def test_solar_production_upstream_and_downstream_config(parsed_values: Dict[str, Any]):
+def test_solar_production_upstream_and_downstream_config(
+    discovery_configs: DiscoveryConfigByUniqueId, parsed_values: Dict[str, Any]
+):
+    assert discovery_configs == {
+        "gem_3456_channel_1_absolute_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech " "Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 1 Absolute Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_1_absolute_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ (value_json.channel_1.absolute_watt_seconds / 3600) | round }}"
+            ),
+        },
+        "gem_3456_channel_1_current": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.CURRENT,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 1 Current",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_1_current",
+            "unit_of_measurement": "A",
+            "value_template": Template("{{ value_json.channel_1.current }}"),
+        },
+        "gem_3456_channel_1_polarized_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech " "Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 1 Polarized Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_1_polarized_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ (value_json.channel_1.polarized_watt_seconds / 3600) | round }}"
+            ),
+        },
+        "gem_3456_channel_1_power": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.POWER,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 1 Power",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_1_power",
+            "unit_of_measurement": "W",
+            "value_template": Template("{{ value_json.channel_1.power }}"),
+        },
+        "gem_3456_channel_2_absolute_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech " "Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 2 Absolute Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_2_absolute_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ (value_json.channel_2.absolute_watt_seconds / 3600) | round }}"
+            ),
+        },
+        "gem_3456_channel_2_current": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.CURRENT,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 2 Current",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_2_current",
+            "unit_of_measurement": "A",
+            "value_template": Template("{{ value_json.channel_2.current }}"),
+        },
+        "gem_3456_channel_2_polarized_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech " "Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 2 Polarized Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_2_polarized_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ (value_json.channel_2.polarized_watt_seconds / 3600) | round }}"
+            ),
+        },
+        "gem_3456_channel_2_power": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.POWER,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 2 Power",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_2_power",
+            "unit_of_measurement": "W",
+            "value_template": Template("{{ value_json.channel_2.power }}"),
+        },
+        "gem_3456_channel_3_absolute_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech " "Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 3 Absolute Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_3_absolute_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ (value_json.channel_3.absolute_watt_seconds / 3600) | round }}"
+            ),
+        },
+        "gem_3456_channel_3_current": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.CURRENT,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 3 Current",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_3_current",
+            "unit_of_measurement": "A",
+            "value_template": Template("{{ value_json.channel_3.current }}"),
+        },
+        "gem_3456_channel_3_polarized_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech " "Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 3 Polarized Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_3_polarized_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ (value_json.channel_3.polarized_watt_seconds / 3600) | round }}"
+            ),
+        },
+        "gem_3456_channel_3_power": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.POWER,
+            "enabled_by_default": False,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Channel 3 Power",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_channel_3_power",
+            "unit_of_measurement": "W",
+            "value_template": Template("{{ value_json.channel_3.power }}"),
+        },
+        "gem_3456_grid_consumed_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech " "Research Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": True,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Grid Consumption Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_grid_consumed_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ ((0  + value_json.channel_1.absolute_watt_seconds - value_json.channel_1.polarized_watt_seconds + value_json.channel_2.absolute_watt_seconds - value_json.channel_2.polarized_watt_seconds) / 3600) | round }}"
+            ),
+        },
+        "gem_3456_grid_returned_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech " "Research Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": True,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Return to Grid Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_grid_returned_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ ((0  + value_json.channel_1.polarized_watt_seconds + value_json.channel_2.polarized_watt_seconds) / 3600) | round }}"
+            ),
+        },
+        "gem_3456_solar_production_energy": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech " "Research " "Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.ENERGY,
+            "enabled_by_default": True,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Solar Production Energy",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.TOTAL_INCREASING,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_solar_production_energy",
+            "unit_of_measurement": "Wh",
+            "value_template": Template(
+                "{{ ((0  + value_json.channel_3.polarized_watt_seconds + value_json.channel_2.polarized_watt_seconds) / 3600) | round }}"
+            ),
+        },
+        "gem_3456_voltage": {
+            "availability": [
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+                {
+                    "payload_available": "online",
+                    "payload_not_available": "offline",
+                    "topic": "brultech-serial2mqtt-3456/status",
+                },
+            ],
+            "availability_mode": "latest",
+            "device": {
+                "connections": [],
+                "identifiers": [
+                    "brultech-serial2mqtt,serial-3456",
+                    "brultech-serial2mqtt,device_id-12",
+                ],
+                "manufacturer": "Brultech Research Inc.",
+                "model": "GreenEye Monitor",
+                "name": "gem",
+            },
+            "device_class": SensorDeviceClass.VOLTAGE,
+            "enabled_by_default": True,
+            "encoding": "utf-8",
+            "force_update": False,
+            "name": "Voltage",
+            "payload_available": "online",
+            "payload_not_available": "offline",
+            "qos": 1,
+            "state_class": SensorStateClass.MEASUREMENT,
+            "state_topic": "brultech-serial2mqtt-3456/state",
+            "unique_id": "gem_3456_voltage",
+            "unit_of_measurement": "V",
+            "value_template": Template("{{ value_json.voltage }}"),
+        },
+    }
     assertParsedValues(
         parsed_values,
         {
