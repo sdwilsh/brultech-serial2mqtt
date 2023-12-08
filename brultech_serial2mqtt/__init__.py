@@ -58,7 +58,7 @@ class BrultechSerial2MQTT:
 
             logger.info("Waiting for first packet to finish setup...")
             first_packet = await packets.__anext__()
-            logger.debug(f"Received new packet:\n{pprint.pformat(first_packet)}")
+            logger.debug(f"Received new packet:\n{first_packet}")
             device_manager = DeviceManager(self._config, first_packet)
 
             logger.debug(f"Connecting to MQTT broker at {self._config.mqtt.broker}")
@@ -96,7 +96,7 @@ class BrultechSerial2MQTT:
                 # Set the packet count such that we will send the first packet to Home Assistant.
                 packet_count = self._config.mqtt.home_assistant.skip_packets + 1
                 async for packet in device_connection.packets():
-                    logger.debug(f"Received new packet:\n{pprint.pformat(packet)}")
+                    logger.debug(f"Received new packet:\n{packet}")
                     packet_count += 1
                     if packet_count <= self._config.mqtt.home_assistant.skip_packets:
                         logger.debug(
