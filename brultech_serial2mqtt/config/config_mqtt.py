@@ -1,73 +1,71 @@
 import ssl
 from typing import Any, Dict, Optional
 
+import voluptuous as vol
+import voluptuous.validators as validators
 from aiomqtt import TLSParameters as MqttTlsParams
 from jinja2 import Template
-from voluptuous import All
-from voluptuous import Any as AnyValid
-from voluptuous import Optional as OptionalField
-from voluptuous import Range
-from voluptuous import Required as RequiredField
-from voluptuous import Schema
 
 from brultech_serial2mqtt.config.typing import EmptyConfigDict
 
-SCHEMA = Schema(
+SCHEMA = vol.Schema(
     {
-        OptionalField("birth_message", default=EmptyConfigDict): {
-            OptionalField("payload", default="online"): str,
-            OptionalField("qos", default=0): All(
+        vol.Optional("birth_message", default=EmptyConfigDict): {
+            vol.Optional("payload", default="online"): str,
+            vol.Optional("qos", default=0): validators.All(
                 int,
-                Range(min=0, max=2),
+                validators.Range(min=0, max=2),
             ),
-            OptionalField("retain", default=True): bool,
+            vol.Optional("retain", default=True): bool,
         },
-        RequiredField("broker"): str,
-        OptionalField(
+        vol.Required("broker"): str,
+        vol.Optional(
             "client_id", default="brultech-serial2mqtt-{{ device_serial }}"
-        ): AnyValid(str, None),
-        OptionalField("home_assistant", default=EmptyConfigDict): {
-            OptionalField("enable", default=True): bool,
-            OptionalField("birth_message", default=EmptyConfigDict): {
-                OptionalField("topic", default="homeassistant/status"): str,
-                OptionalField("payload", default="online"): str,
-                OptionalField("qos", default=0): All(
+        ): validators.Any(str, None),
+        vol.Optional("home_assistant", default=EmptyConfigDict): {
+            vol.Optional("enable", default=True): bool,
+            vol.Optional("birth_message", default=EmptyConfigDict): {
+                vol.Optional("topic", default="homeassistant/status"): str,
+                vol.Optional("payload", default="online"): str,
+                vol.Optional("qos", default=0): validators.All(
                     int,
-                    Range(min=0, max=2),
+                    validators.Range(min=0, max=2),
                 ),
             },
-            OptionalField("discovery_prefix", default="homeassistant"): str,
-            OptionalField("skip_packets", default=37): All(int, Range(min=0)),
+            vol.Optional("discovery_prefix", default="homeassistant"): str,
+            vol.Optional("skip_packets", default=37): validators.All(
+                int, validators.Range(min=0)
+            ),
         },
-        OptionalField("password", default=None): AnyValid(str, None),
-        OptionalField("port", default=1883): int,
-        OptionalField("qos", default=0): All(
+        vol.Optional("password", default=None): validators.Any(str, None),
+        vol.Optional("port", default=1883): int,
+        vol.Optional("qos", default=0): validators.All(
             int,
-            Range(min=0, max=2),
+            validators.Range(min=0, max=2),
         ),
-        OptionalField("tls_options", default=EmptyConfigDict): {
-            OptionalField("ca_certs", default=None): AnyValid(str, None),
-            OptionalField("cert_reqs", default=True): bool,
-            OptionalField("certfile", default=None): AnyValid(str, None),
-            OptionalField("ciphers", default=None): AnyValid(str, None),
-            OptionalField("keyfile", default=None): AnyValid(str, None),
-            OptionalField("keyfile_password", default=None): AnyValid(str, None),
-            OptionalField("tls_version", default="tls1.2"): AnyValid(
+        vol.Optional("tls_options", default=EmptyConfigDict): {
+            vol.Optional("ca_certs", default=None): validators.Any(str, None),
+            vol.Optional("cert_reqs", default=True): bool,
+            vol.Optional("certfile", default=None): validators.Any(str, None),
+            vol.Optional("ciphers", default=None): validators.Any(str, None),
+            vol.Optional("keyfile", default=None): validators.Any(str, None),
+            vol.Optional("keyfile_password", default=None): validators.Any(str, None),
+            vol.Optional("tls_version", default="tls1.2"): validators.Any(
                 "tls1", "tls1.1", "tls1.2", None
             ),
         },
-        OptionalField(
+        vol.Optional(
             "topic_prefix", default="brultech-serial2mqtt-{{ device_serial }}"
-        ): AnyValid(str, None),
-        OptionalField("username", default=None): AnyValid(str, None),
-        OptionalField("usetls", default=False): bool,
-        OptionalField("will_message", default=EmptyConfigDict): {
-            OptionalField("payload", default="offline"): str,
-            OptionalField("qos", default=0): All(
+        ): validators.Any(str, None),
+        vol.Optional("username", default=None): validators.Any(str, None),
+        vol.Optional("usetls", default=False): bool,
+        vol.Optional("will_message", default=EmptyConfigDict): {
+            vol.Optional("payload", default="offline"): str,
+            vol.Optional("qos", default=0): validators.All(
                 int,
-                Range(min=0, max=2),
+                validators.Range(min=0, max=2),
             ),
-            OptionalField("retain", default=True): bool,
+            vol.Optional("retain", default=True): bool,
         },
     },
 )

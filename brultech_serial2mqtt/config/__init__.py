@@ -77,8 +77,7 @@ def load_config(root: str = "/") -> Config:
         with open(config_path, "r") as config_file:
             raw_config = yaml.load(config_file, Loader=yaml.SafeLoader)
             logger.debug(f"loaded config {raw_config}.  Validating...")
-            valid_config: Dict[str, Any] = CONFIG_SCHEMA(raw_config)
-            return Config(valid_config)
+            return Config(CONFIG_SCHEMA(raw_config))
     except FileNotFoundError:
         print(f"Unable to find configuration.  Please create it in {config_path}")
         sys.exit()
