@@ -4,7 +4,9 @@ import logging
 from enum import Enum, unique
 from typing import Any, Dict
 
-from voluptuous import All, Invalid, Length, Optional, Schema
+import voluptuous as vol
+import voluptuous.validators as validators
+from voluptuous.error import Invalid
 
 from brultech_serial2mqtt.config.typing import EmptyConfigDict
 
@@ -34,11 +36,11 @@ class LogLevel(Enum):
         )
 
 
-SCHEMA = Schema(
+SCHEMA = vol.Schema(
     {
-        Optional("level", default="info"): LogLevel.fromValue,
-        Optional("logs", default=EmptyConfigDict): {
-            All(str, Length(min=1)): LogLevel.fromValue
+        vol.Optional("level", default="info"): LogLevel.fromValue,
+        vol.Optional("logs", default=EmptyConfigDict): {
+            validators.All(str, validators.Length(min=1)): LogLevel.fromValue
         },
     },
 )

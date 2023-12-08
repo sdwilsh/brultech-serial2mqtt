@@ -3,17 +3,14 @@ from __future__ import annotations
 from enum import Enum, unique
 from typing import Any, Dict, Iterator, List
 
+import voluptuous as vol
+import voluptuous.validators as validators
 from siobrultech_protocols.gem.const import PACKET_DELAY_CLEAR_TIME_DEFAULT
 from siobrultech_protocols.gem.protocol import (
     ApiType as DeviceType,
     API_RESPONSE_WAIT_TIME,
 )
-from voluptuous import All, Invalid, Match
-from voluptuous import Optional as OptionalField
-from voluptuous import Range
-from voluptuous import Required as RequiredField
-from voluptuous import Schema
-from voluptuous.validators import Length
+from voluptuous.error import Invalid
 
 
 @unique
@@ -33,38 +30,46 @@ class ChannelType(Enum):
         )
 
 
-SCHEMA = Schema(
+SCHEMA = vol.Schema(
     {
-        OptionalField("baud", default=115200): int,
-        RequiredField("channels"): All(
+        vol.Optional("baud", default=115200): int,
+        vol.Required("channels"): validators.All(
             [
-                Schema(
+                vol.Schema(
                     {
-                        OptionalField("home_assistant"): All(bool, None),
-                        OptionalField("name"): All(str, Length(min=1)),
-                        RequiredField("number"): All(int, Range(min=1, max=32)),
-                        OptionalField("type", default="normal"): ChannelType.fromValue,
+                        vol.Optional("home_assistant"): validators.All(bool, None),
+                        vol.Optional("name"): validators.All(
+                            str, validators.Length(min=1)
+                        ),
+                        vol.Required("number"): validators.All(
+                            int, validators.Range(min=1, max=32)
+                        ),
+                        vol.Optional("type", default="normal"): ChannelType.fromValue,
                     }
                 )
             ]
         ),
-        RequiredField("device_com"): All(
+        vol.Required("device_com"): validators.All(
             str,
-            Match(
+            validators.Match(
                 r"^(COM1|COM2)$",
             ),
         ),
-        RequiredField("name"): All(str, Length(min=1)),
-        OptionalField(
+        vol.Required("name"): validators.All(str, validators.Length(min=1)),
+        vol.Optional(
             "packet_delay_clear_seconds",
             default=PACKET_DELAY_CLEAR_TIME_DEFAULT.seconds,
-        ): All(int, Range(min=1, max=15 - API_RESPONSE_WAIT_TIME.seconds)),
-        OptionalField(
+        ): validators.All(
+            int, validators.Range(min=1, max=15 - API_RESPONSE_WAIT_TIME.seconds)
+        ),
+        vol.Optional(
             "send_interval_seconds",
             default=8,
-        ): All(int, Range(min=5, max=256)),
-        OptionalField("type", default="GEM"): All(str, Match(r"^(ECM|GEM)$")),
-        OptionalField("url", default="/dev/ttyUSB0"): str,
+        ): validators.All(int, validators.Range(min=5, max=256)),
+        vol.Optional("type", default="GEM"): validators.All(
+            str, validators.Match(r"^(ECM|GEM)$")
+        ),
+        vol.Optional("url", default="/dev/ttyUSB0"): str,
     },
 )
 
