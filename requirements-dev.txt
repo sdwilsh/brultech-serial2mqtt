@@ -1,5 +1,5 @@
 pre-commit ==3.5.0
 pytest-homeassistant-custom-component==0.13.79
-pyright==1.1.296
+pyright==1.1.339
 ruff==0.1.6
 yamllint==1.33.0
