@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from enum import Enum, unique
 from typing import Any, Dict, Iterator, List
 
@@ -110,6 +112,16 @@ class ChannelConfig:
     @property
     def type(self) -> ChannelType:
         return self._type
+
+    def __str__(self) -> str:
+        return json.dumps(
+            {
+                "name": self.name,
+                "number": self.number,
+                "polarized": self.polarized,
+                "type": self.type.name,
+            }
+        )
 
 
 class ChannelsConfig:

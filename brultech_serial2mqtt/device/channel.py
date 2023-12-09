@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import logging
 from enum import Enum, unique
 from typing import Any, Coroutine, Dict, List, Literal, Set, Tuple
 
@@ -9,6 +10,14 @@ from brultech_serial2mqtt.config import Config
 from brultech_serial2mqtt.config.config_device import ChannelConfig, ChannelType
 from brultech_serial2mqtt.device.mqtt import HomeAssistantDiscoveryConfig
 from brultech_serial2mqtt.device.sensor import SensorMixin
+
+
+logger = logging.getLogger(__name__)
+
+
+class ConfigException(Exception):
+    def __init__(self, message: str, config: ChannelConfig):
+        super().__init__(f"{message} channel_config={config}")
 
 
 class Channel(SensorMixin):
@@ -22,6 +31,11 @@ class Channel(SensorMixin):
             f"gem_{previous_packet.serial_number}_channel_{channel_num}"
         )
         self._name_root = config.device.channels[channel_num].name
+
+        if channel_num > previous_packet.num_channels:
+            raise ConfigException(
+                "Channel configured but not available in packet!", self._channel_config
+            )
 
     async def handle_new_packet(self, packet: Packet) -> None:
         self._average_power = self._last_packet.get_average_power(
@@ -225,10 +239,15 @@ class AggregatedEnergyChannel(SensorMixin):
 
 class ChannelsManager:
     def __init__(self, config: Config, previous_packet: Packet):
-        self._channels = {
-            Channel(config, c_conf.number, previous_packet)
-            for c_conf in config.device.channels
-        }
+        self._channels: Set[Channel] = set()
+        for c_conf in config.device.channels:
+            try:
+                self._channels.add(Channel(config, c_conf.number, previous_packet))
+            except ConfigException:
+                logger.exception(
+                    f"Exception while setting up channel {c_conf.number}; skipping!"
+                )
+
         self._previous_packet = previous_packet
         self._aggregate_channels = self._get_aggregate_channels(config)
 
@@ -238,6 +257,10 @@ class ChannelsManager:
             updates.append(c.handle_new_packet(packet))
         await asyncio.gather(*updates)
         self._previous_packet = packet
+
+    @property
+    def channels(self) -> Set[Channel]:
+        return self._channels
 
     @property
     def state_data(self) -> Dict[str, Dict[str, Any]]:
