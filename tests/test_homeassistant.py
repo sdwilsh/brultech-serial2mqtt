@@ -9,8 +9,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.template import Template
 from siobrultech_protocols.gem.packets import BIN48_NET_TIME, Packet
 
-from brultech_serial2mqtt.config import Config
+from brultech_serial2mqtt.config import CONFIG_SCHEMA, Config
 from brultech_serial2mqtt.device import DeviceManager
+
+
+@pytest.fixture()
+def local_config(
+    config: Dict[str, Any],
+) -> Generator[Config, None, None]:
+    valid_config: Dict[str, Any] = CONFIG_SCHEMA(config)
+    yield Config(valid_config)
 
 
 @pytest.fixture()
@@ -107,15 +115,18 @@ def assertParsedValues(parsed: Dict[str, Any], expected: Dict[str, Any]) -> None
         assert entity in expected, f"Unexpected entity '{entity}' in parsed data."
 
 
-@pytest.mark.local_config(
-    {
-        "device": {
-            "channels": [{"number": 1}],
-            "device_com": "COM1",
-            "name": "gem",
+@pytest.mark.parametrize(
+    "config",
+    [
+        {
+            "device": {
+                "channels": [{"number": 1}],
+                "device_com": "COM1",
+                "name": "gem",
+            },
+            "mqtt": {"broker": "localhost"},
         },
-        "mqtt": {"broker": "localhost"},
-    }
+    ],
 )
 def test_simple_config(
     discovery_configs: DiscoveryConfigByUniqueId, parsed_values: Dict[str, Any]
@@ -287,18 +298,21 @@ def test_simple_config(
     )
 
 
-@pytest.mark.local_config(
-    {
-        "device": {
-            "channels": [
-                {"number": 1, "type": "main"},
-                {"number": 2, "type": "solar_downstream_main"},
-            ],
-            "device_com": "COM1",
-            "name": "gem",
+@pytest.mark.parametrize(
+    "config",
+    [
+        {
+            "device": {
+                "channels": [
+                    {"number": 1, "type": "main"},
+                    {"number": 2, "type": "solar_downstream_main"},
+                ],
+                "device_com": "COM1",
+                "name": "gem",
+            },
+            "mqtt": {"broker": "localhost"},
         },
-        "mqtt": {"broker": "localhost"},
-    }
+    ],
 )
 def test_main_with_downstream_soloar_config(parsed_values: Dict[str, Any]):
     assertParsedValues(
@@ -320,20 +334,23 @@ def test_main_with_downstream_soloar_config(parsed_values: Dict[str, Any]):
     )
 
 
-@pytest.mark.local_config(
-    {
-        "device": {
-            "channels": [
-                # Absolute: 1 Wh, Polarized 0 Wh
-                {"number": 1, "type": "solar_upstream_main"},
-                # Absolute: 2 Wh, Polarized 1 Wh
-                {"number": 2, "type": "solar_upstream_main"},
-            ],
-            "device_com": "COM1",
-            "name": "gem",
+@pytest.mark.parametrize(
+    "config",
+    [
+        {
+            "device": {
+                "channels": [
+                    # Absolute: 1 Wh, Polarized 0 Wh
+                    {"number": 1, "type": "solar_upstream_main"},
+                    # Absolute: 2 Wh, Polarized 1 Wh
+                    {"number": 2, "type": "solar_upstream_main"},
+                ],
+                "device_com": "COM1",
+                "name": "gem",
+            },
+            "mqtt": {"broker": "localhost"},
         },
-        "mqtt": {"broker": "localhost"},
-    }
+    ],
 )
 def test_solar_production_only_upstream_config(parsed_values: Dict[str, Any]):
     assertParsedValues(
@@ -355,18 +372,21 @@ def test_solar_production_only_upstream_config(parsed_values: Dict[str, Any]):
     )
 
 
-@pytest.mark.local_config(
-    {
-        "device": {
-            "channels": [
-                {"number": 1, "type": "solar_downstream_main"},
-                {"number": 2, "type": "solar_downstream_main"},
-            ],
-            "device_com": "COM1",
-            "name": "gem",
+@pytest.mark.parametrize(
+    "config",
+    [
+        {
+            "device": {
+                "channels": [
+                    {"number": 1, "type": "solar_downstream_main"},
+                    {"number": 2, "type": "solar_downstream_main"},
+                ],
+                "device_com": "COM1",
+                "name": "gem",
+            },
+            "mqtt": {"broker": "localhost"},
         },
-        "mqtt": {"broker": "localhost"},
-    }
+    ],
 )
 def test_solar_production_only_downstream_config(parsed_values: Dict[str, Any]):
     assertParsedValues(
@@ -386,22 +406,25 @@ def test_solar_production_only_downstream_config(parsed_values: Dict[str, Any]):
     )
 
 
-@pytest.mark.local_config(
-    {
-        "device": {
-            "channels": [
-                # Absolute: 1 Wh, Polarized 0 Wh
-                {"number": 1, "type": "main"},
-                # Absolute: 2 Wh, Polarized 1 Wh
-                {"number": 2, "type": "solar_upstream_main"},
-                # Absolute: 3 Wh, Polarized 2 Wh
-                {"number": 3, "type": "solar_downstream_main"},
-            ],
-            "device_com": "COM1",
-            "name": "gem",
+@pytest.mark.parametrize(
+    "config",
+    [
+        {
+            "device": {
+                "channels": [
+                    # Absolute: 1 Wh, Polarized 0 Wh
+                    {"number": 1, "type": "main"},
+                    # Absolute: 2 Wh, Polarized 1 Wh
+                    {"number": 2, "type": "solar_upstream_main"},
+                    # Absolute: 3 Wh, Polarized 2 Wh
+                    {"number": 3, "type": "solar_downstream_main"},
+                ],
+                "device_com": "COM1",
+                "name": "gem",
+            },
+            "mqtt": {"broker": "localhost"},
         },
-        "mqtt": {"broker": "localhost"},
-    }
+    ],
 )
 def test_solar_production_upstream_and_downstream_config(
     discovery_configs: DiscoveryConfigByUniqueId, parsed_values: Dict[str, Any]
