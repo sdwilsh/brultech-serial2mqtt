@@ -18,7 +18,7 @@ exclude = [
     "**/__pycache__",
     "typings",
 ]
-pythonVersion = "3.8"
+pythonVersion = "3.11"
 reportConstantRedefinition = "error"
 reportFunctionMemberAccess = "error"
 reportIncompatibleMethodOverride = "error"
