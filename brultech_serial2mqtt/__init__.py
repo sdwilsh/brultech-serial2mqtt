@@ -5,7 +5,7 @@ from contextlib import AsyncExitStack
 from datetime import timedelta
 
 from aiobrultech_serial import Connection as DeviceConnection
-from aiomqtt import Client as MQTTClient
+from aiomqtt import Client as MqttClient
 from aiomqtt.client import Will
 from aiomqtt.error import MqttError
 from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFormatType
@@ -63,8 +63,8 @@ class BrultechSerial2MQTT:
 
             logger.debug(f"Connecting to MQTT broker at {self._config.mqtt.broker}")
             async with AsyncExitStack() as stack:
-                mqtt_client: MQTTClient = await stack.enter_async_context(
-                    MQTTClient(
+                mqtt_client: MqttClient = await stack.enter_async_context(
+                    MqttClient(
                         client_id=self._config.mqtt.client_id(
                             first_packet.serial_number
                         ),
