@@ -6,7 +6,6 @@ from datetime import timedelta
 
 from aiobrultech_serial import Connection as DeviceConnection
 from aiomqtt import Client as MqttClient
-from aiomqtt.client import Will
 from aiomqtt.error import MqttError
 from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFormatType
 
@@ -15,6 +14,7 @@ from brultech_serial2mqtt.config.config_device import DeviceCOM, DeviceType
 from brultech_serial2mqtt.config.config_logging import LoggingConfig
 from brultech_serial2mqtt.device import DeviceManager
 from brultech_serial2mqtt.mqtt import (
+    get_client,
     manage_home_assistant_lifecycle,
     publish_birth_message,
 )
@@ -64,24 +64,7 @@ class BrultechSerial2MQTT:
             logger.debug(f"Connecting to MQTT broker at {self._config.mqtt.broker}")
             async with AsyncExitStack() as stack:
                 mqtt_client: MqttClient = await stack.enter_async_context(
-                    MqttClient(
-                        client_id=self._config.mqtt.client_id(
-                            first_packet.serial_number
-                        ),
-                        hostname=self._config.mqtt.broker,
-                        password=self._config.mqtt.password,
-                        port=self._config.mqtt.port,
-                        tls_params=self._config.mqtt.tls_params,
-                        username=self._config.mqtt.username,
-                        will=Will(
-                            payload=self._config.mqtt.will_message.payload,
-                            qos=self._config.mqtt.will_message.qos,
-                            retain=self._config.mqtt.will_message.retain,
-                            topic=self._config.mqtt.status_topic(
-                                first_packet.serial_number
-                            ),
-                        ),
-                    )
+                    get_client(self._config.mqtt, first_packet.serial_number)
                 )
                 task = await manage_home_assistant_lifecycle(
                     self._config.mqtt,

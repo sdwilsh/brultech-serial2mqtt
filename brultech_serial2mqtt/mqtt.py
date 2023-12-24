@@ -6,11 +6,29 @@ from asyncio.tasks import Task
 from typing import Awaitable, Callable, Optional
 
 from aiomqtt import Client
+from aiomqtt.client import Will
 from aiomqtt.error import MqttError
 from brultech_serial2mqtt.config import MQTTConfig
 from brultech_serial2mqtt.device import DeviceManager
 
 logger = logging.getLogger(__name__)
+
+
+def get_client(config: MQTTConfig, device_serial: int) -> Client:
+    return Client(
+        client_id=config.client_id(device_serial),
+        hostname=config.broker,
+        password=config.password,
+        port=config.port,
+        tls_params=config.tls_params,
+        username=config.username,
+        will=Will(
+            payload=config.will_message.payload,
+            qos=config.will_message.qos,
+            retain=config.will_message.retain,
+            topic=config.status_topic(device_serial),
+        ),
+    )
 
 
 async def manage_home_assistant_lifecycle(
