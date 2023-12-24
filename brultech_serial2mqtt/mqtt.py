@@ -10,6 +10,7 @@ from aiomqtt.client import Will
 from aiomqtt.error import MqttError
 from brultech_serial2mqtt.config import MQTTConfig
 from brultech_serial2mqtt.device import DeviceManager
+from siobrultech_protocols.gem.packets import Packet as DevicePacket
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,10 @@ def get_client(config: MQTTConfig, device_serial: int) -> Client:
 
 
 async def manage_home_assistant_lifecycle(
-    config: MQTTConfig, mqtt_client: Client, device_manager: DeviceManager
+    config: MQTTConfig,
+    mqtt_client: Client,
+    device_manager: DeviceManager,
+    packet_getter: Callable[[], DevicePacket],
 ) -> Optional[Task[None]]:
     if not config.home_assistant.enable:
         logger.info(
@@ -53,6 +57,8 @@ async def manage_home_assistant_lifecycle(
             mqtt_client,
             device_manager.serial_number,
         )
+        # Now that Home Assistant is online, give it the latest data too!
+        await publish_packet(mqtt_client, device_manager, packet_getter())
 
     # Assume Home Assistant is online already, and publish discovery configs.
     await publish_home_assistant_discovery_config(config, mqtt_client, device_manager)
@@ -107,6 +113,20 @@ async def publish_home_assistant_discovery_config(
             "Exception caught while attempting to publish Home Assistant discovery configuration!",
             exc_info=exc,
         )
+
+
+async def publish_packet(
+    mqtt_client: Client, device_manager: DeviceManager, packet: DevicePacket
+) -> bool:
+    try:
+        await device_manager.handle_new_packet(packet, mqtt_client)
+        return True
+    except MqttError as exc:
+        logger.exception(
+            "MqttError while handling a new packet!",
+            exc_info=exc,
+        )
+        return False
 
 
 async def subscribe_to_home_assistant_birth(

@@ -3,11 +3,14 @@ from __future__ import annotations
 import logging
 from contextlib import AsyncExitStack
 from datetime import timedelta
+from typing import Optional
 
 from aiobrultech_serial import Connection as DeviceConnection
 from aiomqtt import Client as MqttClient
-from aiomqtt.error import MqttError
-from siobrultech_protocols.gem.packets import PacketFormatType as DevicePacketFormatType
+from siobrultech_protocols.gem.packets import (
+    Packet as DevicePacket,
+    PacketFormatType as DevicePacketFormatType,
+)
 
 from brultech_serial2mqtt.config import load_config
 from brultech_serial2mqtt.config.config_device import DeviceCOM, DeviceType
@@ -19,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 
 class BrultechSerial2MQTT:
+    _most_recent_packet: Optional[DevicePacket] = None
+
     def __init__(self):
         self._config = load_config()
 
@@ -66,6 +71,7 @@ class BrultechSerial2MQTT:
                     self._config.mqtt,
                     mqtt_client,
                     device_manager,
+                    lambda: self.most_recent_packet or first_packet,
                 )
                 if task is not None:
                     stack.callback(lambda: task.cancel())
@@ -78,6 +84,7 @@ class BrultechSerial2MQTT:
                 packet_count = self._config.mqtt.home_assistant.skip_packets + 1
                 async for packet in device_connection.packets():
                     logger.debug(f"Received new packet:\n{packet}")
+                    self._most_recent_packet = packet
                     packet_count += 1
                     if packet_count <= self._config.mqtt.home_assistant.skip_packets:
                         logger.debug(
@@ -86,16 +93,18 @@ class BrultechSerial2MQTT:
                             self._config.mqtt.home_assistant.skip_packets,
                         )
                         continue
-                    else:
-                        packet_count = 0
-                    try:
-                        await device_manager.handle_new_packet(packet, mqtt_client)
-                    except MqttError as exc:
-                        logger.exception(
-                            "MqttError while handling a new packet!",
-                            exc_info=exc,
-                        )
+
+                    if not await mqtt.publish_packet(
+                        mqtt_client, device_manager, packet
+                    ):
                         break
+
+                    # Reset the packet_count now that we have published.
+                    packet_count = 0
+
+    @property
+    def most_recent_packet(self) -> Optional[DevicePacket]:
+        return self._most_recent_packet
 
     async def _setup_device(self, connection: DeviceConnection) -> None:
         logger.info(f"Setting up {self._config.device.type.name} device...")
