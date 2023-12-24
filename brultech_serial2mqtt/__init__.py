@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import asyncio
 import logging
-from asyncio.tasks import Task
 from contextlib import AsyncExitStack
 from datetime import timedelta
-from typing import Optional
 
 from aiobrultech_serial import Connection as DeviceConnection
 from aiomqtt import Client as MQTTClient
@@ -18,8 +15,8 @@ from brultech_serial2mqtt.config.config_device import DeviceCOM, DeviceType
 from brultech_serial2mqtt.config.config_logging import LoggingConfig
 from brultech_serial2mqtt.device import DeviceManager
 from brultech_serial2mqtt.mqtt import (
+    manage_home_assistant_lifecycle,
     publish_birth_message,
-    publish_home_assistant_discovery_config,
 )
 
 logger = logging.getLogger(__name__)
@@ -86,8 +83,10 @@ class BrultechSerial2MQTT:
                         ),
                     )
                 )
-                task = await self._publish_home_assistant_discovery_config(
-                    mqtt_client, device_manager
+                task = await manage_home_assistant_lifecycle(
+                    self._config.mqtt,
+                    mqtt_client,
+                    device_manager,
                 )
                 if task is not None:
                     stack.callback(lambda: task.cancel())
@@ -141,53 +140,3 @@ class BrultechSerial2MQTT:
         )
 
         logger.info(f"Setup of {self._config.device.type.name} device complete!")
-
-    async def _publish_home_assistant_discovery_config(
-        self, mqtt_client: MQTTClient, device_manager: DeviceManager
-    ) -> Optional[Task[None]]:
-        if not self._config.mqtt.home_assistant.enable:
-            logger.info(
-                "Home Assistant dicovery configuration is disabled.  Not publishing configuration."
-            )
-            return None
-
-        async def subscribe_to_home_assistant_birth() -> None:
-            try:
-                async with mqtt_client.messages() as messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/issues/100
-                    await mqtt_client.subscribe(
-                        self._config.mqtt.home_assistant.birth_message.topic,
-                        qos=self._config.mqtt.home_assistant.birth_message.qos,
-                    )
-                    async for message in messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/issues/100
-                        if (
-                            message.topic.matches(
-                                self._config.mqtt.home_assistant.birth_message.topic
-                            )
-                            and message.payload
-                            == self._config.mqtt.home_assistant.birth_message.payload
-                        ):
-                            logger.debug(
-                                "Home Assistant has re-connected to the mqtt server.  Resending discovery configuration..."
-                            )
-                            await asyncio.create_task(
-                                publish_home_assistant_discovery_config(
-                                    self._config.mqtt, mqtt_client, device_manager
-                                )
-                            )
-            except asyncio.CancelledError:
-                pass
-            except MqttError as exc:
-                logger.debug(
-                    "MqttError while listenting/publishing for Home Assistant birth!",
-                    exc_info=exc,
-                )
-            except Exception as exc:
-                logger.exception(
-                    "Exception caught while listenting/publishing for Home Assistant birth!",
-                    exc_info=exc,
-                )
-
-        await publish_home_assistant_discovery_config(
-            self._config.mqtt, mqtt_client, device_manager
-        )
-        return asyncio.create_task(subscribe_to_home_assistant_birth())
