@@ -153,7 +153,13 @@ async def test_manage_home_assistant_lifecyle_birth_message_sends_discovery(
                     payload=ANY,
                 ),
                 call(topic="homeassistant/sensor/gem_3456_voltage/config", payload=ANY),
+                call(
+                    payload=mqtt_config.birth_message.payload,
+                    qos=mqtt_config.birth_message.qos,
+                    retain=mqtt_config.birth_message.retain,
+                    topic=mqtt_config.status_topic(device_manager.serial_number),
+                ),
             ],
             any_order=True,
         )
-        assert mock_client.publish.call_count == 4
+        assert mock_client.publish.call_count == 5

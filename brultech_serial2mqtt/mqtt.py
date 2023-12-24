@@ -44,8 +44,14 @@ async def manage_home_assistant_lifecycle(
         logger.debug(
             "Home Assistant has re-connected to the mqtt server.  Resending discovery configuration..."
         )
-        await asyncio.create_task(
-            publish_home_assistant_discovery_config(config, mqtt_client, device_manager)
+        await publish_home_assistant_discovery_config(
+            config, mqtt_client, device_manager
+        )
+        # Regardless if our birth message is retained, Home Assistant needs to see this again.
+        await publish_birth_message(
+            config,
+            mqtt_client,
+            device_manager.serial_number,
         )
 
     # Assume Home Assistant is online already, and publish discovery configs.
