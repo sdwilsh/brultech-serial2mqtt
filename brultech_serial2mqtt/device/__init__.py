@@ -57,6 +57,10 @@ class DeviceManager:
         logger.debug(f"Published packet data to {topic}:\n{pprint.pformat(state)}")
 
     @property
+    def serial_number(self) -> int:
+        return self._previous_packet.serial_number
+
+    @property
     def state_data(self) -> Dict[str, Dict[str, Any]]:
         states = self._voltage.state_data
         states.update(self._channels_manager.state_data)
