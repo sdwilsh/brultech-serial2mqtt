@@ -48,7 +48,10 @@ async def manage_home_assistant_lifecycle(
             publish_home_assistant_discovery_config(config, mqtt_client, device_manager)
         )
 
+    # Assume Home Assistant is online already, and publish discovery configs.
     await publish_home_assistant_discovery_config(config, mqtt_client, device_manager)
+
+    # Subscribe to birth messages in case Home Assistant goes away and comes back.
     return asyncio.create_task(
         subscribe_to_home_assistant_birth(config, mqtt_client, _on_birth)
     )
