@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import pprint
 from asyncio.tasks import Task
 from contextlib import AsyncExitStack
 from datetime import timedelta
@@ -18,7 +17,10 @@ from brultech_serial2mqtt.config import load_config
 from brultech_serial2mqtt.config.config_device import DeviceCOM, DeviceType
 from brultech_serial2mqtt.config.config_logging import LoggingConfig
 from brultech_serial2mqtt.device import DeviceManager
-from brultech_serial2mqtt.mqtt import publish_birth_message
+from brultech_serial2mqtt.mqtt import (
+    publish_birth_message,
+    publish_home_assistant_discovery_config,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -149,35 +151,6 @@ class BrultechSerial2MQTT:
             )
             return None
 
-        async def publish_discovery_config() -> None:
-            try:
-                for config in device_manager.home_assistant_discovery_configs:
-                    topic = config.get_discovery_topic(
-                        self._config.mqtt.home_assistant.discovery_prefix
-                    )
-                    await mqtt_client.publish(
-                        topic=topic,
-                        payload=config.json_config,
-                    )
-                    logger.info(
-                        f"Published Home Assistant dicovery configuration for a {config.component} identified by {config.object_id} to {topic}"
-                    )
-                    logger.debug(
-                        f"Configuration for {config.component} identified by {config.object_id}:\n{pprint.pformat(config.config)}"
-                    )
-            except asyncio.CancelledError:
-                pass
-            except MqttError as exc:
-                logger.debug(
-                    "MqttError while attempting to publish Home Assistant dicovery configuration!",
-                    exc_info=exc,
-                )
-            except Exception as exc:
-                logger.exception(
-                    "Exception caught while attempting to publish Home Assistant discovery configuration!",
-                    exc_info=exc,
-                )
-
         async def subscribe_to_home_assistant_birth() -> None:
             try:
                 async with mqtt_client.messages() as messages:  # type: ignore https://github.com/sbtinstruments/asyncio-mqtt/issues/100
@@ -196,7 +169,11 @@ class BrultechSerial2MQTT:
                             logger.debug(
                                 "Home Assistant has re-connected to the mqtt server.  Resending discovery configuration..."
                             )
-                            await asyncio.create_task(publish_discovery_config())
+                            await asyncio.create_task(
+                                publish_home_assistant_discovery_config(
+                                    self._config.mqtt, mqtt_client, device_manager
+                                )
+                            )
             except asyncio.CancelledError:
                 pass
             except MqttError as exc:
@@ -210,5 +187,7 @@ class BrultechSerial2MQTT:
                     exc_info=exc,
                 )
 
-        await publish_discovery_config()
+        await publish_home_assistant_discovery_config(
+            self._config.mqtt, mqtt_client, device_manager
+        )
         return asyncio.create_task(subscribe_to_home_assistant_birth())
