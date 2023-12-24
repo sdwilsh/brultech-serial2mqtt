@@ -6,10 +6,10 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.template import Template
 from brultech_serial2mqtt.device import DeviceManager
+from brultech_serial2mqtt.device.mqtt import DiscoveryConfigDict
 
 
-DiscoveryConfig = Dict[str, Any]
-DiscoveryConfigByUniqueId = Dict[str, DiscoveryConfig]
+DiscoveryConfigByUniqueId = Dict[str, DiscoveryConfigDict]
 
 
 @pytest.fixture()
