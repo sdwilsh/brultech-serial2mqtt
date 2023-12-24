@@ -18,6 +18,7 @@ from brultech_serial2mqtt.config import load_config
 from brultech_serial2mqtt.config.config_device import DeviceCOM, DeviceType
 from brultech_serial2mqtt.config.config_logging import LoggingConfig
 from brultech_serial2mqtt.device import DeviceManager
+from brultech_serial2mqtt.mqtt import publish_birth_message
 
 logger = logging.getLogger(__name__)
 
@@ -89,8 +90,8 @@ class BrultechSerial2MQTT:
                 if task is not None:
                     stack.callback(lambda: task.cancel())
 
-                await self._publish_birth_message(
-                    mqtt_client, first_packet.serial_number
+                await publish_birth_message(
+                    self._config.mqtt, mqtt_client, first_packet.serial_number
                 )
 
                 # Set the packet count such that we will send the first packet to Home Assistant.
@@ -211,16 +212,3 @@ class BrultechSerial2MQTT:
 
         await publish_discovery_config()
         return asyncio.create_task(subscribe_to_home_assistant_birth())
-
-    async def _publish_birth_message(
-        self, mqtt_client: MQTTClient, device_serial: int
-    ) -> None:
-        logger.info(
-            f"Notifying clients that we are online on {self._config.mqtt.status_topic(device_serial)}"
-        )
-        await mqtt_client.publish(
-            payload=self._config.mqtt.birth_message.payload,
-            qos=self._config.mqtt.birth_message.qos,
-            retain=self._config.mqtt.birth_message.retain,
-            topic=self._config.mqtt.status_topic(device_serial),
-        )
