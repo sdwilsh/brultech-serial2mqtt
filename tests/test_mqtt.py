@@ -8,6 +8,7 @@ from aiomqtt.client import Message
 from brultech_serial2mqtt import mqtt
 from brultech_serial2mqtt.config import Config, MQTTConfig
 from brultech_serial2mqtt.device import DeviceManager
+from siobrultech_protocols.gem.packets import Packet
 
 
 @pytest.fixture()
@@ -34,12 +35,14 @@ def mqtt_config(local_config: Config) -> Generator[MQTTConfig, None, None]:
     ],
 )
 async def test_manage_home_assistant_lifecyle_disabled(
-    mqtt_config: MQTTConfig, device_manager: DeviceManager
+    mqtt_config: MQTTConfig,
+    device_manager: DeviceManager,
+    packet_generator: Generator[Packet, None, None],
 ) -> None:
     with patch("brultech_serial2mqtt.mqtt.Client", autospec=True):
         client = mqtt.get_client(mqtt_config, 42)
         task = await mqtt.manage_home_assistant_lifecycle(
-            mqtt_config, client, device_manager
+            mqtt_config, client, device_manager, lambda: next(packet_generator)
         )
         assert task is None
 
@@ -60,12 +63,14 @@ async def test_manage_home_assistant_lifecyle_disabled(
     ],
 )
 async def test_manage_home_assistant_lifecyle_enabled(
-    mqtt_config: MQTTConfig, device_manager: DeviceManager
+    mqtt_config: MQTTConfig,
+    device_manager: DeviceManager,
+    packet_generator: Generator[Packet, None, None],
 ) -> None:
     with patch("brultech_serial2mqtt.mqtt.Client", autospec=True):
         client = mqtt.get_client(mqtt_config, 42)
         task = await mqtt.manage_home_assistant_lifecycle(
-            mqtt_config, client, device_manager
+            mqtt_config, client, device_manager, lambda: next(packet_generator)
         )
         assert task is not None
         await task
@@ -108,7 +113,9 @@ async def test_manage_home_assistant_lifecyle_enabled(
     ],
 )
 async def test_manage_home_assistant_lifecyle_birth_message_sends_discovery(
-    mqtt_config: MQTTConfig, device_manager: DeviceManager
+    mqtt_config: MQTTConfig,
+    device_manager: DeviceManager,
+    packet_generator: Generator[Packet, None, None],
 ) -> None:
     BIRTH_MESSAGE = Message(
         topic=mqtt_config.home_assistant.birth_message.topic,
@@ -129,7 +136,7 @@ async def test_manage_home_assistant_lifecyle_birth_message_sends_discovery(
     with patch("brultech_serial2mqtt.mqtt.Client", autospec=True):
         client = mqtt.get_client(mqtt_config, 42)
         task = await mqtt.manage_home_assistant_lifecycle(
-            mqtt_config, client, device_manager
+            mqtt_config, client, device_manager, lambda: next(packet_generator)
         )
         assert task is not None
         mock_client = cast(Mock, client)
@@ -159,7 +166,12 @@ async def test_manage_home_assistant_lifecyle_birth_message_sends_discovery(
                     retain=mqtt_config.birth_message.retain,
                     topic=mqtt_config.status_topic(device_manager.serial_number),
                 ),
+                call(
+                    payload=ANY,
+                    qos=mqtt_config.qos,
+                    topic=mqtt_config.state_topic(device_manager.serial_number),
+                ),
             ],
             any_order=True,
         )
-        assert mock_client.publish.call_count == 5
+        assert mock_client.publish.call_count == 6
