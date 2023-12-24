@@ -233,8 +233,8 @@ def test_simple_config(
     assertParsedValues(
         parsed_values,
         {
-            "gem_3456_channel_1_current": 0.1,
-            "gem_3456_channel_1_energy": 1,
+            "gem_3456_channel_1_current": 0.2,
+            "gem_3456_channel_1_energy": 2,
             "gem_3456_channel_1_power": 360,
             "gem_3456_voltage": 120.0,
         },
@@ -257,21 +257,21 @@ def test_simple_config(
         },
     ],
 )
-def test_main_with_downstream_soloar_config(parsed_values: Dict[str, Any]):
+def test_main_with_downstream_solar_config(parsed_values: Dict[str, Any]):
     assertParsedValues(
         parsed_values,
         {
-            "gem_3456_channel_1_absolute_energy": 1,  # To/from grid, through main
-            "gem_3456_channel_1_current": 0.1,
+            "gem_3456_channel_1_absolute_energy": 2,  # To/from grid, through main
+            "gem_3456_channel_1_current": 0.2,
             "gem_3456_channel_1_polarized_energy": 0,  # To grid, through main
             "gem_3456_channel_1_power": 360,
-            "gem_3456_channel_2_absolute_energy": 2,  # To/from solar
-            "gem_3456_channel_2_current": 0.2,
+            "gem_3456_channel_2_absolute_energy": 3,  # To/from solar
+            "gem_3456_channel_2_current": 0.3,
             "gem_3456_channel_2_polarized_energy": 1,  # From solar
-            "gem_3456_channel_2_power": 0,
+            "gem_3456_channel_2_power": 360,
             "gem_3456_solar_production_energy": 1,
             "gem_3456_grid_returned_energy": 0,
-            "gem_3456_grid_consumed_energy": 1,
+            "gem_3456_grid_consumed_energy": 2,
             "gem_3456_voltage": 120.0,
         },
     )
@@ -299,17 +299,17 @@ def test_solar_production_only_upstream_config(parsed_values: Dict[str, Any]):
     assertParsedValues(
         parsed_values,
         {
-            "gem_3456_channel_1_absolute_energy": 1,
-            "gem_3456_channel_1_current": 0.1,
+            "gem_3456_channel_1_absolute_energy": 2,
+            "gem_3456_channel_1_current": 0.2,
             "gem_3456_channel_1_polarized_energy": 0,
             "gem_3456_channel_1_power": 360,
-            "gem_3456_channel_2_absolute_energy": 2,
-            "gem_3456_channel_2_current": 0.2,
+            "gem_3456_channel_2_absolute_energy": 3,
+            "gem_3456_channel_2_current": 0.3,
             "gem_3456_channel_2_polarized_energy": 1,
-            "gem_3456_channel_2_power": 0,
+            "gem_3456_channel_2_power": 360,
             "gem_3456_solar_production_energy": 1,
             "gem_3456_grid_returned_energy": 1,
-            "gem_3456_grid_consumed_energy": 2,
+            "gem_3456_grid_consumed_energy": 4,
             "gem_3456_voltage": 120.0,
         },
     )
@@ -335,14 +335,14 @@ def test_solar_production_only_downstream_config(parsed_values: Dict[str, Any]):
     assertParsedValues(
         parsed_values,
         {
-            "gem_3456_channel_1_absolute_energy": 1,
-            "gem_3456_channel_1_current": 0.1,
+            "gem_3456_channel_1_absolute_energy": 2,
+            "gem_3456_channel_1_current": 0.2,
             "gem_3456_channel_1_polarized_energy": 0,
             "gem_3456_channel_1_power": 360,
-            "gem_3456_channel_2_absolute_energy": 2,
-            "gem_3456_channel_2_current": 0.2,
+            "gem_3456_channel_2_absolute_energy": 3,
+            "gem_3456_channel_2_current": 0.3,
             "gem_3456_channel_2_polarized_energy": 1,
-            "gem_3456_channel_2_power": 0,
+            "gem_3456_channel_2_power": 360,
             "gem_3456_solar_production_energy": 1,
             "gem_3456_voltage": 120.0,
         },
@@ -1003,21 +1003,21 @@ def test_solar_production_upstream_and_downstream_config(
     assertParsedValues(
         parsed_values,
         {
-            "gem_3456_channel_1_absolute_energy": 1,
-            "gem_3456_channel_1_current": 0.1,
+            "gem_3456_channel_1_absolute_energy": 2,
+            "gem_3456_channel_1_current": 0.2,
             "gem_3456_channel_1_polarized_energy": 0,
             "gem_3456_channel_1_power": 360,
-            "gem_3456_channel_2_absolute_energy": 2,
-            "gem_3456_channel_2_current": 0.2,
+            "gem_3456_channel_2_absolute_energy": 3,
+            "gem_3456_channel_2_current": 0.3,
             "gem_3456_channel_2_polarized_energy": 1,
-            "gem_3456_channel_2_power": 0,
-            "gem_3456_channel_3_absolute_energy": 3,
-            "gem_3456_channel_3_current": 0.3,
+            "gem_3456_channel_2_power": 360,
+            "gem_3456_channel_3_absolute_energy": 4,
+            "gem_3456_channel_3_current": 0.4,
             "gem_3456_channel_3_polarized_energy": 2,
-            "gem_3456_channel_3_power": -360,
+            "gem_3456_channel_3_power": 360,
             "gem_3456_solar_production_energy": 3,
             "gem_3456_grid_returned_energy": 1,
-            "gem_3456_grid_consumed_energy": 2,
+            "gem_3456_grid_consumed_energy": 4,
             "gem_3456_voltage": 120.0,
         },
     )
