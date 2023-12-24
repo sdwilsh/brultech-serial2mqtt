@@ -13,11 +13,7 @@ from brultech_serial2mqtt.config import load_config
 from brultech_serial2mqtt.config.config_device import DeviceCOM, DeviceType
 from brultech_serial2mqtt.config.config_logging import LoggingConfig
 from brultech_serial2mqtt.device import DeviceManager
-from brultech_serial2mqtt.mqtt import (
-    get_client,
-    manage_home_assistant_lifecycle,
-    publish_birth_message,
-)
+from brultech_serial2mqtt import mqtt
 
 logger = logging.getLogger(__name__)
 
@@ -64,9 +60,9 @@ class BrultechSerial2MQTT:
             logger.debug(f"Connecting to MQTT broker at {self._config.mqtt.broker}")
             async with AsyncExitStack() as stack:
                 mqtt_client: MqttClient = await stack.enter_async_context(
-                    get_client(self._config.mqtt, first_packet.serial_number)
+                    mqtt.get_client(self._config.mqtt, first_packet.serial_number)
                 )
-                task = await manage_home_assistant_lifecycle(
+                task = await mqtt.manage_home_assistant_lifecycle(
                     self._config.mqtt,
                     mqtt_client,
                     device_manager,
@@ -74,7 +70,7 @@ class BrultechSerial2MQTT:
                 if task is not None:
                     stack.callback(lambda: task.cancel())
 
-                await publish_birth_message(
+                await mqtt.publish_birth_message(
                     self._config.mqtt, mqtt_client, first_packet.serial_number
                 )
 
