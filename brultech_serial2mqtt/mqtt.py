@@ -5,7 +5,7 @@ import pprint
 from asyncio.tasks import Task
 from typing import Awaitable, Callable, Optional
 
-from aiomqtt import Client as MQTTClient
+from aiomqtt import Client
 from aiomqtt.error import MqttError
 from brultech_serial2mqtt.config import MQTTConfig
 from brultech_serial2mqtt.device import DeviceManager
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 async def manage_home_assistant_lifecycle(
-    config: MQTTConfig, mqtt_client: MQTTClient, device_manager: DeviceManager
+    config: MQTTConfig, mqtt_client: Client, device_manager: DeviceManager
 ) -> Optional[Task[None]]:
     if not config.home_assistant.enable:
         logger.info(
@@ -37,7 +37,7 @@ async def manage_home_assistant_lifecycle(
 
 
 async def publish_birth_message(
-    config: MQTTConfig, mqtt_client: MQTTClient, device_serial: int
+    config: MQTTConfig, mqtt_client: Client, device_serial: int
 ) -> None:
     logger.info(
         f"Notifying clients that we are online on {config.status_topic(device_serial)}"
@@ -51,7 +51,7 @@ async def publish_birth_message(
 
 
 async def publish_home_assistant_discovery_config(
-    config: MQTTConfig, mqtt_client: MQTTClient, device_manager: DeviceManager
+    config: MQTTConfig, mqtt_client: Client, device_manager: DeviceManager
 ) -> None:
     try:
         for discovery_config in device_manager.home_assistant_discovery_configs:
@@ -83,7 +83,7 @@ async def publish_home_assistant_discovery_config(
 
 
 async def subscribe_to_home_assistant_birth(
-    config: MQTTConfig, mqtt_client: MQTTClient, on_birth: Callable[[], Awaitable[None]]
+    config: MQTTConfig, mqtt_client: Client, on_birth: Callable[[], Awaitable[None]]
 ) -> None:
     try:
         async with mqtt_client.messages() as messages:
