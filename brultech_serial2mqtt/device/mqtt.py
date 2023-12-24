@@ -3,13 +3,16 @@ from copy import deepcopy
 from typing import Any, Dict
 
 
+DiscoveryConfigDict = Dict[str, Any]
+
+
 class HomeAssistantDiscoveryConfig:
     """
     Helper object to manage the discovery config.  See
     https://www.home-assistant.io/docs/mqtt/discovery/
     """
 
-    def __init__(self, component: str, config: Dict[str, Any]) -> None:
+    def __init__(self, component: str, config: DiscoveryConfigDict) -> None:
         assert "unique_id" in config
         self._component = component
         self._object_id = config["unique_id"]
@@ -20,7 +23,7 @@ class HomeAssistantDiscoveryConfig:
         return self._component
 
     @property
-    def config(self) -> Dict[str, Any]:
+    def config(self) -> DiscoveryConfigDict:
         return self._config
 
     @property
@@ -32,7 +35,7 @@ class HomeAssistantDiscoveryConfig:
     def object_id(self) -> str:
         return self._object_id
 
-    def apply_common_config(self, common_config: Dict[str, Any]):
+    def apply_common_config(self, common_config: DiscoveryConfigDict):
         """
         Applies the given common configuration, allowing the current
         configuration to override any part of it.
