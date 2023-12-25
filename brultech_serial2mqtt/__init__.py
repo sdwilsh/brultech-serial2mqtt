@@ -63,32 +63,31 @@ class BrultechSerial2MQTT:
             device_manager = DeviceManager(self._config, first_packet)
 
             logger.debug(f"Connecting to MQTT broker at {self._config.mqtt.broker}")
-            async with TaskGroup() as task_group:
-                mqtt_client = mqtt.get_client(
-                    self._config.mqtt, first_packet.serial_number
-                )
-
-                # First, setup the Home Assistant lifecyle process, if configured.
-                await mqtt.manage_home_assistant_lifecycle(
-                    task_group,
-                    self._config.mqtt,
-                    mqtt_client,
-                    device_manager,
-                    lambda: self.most_recent_packet or first_packet,
-                )
-
-                # Next, let any consumer, inluding Home Assistant who now knows about us, that we
-                # are alive.
-                await mqtt.publish_birth_message(
-                    self._config.mqtt, mqtt_client, first_packet.serial_number
-                )
-
-                # Finally, we can asychronously process packets.
-                task_group.create_task(
-                    self._process_packets(
-                        device_connection, device_manager, mqtt_client
+            async with mqtt.get_client(
+                self._config.mqtt, first_packet.serial_number
+            ) as mqtt_client:
+                async with TaskGroup() as task_group:
+                    # First, setup the Home Assistant lifecyle process, if configured.
+                    await mqtt.manage_home_assistant_lifecycle(
+                        task_group,
+                        self._config.mqtt,
+                        mqtt_client,
+                        device_manager,
+                        lambda: self.most_recent_packet or first_packet,
                     )
-                )
+
+                    # Next, let any consumer, inluding Home Assistant who now knows about us, that
+                    # we are alive.
+                    await mqtt.publish_birth_message(
+                        self._config.mqtt, mqtt_client, first_packet.serial_number
+                    )
+
+                    # Finally, we can asychronously process packets.
+                    task_group.create_task(
+                        self._process_packets(
+                            device_connection, device_manager, mqtt_client
+                        )
+                    )
 
     @property
     def most_recent_packet(self) -> Optional[DevicePacket]:
