@@ -1,5 +1,6 @@
 import pytest
 
+from asyncio import TaskGroup
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator, cast, Generator
 from unittest.mock import ANY, call, patch, Mock
@@ -41,10 +42,16 @@ async def test_manage_home_assistant_lifecyle_disabled(
 ) -> None:
     with patch("brultech_serial2mqtt.mqtt.Client", autospec=True):
         client = mqtt.get_client(mqtt_config, 42)
-        task = await mqtt.manage_home_assistant_lifecycle(
-            mqtt_config, client, device_manager, lambda: next(packet_generator)
-        )
-        assert task is None
+        async with TaskGroup() as task_group:
+            await mqtt.manage_home_assistant_lifecycle(
+                task_group,
+                mqtt_config,
+                client,
+                device_manager,
+                lambda: next(packet_generator),
+            )
+        mock_client = cast(Mock, client)
+        mock_client.publish.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -69,11 +76,14 @@ async def test_manage_home_assistant_lifecyle_enabled(
 ) -> None:
     with patch("brultech_serial2mqtt.mqtt.Client", autospec=True):
         client = mqtt.get_client(mqtt_config, 42)
-        task = await mqtt.manage_home_assistant_lifecycle(
-            mqtt_config, client, device_manager, lambda: next(packet_generator)
-        )
-        assert task is not None
-        await task
+        async with TaskGroup() as task_group:
+            await mqtt.manage_home_assistant_lifecycle(
+                task_group,
+                mqtt_config,
+                client,
+                device_manager,
+                lambda: next(packet_generator),
+            )
         mock_client = cast(Mock, client)
         mock_client.publish.assert_has_calls(
             [
@@ -135,16 +145,20 @@ async def test_manage_home_assistant_lifecyle_birth_message_sends_discovery(
 
     with patch("brultech_serial2mqtt.mqtt.Client", autospec=True):
         client = mqtt.get_client(mqtt_config, 42)
-        task = await mqtt.manage_home_assistant_lifecycle(
-            mqtt_config, client, device_manager, lambda: next(packet_generator)
-        )
-        assert task is not None
-        mock_client = cast(Mock, client)
-        mock_client.publish.reset_mock()
-        assert mock_client.publish.call_count == 0
-        mock_client.messages.side_effect = _messages
+        async with TaskGroup() as task_group:
+            await mqtt.manage_home_assistant_lifecycle(
+                task_group,
+                mqtt_config,
+                client,
+                device_manager,
+                lambda: next(packet_generator),
+            )
+            mock_client = cast(Mock, client)
+            mock_client.publish.reset_mock()
+            assert mock_client.publish.call_count == 0
+            mock_client.messages.side_effect = _messages
 
-        await task  # This subscribes and reads messages!
+        # Exiting the task group means the subscribe happened!
         mock_client.publish.assert_has_calls(
             [
                 call(

@@ -1,9 +1,8 @@
-import asyncio
 import logging
 import pprint
 
-from asyncio.tasks import Task
-from typing import Awaitable, Callable, Optional
+from asyncio import CancelledError, TaskGroup
+from typing import Awaitable, Callable
 
 from aiomqtt import Client
 from aiomqtt.client import Will
@@ -33,16 +32,17 @@ def get_client(config: MQTTConfig, device_serial: int) -> Client:
 
 
 async def manage_home_assistant_lifecycle(
+    task_group: TaskGroup,
     config: MQTTConfig,
     mqtt_client: Client,
     device_manager: DeviceManager,
     packet_getter: Callable[[], DevicePacket],
-) -> Optional[Task[None]]:
+) -> None:
     if not config.home_assistant.enable:
         logger.info(
             "Home Assistant dicovery configuration is disabled.  Not publishing configuration."
         )
-        return None
+        return
 
     async def _on_birth() -> None:
         logger.debug(
@@ -64,7 +64,7 @@ async def manage_home_assistant_lifecycle(
     await publish_home_assistant_discovery_config(config, mqtt_client, device_manager)
 
     # Subscribe to birth messages in case Home Assistant goes away and comes back.
-    return asyncio.create_task(
+    task_group.create_task(
         subscribe_to_home_assistant_birth(config, mqtt_client, _on_birth)
     )
 
@@ -101,7 +101,7 @@ async def publish_home_assistant_discovery_config(
             logger.debug(
                 f"Configuration for {discovery_config.component} identified by {discovery_config.object_id}:\n{pprint.pformat(discovery_config.config)}"
             )
-    except asyncio.CancelledError as exc:
+    except CancelledError as exc:
         raise exc
     except MqttError as exc:
         logger.debug(
@@ -144,7 +144,7 @@ async def subscribe_to_home_assistant_birth(
                     and message.payload == config.home_assistant.birth_message.payload
                 ):
                     await on_birth()
-    except asyncio.CancelledError as exc:
+    except CancelledError as exc:
         raise exc
     except MqttError as exc:
         logger.debug(

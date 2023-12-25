@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from contextlib import AsyncExitStack
+from asyncio import TaskGroup
 from datetime import timedelta
 from typing import Optional
 
@@ -63,48 +63,63 @@ class BrultechSerial2MQTT:
             device_manager = DeviceManager(self._config, first_packet)
 
             logger.debug(f"Connecting to MQTT broker at {self._config.mqtt.broker}")
-            async with AsyncExitStack() as stack:
-                mqtt_client: MqttClient = await stack.enter_async_context(
-                    mqtt.get_client(self._config.mqtt, first_packet.serial_number)
+            async with TaskGroup() as task_group:
+                mqtt_client = mqtt.get_client(
+                    self._config.mqtt, first_packet.serial_number
                 )
-                task = await mqtt.manage_home_assistant_lifecycle(
+
+                # First, setup the Home Assistant lifecyle process, if configured.
+                await mqtt.manage_home_assistant_lifecycle(
+                    task_group,
                     self._config.mqtt,
                     mqtt_client,
                     device_manager,
                     lambda: self.most_recent_packet or first_packet,
                 )
-                if task is not None:
-                    stack.callback(lambda: task.cancel())
 
+                # Next, let any consumer, inluding Home Assistant who now knows about us, that we
+                # are alive.
                 await mqtt.publish_birth_message(
                     self._config.mqtt, mqtt_client, first_packet.serial_number
                 )
 
-                # Set the packet count such that we will send the first packet to Home Assistant.
-                packet_count = self._config.mqtt.home_assistant.skip_packets + 1
-                async for packet in device_connection.packets():
-                    logger.debug(f"Received new packet:\n{packet}")
-                    self._most_recent_packet = packet
-                    packet_count += 1
-                    if packet_count <= self._config.mqtt.home_assistant.skip_packets:
-                        logger.debug(
-                            "Skipping packet #%d because we are supposed to skip every %d packets",
-                            packet_count,
-                            self._config.mqtt.home_assistant.skip_packets,
-                        )
-                        continue
-
-                    if not await mqtt.publish_packet(
-                        mqtt_client, device_manager, packet
-                    ):
-                        break
-
-                    # Reset the packet_count now that we have published.
-                    packet_count = 0
+                # Finally, we can asychronously process packets.
+                task_group.create_task(
+                    self._process_packets(
+                        device_connection, device_manager, mqtt_client
+                    )
+                )
 
     @property
     def most_recent_packet(self) -> Optional[DevicePacket]:
         return self._most_recent_packet
+
+    async def _process_packets(
+        self,
+        device_connection: DeviceConnection,
+        device_manager: DeviceManager,
+        mqtt_client: MqttClient,
+    ) -> None:
+        # Set the packet count such that we will send the first packet to Home Assistant.
+        packet_count = self._config.mqtt.home_assistant.skip_packets + 1
+        async for packet in device_connection.packets():
+            logger.debug(f"Received new packet:\n{packet}")
+            self._most_recent_packet = packet
+            packet_count += 1
+            if packet_count <= self._config.mqtt.home_assistant.skip_packets:
+                logger.debug(
+                    "Skipping packet #%d because we are supposed to skip every %d packets",
+                    packet_count,
+                    self._config.mqtt.home_assistant.skip_packets,
+                )
+                continue
+
+            if not await mqtt.publish_packet(mqtt_client, device_manager, packet):
+                # We have failed to publish a packet; assume the worst and exit!
+                break
+
+            # Reset the packet_count now that we have published.
+            packet_count = 0
 
     async def _setup_device(self, connection: DeviceConnection) -> None:
         logger.info(f"Setting up {self._config.device.type.name} device...")
