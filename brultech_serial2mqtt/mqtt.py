@@ -101,8 +101,8 @@ async def publish_home_assistant_discovery_config(
             logger.debug(
                 f"Configuration for {discovery_config.component} identified by {discovery_config.object_id}:\n{pprint.pformat(discovery_config.config)}"
             )
-    except asyncio.CancelledError:
-        pass
+    except asyncio.CancelledError as exc:
+        raise exc
     except MqttError as exc:
         logger.debug(
             "MqttError while attempting to publish Home Assistant dicovery configuration!",
@@ -144,8 +144,8 @@ async def subscribe_to_home_assistant_birth(
                     and message.payload == config.home_assistant.birth_message.payload
                 ):
                     await on_birth()
-    except asyncio.CancelledError:
-        pass
+    except asyncio.CancelledError as exc:
+        raise exc
     except MqttError as exc:
         logger.debug(
             "MqttError while listenting/publishing for Home Assistant birth!",
