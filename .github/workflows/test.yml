@@ -100,7 +100,7 @@ jobs:
         env:
           # renovate: datasource=pypi depName=pre-commit
           PRECOMMIT_VERSION: "==3.5.0"
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         env:
           # renovate: datasource=pypi depName=pre-commit
           PRECOMMIT_VERSION: "==3.5.0"
