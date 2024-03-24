@@ -1,4 +1,4 @@
-pre-commit ==3.6.2
+pre-commit ==3.7.0
 pytest-homeassistant-custom-component==0.13.109
 pyright==1.1.355
 ruff==0.1.6
