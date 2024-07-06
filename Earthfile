@@ -2,7 +2,7 @@ VERSION 0.7
 FROM alpine
 
 # renovate: datasource=docker depName=python
-ARG --global PYTHON_VERSION=3.11
+ARG --global PYTHON_VERSION=3.12
 
 brultech-serial2mqtt:
     ARG PYTHON_VERSION

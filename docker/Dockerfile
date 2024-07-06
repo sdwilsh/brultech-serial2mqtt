@@ -3,7 +3,7 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 LABEL maintainer="sdwilsh"
 
 # renovate: datasource=docker depName=python
-ARG PYTHON_VERSION=3.11
+ARG PYTHON_VERSION=3.12
 
 ENV PYTHON=python${PYTHON_VERSION}
 
