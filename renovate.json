@@ -26,7 +26,8 @@
         "(^|/|\\.)Earthfile$"
       ],
       "matchStrings": [
-        "#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)(\\s+versioning=(?<versioning>.*?))?\\s+ARG\\s+(?:--global\\s+)?.+_VERSION=(?<currentValue>.*?)\\s"
+        "#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)(\\s+versioning=(?<versioning>.*?))?\\s+ARG\\s+.+_VERSION=(?<currentValue>.*?)\\s",
+        "#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)(\\s+versioning=(?<versioning>.*?))?\\s+ARG\\s+--global\\s+.+_VERSION=(?<currentValue>.*?)\\s"
       ],
       "versioningTemplate": "{{#if versioning}}{{versioning}}{{else}}semver{{/if}}"
     },
