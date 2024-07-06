@@ -14,16 +14,16 @@ DiscoveryConfigByUniqueId = Dict[str, DiscoveryConfigDict]
 
 @pytest.fixture()
 def discovery_configs(
-    device_manager: DeviceManager
+    device_manager: DeviceManager,
 ) -> Generator[DiscoveryConfigByUniqueId, None, None]:
     discovery_configs_by_unique_id: DiscoveryConfigByUniqueId = {}
     for discovery_config in device_manager.home_assistant_discovery_configs:
         home_assistant_config = {"platform": "mqtt"}
         home_assistant_config.update(discovery_config.config)
         parsed_discover_config: Dict[str, Any] = DISCOVERY_SCHEMA(home_assistant_config)
-        discovery_configs_by_unique_id[
-            parsed_discover_config["unique_id"]
-        ] = parsed_discover_config
+        discovery_configs_by_unique_id[parsed_discover_config["unique_id"]] = (
+            parsed_discover_config
+        )
     yield discovery_configs_by_unique_id
 
 

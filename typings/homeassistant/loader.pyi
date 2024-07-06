@@ -221,7 +221,7 @@ def async_process_zeroconf_match_dict(entry: dict[str, Any]) -> dict[str, Any]:
     ...
 
 async def async_get_zeroconf(
-    hass: HomeAssistant
+    hass: HomeAssistant,
 ) -> dict[str, list[dict[str, str | dict[str, str]]]]:
     """Return cached list of zeroconf types."""
     ...
@@ -243,7 +243,7 @@ def homekit_always_discover(iot_class: str | None) -> bool:
     ...
 
 async def async_get_homekit(
-    hass: HomeAssistant
+    hass: HomeAssistant,
 ) -> dict[str, HomeKitDiscoveredIntegration]:
     """Return cached list of homekit models."""
     ...
@@ -337,7 +337,7 @@ class Integration:
 
     @property
     def integration_type(
-        self
+        self,
     ) -> Literal["entity", "device", "hardware", "helper", "hub", "service", "system"]:
         """Return the integration type."""
         ...

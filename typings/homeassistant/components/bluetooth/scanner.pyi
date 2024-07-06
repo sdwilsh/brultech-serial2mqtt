@@ -66,7 +66,7 @@ class HaScanner(BaseHaScanner):
 
     @property
     def discovered_devices_and_advertisement_data(
-        self
+        self,
     ) -> dict[str, tuple[BLEDevice, AdvertisementData]]:
         """Return a list of discovered devices and advertisement data."""
         ...

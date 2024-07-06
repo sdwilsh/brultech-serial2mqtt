@@ -35,7 +35,7 @@ class LocationInfo(NamedTuple):
     ...
 
 async def async_detect_location_info(
-    session: aiohttp.ClientSession
+    session: aiohttp.ClientSession,
 ) -> LocationInfo | None:
     """Detect location information."""
     ...

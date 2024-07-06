@@ -141,7 +141,7 @@ def async_register_scanner(
 
 @hass_callback
 def async_get_advertisement_callback(
-    hass: HomeAssistant
+    hass: HomeAssistant,
 ) -> Callable[[BluetoothServiceInfoBleak], None]:
     """Get the advertisement callback."""
     ...

@@ -19,7 +19,7 @@ _AstralSunEventCallable = Callable[..., datetime.datetime]
 @callback
 @bind_hass
 def get_astral_location(
-    hass: HomeAssistant
+    hass: HomeAssistant,
 ) -> tuple[astral.location.Location, astral.Elevation]:
     """Get an astral location for the current Home Assistant configuration."""
     ...
