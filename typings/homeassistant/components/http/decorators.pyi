@@ -23,7 +23,7 @@ def require_admin(
 ]: ...
 @overload
 def require_admin(
-    _func: _FuncType[_HomeAssistantViewT, _P]
+    _func: _FuncType[_HomeAssistantViewT, _P],
 ) -> _FuncType[_HomeAssistantViewT, _P]: ...
 def require_admin(
     _func: _FuncType[_HomeAssistantViewT, _P] | None = ...,

@@ -29,13 +29,11 @@ class Marker(object):
         schema_: Schemable,
         msg: typing.Optional[str] = None,
         description: typing.Optional[str] = None,
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 class Object(dict):
-    def __init__(self, schema: typing.Any, cls: object = ...) -> None:
-        ...
+    def __init__(self, schema: typing.Any, cls: object = ...) -> None: ...
 
 
 class Optional(Marker):
@@ -45,8 +43,7 @@ class Optional(Marker):
         msg: typing.Optional[str] = None,
         default: typing.Any = ...,
         description: typing.Optional[str] = None,
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 class Required(Marker):
@@ -56,15 +53,12 @@ class Required(Marker):
         msg: typing.Optional[str] = None,
         default: typing.Any = ...,
         description: typing.Optional[str] = None,
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 class Schema:
     def __init__(
         self, schema: Schemable, required: bool = False, extra: int = ...
-    ) -> None:
-        ...
+    ) -> None: ...
 
-    def __call__(self, data) -> dict[str, typing.Any]:
-        ...
+    def __call__(self, data) -> dict[str, typing.Any]: ...

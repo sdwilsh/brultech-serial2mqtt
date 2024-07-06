@@ -54,7 +54,7 @@ class BaseHaScanner(ABC):
     @property
     @abstractmethod
     def discovered_devices_and_advertisement_data(
-        self
+        self,
     ) -> dict[str, tuple[BLEDevice, AdvertisementData]]:
         """Return a list of discovered devices and their advertisement data."""
         ...
@@ -91,7 +91,7 @@ class BaseHaRemoteScanner(BaseHaScanner):
 
     @property
     def discovered_devices_and_advertisement_data(
-        self
+        self,
     ) -> dict[str, tuple[BLEDevice, AdvertisementData]]:
         """Return a list of discovered devices and advertisement data."""
         ...
