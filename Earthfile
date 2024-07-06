@@ -31,7 +31,7 @@ python-dev-requirements:
     WORKDIR /usr/src/app
     COPY pyproject.toml .
     COPY requirements-dev.txt .
-    RUN pip install --no-cache-dir -r requirements-dev.txt
+    RUN pip install --no-cache-dir -r requirements-dev.txt -r requirements.txt
 
 pyright-image:
     FROM +python-dev-requirements
