@@ -16,11 +16,9 @@
       "depNameTemplate": "python",
       "fileMatch": [
         "^pyproject\\.toml$",
-        "^setup\\.cfg$"
       ],
       "matchStrings": [
-        "requires-python\\s+=\\s+\">=(?<currentValue>.*?),<4\"",
-        "python_requires\\s+=\\s+>=(?<currentValue>.*?),<4"
+        "requires-python\\s+=\\s+\">=(?<currentValue>.*?),<4\""
       ]
     },
     {

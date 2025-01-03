@@ -3,6 +3,23 @@ requires = ["setuptools >= 40.6.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
+authors = [
+    { name = "Shawn Wilsher", email = "me@shawnwilsher.com" },
+]
+dependencies = [
+	"aiobrultech-serial ==0.9.0",
+	"aiomqtt ==1.2.1",
+	"jinja2 >= 3.0, < 4",
+	"pyserial == 3.5",
+	"pyyaml >= 6.0, <= 7",
+	"voluptuous ==0.13.1",
+]
+dynamic = [
+    "version",
+]
+license = {file = "LICENSE"}
+name = "brultech-serial2mqtt"
+readme = "README.md"
 requires-python = ">=3.12,<4"
 
 [tool.pytest.ini_options]
@@ -45,3 +62,11 @@ reportUnusedFunction = "error"
 reportUnusedImport = "error"
 reportUnusedVariable = "error"
 typeCheckingMode = "strict"
+
+[tool.setuptools.packages.find]
+where = [
+    ".",
+]
+include = [
+    "brultech_serial2mqtt",
+]
