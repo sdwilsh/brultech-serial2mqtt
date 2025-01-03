@@ -8,7 +8,7 @@ default:
 build-image platform:
     docker buildx build \
         -f docker/Dockerfile \
-        --platform {{platform}} \
+        --platform {{ platform }} \
         .
 
 # Check `just` syntax
