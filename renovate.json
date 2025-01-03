@@ -4,6 +4,15 @@
     {
       "customType": "regex",
       "fileMatch": [
+        "^.devcontainer/devcontainer.json$"
+      ],
+      "matchStrings": [
+        "\\srenovate:\\s+datasource=(?<datasource>.*?)\\sdepName=(?<depName>.*?)\\n\\s*\"[a-z]+\":\\s+\"(?<currentValue>.*?)\""
+      ]
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
         "^\\.pre-commit-config.yaml$"
       ],
       "matchStrings": [
@@ -51,6 +60,17 @@
       "matchUpdateTypes": [
         "minor",
         "patch"
+      ]
+    },
+    {
+      "automerge": true,
+      "automergeType": "branch",
+      "groupName": "renovate",
+      "matchPackageNames": [
+        "/^renovatebot\\/renovate$"
+      ],
+      "schedule": [
+        "after 16:00 every friday"
       ]
     }
   ],

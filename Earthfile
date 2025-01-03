@@ -33,42 +33,6 @@ python-dev-requirements:
     COPY requirements-dev.txt .
     RUN pip install --no-cache-dir -r requirements-dev.txt -r requirements.txt
 
-pyright-image:
-    FROM +python-dev-requirements
-    RUN nodeenv /.cache/nodeenv
-    ENV PYRIGHT_PYTHON_ENV_DIR=/.cache/nodeenv
-    WORKDIR /usr/src/app
-
-pyright-validate:
-    FROM +pyright-image
-    COPY --dir brultech_serial2mqtt/ .
-    COPY --dir tests/ .
-    COPY --dir typings/ .
-    RUN pyright
-
-renovate-validate:
-    # renovate: datasource=docker depName=renovate/renovate versioning=docker
-    ARG RENOVATE_VERSION=39
-    FROM renovate/renovate:$RENOVATE_VERSION
-    WORKDIR /usr/src/app
-    COPY renovate.json .
-    RUN renovate-config-validator
-
-ruff-validate:
-    FROM +python-dev-requirements
-    WORKDIR /usr/src/app
-    COPY pyproject.toml .
-    COPY --dir brultech_serial2mqtt .
-    COPY --dir tests .
-    COPY --dir typings/ .
-    RUN ruff check . --diff
-    RUN ruff format . --diff
-
-lint:
-    BUILD +pyright-validate
-    BUILD +renovate-validate
-    BUILD +ruff-validate
-
 test:
     FROM +python-dev-requirements
     COPY --dir brultech_serial2mqtt .

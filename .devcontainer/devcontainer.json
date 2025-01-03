@@ -8,7 +8,9 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"charliermarsh.ruff"
+				"charliermarsh.ruff",
+				"github.vscode-github-actions",
+				"ms-azuretools.vscode-docker"
 			],
 			"settings": {
 				"python.testing.pytestArgs": [
@@ -20,6 +22,20 @@
 				"python.analysis.typeCheckingMode": "basic",
 				"python.analysis.autoImportCompletions": true
 			}
+		}
+	},
+	"features": {
+		"ghcr.io/dhoeric/features/hadolint:1": {
+			// renovate: datasource=github-releases depName=hadolint/hadolint
+			"version": "2.12.0"
+		},
+		"ghcr.io/guiyomh/features/just:0": {
+			// renovate: datasource=github-releases depName=casey/just
+			"version": "1.38.0"
+		},
+		"ghcr.io/devcontainers-extra/features/renovate-cli:2": {
+			// renovate: datasource=github-releases depName=renovatebot/renovate
+			"version": "39.86.1"
 		}
 	},
 	"remoteUser": "vscode"

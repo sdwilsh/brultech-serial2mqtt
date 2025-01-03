@@ -27,3 +27,45 @@ jobs:
           imageName: ghcr.io/${{ github.repository }}-devcontainer
           push: filter
           refFilterForPush: refs/heads/main
+
+  just-check:
+    needs: build-devcontainer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Run quick-lint
+        uses: devcontainers/ci@v0.3.1900000349
+        with:
+          cacheFrom: ghcr.io/${{ github.repository }}-devcontainer
+          push: never
+          runCmd: just just-check
+
+  format:
+    needs: just-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Run quick-lint
+        uses: devcontainers/ci@v0.3.1900000349
+        with:
+          cacheFrom: ghcr.io/${{ github.repository }}-devcontainer
+          push: never
+          runCmd: |
+            just just-format
+            just ruff-format
+
+  quick-lint:
+    needs: just-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Run quick-lint
+        uses: devcontainers/ci@v0.3.1900000349
+        with:
+          cacheFrom: ghcr.io/${{ github.repository }}-devcontainer
+          push: never
+          runCmd: |
+            just hadolint
+            just pyright
+            just renovate-validate
+            just ruff-check
