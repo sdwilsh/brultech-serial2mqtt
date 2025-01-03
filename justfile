@@ -11,6 +11,17 @@ build-image platform:
         --platform {{ platform }} \
         .
 
+# Run `hadolint` on all `Dockerfile`s
+[group('lint')]
+hadolint:
+    #!/usr/bin/env bash
+    set -eou pipefail
+    find . -type f -name "Dockerfile*" | while read -r file; do
+        echo -n "Running \`hadolint\` on ${file}..."
+        hadolint ${file}
+        echo "{{ BOLD + GREEN }}OK{{ NORMAL }}"
+    done
+
 # Check `just` syntax
 [group('lint')]
 just-check:
@@ -31,17 +42,6 @@ just-format:
     find . -type f -name "justfile" | while read -r file; do
         echo "Running \`just --fmt\` on ${file}..."
         just --unstable --fmt -f ${file}
-    done
-
-# Run `hadolint` on all `Dockerfile`s
-[group('lint')]
-hadolint:
-    #!/usr/bin/env bash
-    set -eou pipefail
-    find . -type f -name "Dockerfile*" | while read -r file; do
-        echo -n "Running \`hadolint\` on ${file}..."
-        hadolint ${file}
-        echo "{{ BOLD + GREEN }}OK{{ NORMAL }}"
     done
 
 # Check Python code with Pyright
