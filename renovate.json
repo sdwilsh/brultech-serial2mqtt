@@ -56,6 +56,18 @@
     {
       "automerge": true,
       "automergeType": "branch",
+      "groupName": "home assistant shared deps",
+      "matchPackageNames": [
+        "pytest-homeassistant-custom-component",
+        "voluptuous"
+      ],
+      "schedule": [
+        "after 16:00 on friday"
+      ]
+    },
+    {
+      "automerge": true,
+      "automergeType": "branch",
       "groupName": "renovate",
       "matchPackageNames": [
         "/^renovatebot\\/renovate$"
