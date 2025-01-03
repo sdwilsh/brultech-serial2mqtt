@@ -42,7 +42,7 @@
     }
   ],
   "extends": [
-    "config:base"
+    "config:best-practices"
   ],
   "packageRules": [
     {
@@ -61,12 +61,12 @@
         "/^renovatebot\\/renovate$"
       ],
       "schedule": [
-        "after 16:00 every friday"
+        "after 16:00 on friday"
       ]
     }
   ],
   "schedule": [
-    "after 16:00 every friday",
+    "after 16:00 on friday",
     "every weekend"
   ],
   "timezone": "America/Los_Angeles"
