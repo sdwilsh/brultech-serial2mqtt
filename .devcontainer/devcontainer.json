@@ -10,7 +10,8 @@
 			"extensions": [
 				"charliermarsh.ruff",
 				"github.vscode-github-actions",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"nefrob.vscode-just-syntax"
 			],
 			"settings": {
 				"python.testing.pytestArgs": [
@@ -32,6 +33,10 @@
 		"ghcr.io/guiyomh/features/just:0": {
 			// renovate: datasource=github-releases depName=casey/just
 			"version": "1.38.0"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			// renovate: datasource=github-releases depName=moby/moby
+			"version": "27.4.1"
 		},
 		"ghcr.io/devcontainers-extra/features/renovate-cli:2": {
 			// renovate: datasource=github-releases depName=renovatebot/renovate

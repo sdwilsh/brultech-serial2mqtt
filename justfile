@@ -3,6 +3,14 @@
 default:
     @just --list
 
+# Builds the docker container for the specified platform
+[group('build')]
+build-image platform:
+    docker buildx build \
+        -f docker/Dockerfile \
+        --platform {{platform}} \
+        .
+
 # Check `just` syntax
 [group('lint')]
 just-check:
