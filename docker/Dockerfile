@@ -1,6 +1,9 @@
 FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 
 LABEL maintainer="sdwilsh"
+LABEL org.opencontainers.image.description="This talks to Brultech devices over a serial port and sends their data to an MQTT server"
+LABEL org.opencontainers.image.licenses=MIT
+LABEL org.opencontainers.image.source=https://github.com/sdwilsh/brultech-serial2mqtt
 
 # renovate: datasource=docker depName=python
 ARG PYTHON_VERSION=3.12
