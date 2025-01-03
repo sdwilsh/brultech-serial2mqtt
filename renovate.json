@@ -12,11 +12,15 @@
     },
     {
       "customType": "regex",
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "python",
       "fileMatch": [
-        "^\\.pre-commit-config.yaml$"
+        "^pyproject\\.toml$",
+        "^setup\\.cfg$"
       ],
       "matchStrings": [
-        "#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)\\s+rev:\\s+v?(?<currentValue>.*?)\\s"
+        "requires-python\\s+=\\s+\">=(?<currentValue>.*?),<4\"",
+        "python_requires\\s+=\\s+>=(?<currentValue>.*?),<4"
       ]
     },
     {

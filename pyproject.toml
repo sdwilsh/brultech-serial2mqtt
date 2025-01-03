@@ -2,6 +2,9 @@
 requires = ["setuptools >= 40.6.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[project]
+requires-python = ">=3.12,<4"
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 
@@ -18,7 +21,6 @@ exclude = [
     "**/__pycache__",
     "typings",
 ]
-pythonVersion = "3.11"
 reportConstantRedefinition = "error"
 reportFunctionMemberAccess = "error"
 reportIncompatibleMethodOverride = "error"
