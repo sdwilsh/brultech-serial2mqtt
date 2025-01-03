@@ -44,6 +44,9 @@ just-format:
         just --unstable --fmt -f ${file}
     done
 
+# Runs all linters
+lint: hadolint just-check just-format pyright renovate-validate ruff-check ruff-format yamllint
+
 # Check Python code with Pyright
 
 [group('lint')]
