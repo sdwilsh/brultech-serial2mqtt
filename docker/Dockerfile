@@ -30,8 +30,6 @@ RUN \
 COPY LICENSE /src/brultech_serial2mqtt/LICENSE
 COPY pyproject.toml /src/brultech_serial2mqtt/pyproject.toml
 COPY requirements.txt /src/brultech_serial2mqtt/requirements.txt
-COPY setup.cfg /src/brultech_serial2mqtt/setup.cfg
-COPY setup.py /src/brultech_serial2mqtt/setup.py
 COPY brultech_serial2mqtt /src/brultech_serial2mqtt/brultech_serial2mqtt
 WORKDIR /src/brultech_serial2mqtt
 RUN \

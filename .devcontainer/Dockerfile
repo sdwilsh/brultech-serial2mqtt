@@ -7,9 +7,8 @@ WORKDIR /tmp
 COPY pyproject.toml pyproject.toml
 COPY requirements.txt requirements.txt
 COPY requirements-dev.txt requirements-dev.txt
-COPY setup.cfg setup.cfg
 RUN pip3 install --no-cache-dir -r requirements-dev.txt -r requirements.txt \
-  && rm pyproject.toml requirements.txt requirements-dev.txt setup.cfg
+  && rm pyproject.toml requirements.txt requirements-dev.txt
 
 # Pre-cache Node for Pyright
 RUN nodeenv /.cache/nodeenv
