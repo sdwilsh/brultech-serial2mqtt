@@ -52,22 +52,6 @@ jobs:
             }}"
           tags: ${{ steps.metadata.outputs.tags }}
 
-  earthly-lint:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: earthly/actions-setup@v1.0.13
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # renovate: datasource=docker depName=earthly/earthly
-          version: "v0.8.15"
-      - uses: actions/checkout@v4
-      - name: Run Earthly Lint
-        env:
-          EARTHLY_CI: true
-        run: earthly +lint
-
   earthly-test:
     runs-on: ubuntu-latest
     permissions:
@@ -83,31 +67,3 @@ jobs:
         env:
           EARTHLY_CI: true
         run: earthly +test
-
-  pre-commit-lint:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          cache: pip
-          # renovate: datasource=docker depName=python
-          python-version: "3.13"
-      - run: pip install pre-commit$PRECOMMIT_VERSION
-        env:
-          # renovate: datasource=pypi depName=pre-commit
-          PRECOMMIT_VERSION: "==3.5.0"
-      - uses: actions/cache@v4
-        env:
-          # renovate: datasource=pypi depName=pre-commit
-          PRECOMMIT_VERSION: "==3.5.0"
-        with:
-          path: ~/.cache/pre-commit
-          key: |-
-            ${{ env.PRECOMMIT_VERSION }}
-            ${{ env.pythonLocation }}
-            ${{ hashFiles('.pre-commit-config.yaml') }}
-      - run: pre-commit run --all-files --color=always --show-diff-on-failure

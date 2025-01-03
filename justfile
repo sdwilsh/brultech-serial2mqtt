@@ -57,3 +57,8 @@ ruff-check:
 [group('lint')]
 ruff-format:
     ruff format . --diff
+
+# Check YAML files with yamllint
+[group('lint')]
+yamllint:
+    yamllint .
