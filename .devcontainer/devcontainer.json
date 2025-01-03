@@ -1,6 +1,7 @@
 {
 	"name": "brultech-serial2mqtt",
 	"build": {
+		"cacheFrom": "ghcr.io/sdwilsh/brultech-serial2mqtt-devcontainer:latest",
 		"context": "..",
 		"dockerfile": "Dockerfile"
 	},
