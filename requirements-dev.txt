@@ -1,4 +1,4 @@
 pytest-homeassistant-custom-component==0.13.148
 pyright==1.1.391
-ruff==0.6.3
+ruff==0.8.5
 yamllint==1.35.1
