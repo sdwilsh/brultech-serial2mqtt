@@ -66,7 +66,6 @@ services:
 All published images support multiple architectures. The images are currently published with support for the folowing:
 
 - linux/amd64
-- linux/arm/v7
 - linux/arm64
 
 The available images are:
