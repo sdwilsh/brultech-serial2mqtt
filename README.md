@@ -1,5 +1,5 @@
-![CI](https://github.com/sdwilsh/brultech-serial2mqtt/workflows/Devcontainer-based%20CI/badge.svg)
-![Container Image](https://github.com/sdwilsh/brultech-serial2mqtt/workflows/Build/badge.svg)
+![CI](https://github.com/sdwilsh/brultech-serial2mqtt/workflows/Devcontainer-based%20CI/badge.svg?branch=refs/heads/main)
+![Container Image](https://github.com/sdwilsh/brultech-serial2mqtt/workflows/Build/badge.svg?branch=refs/heads/main)
 
 # What is brultech-serial2mqtt?
 
