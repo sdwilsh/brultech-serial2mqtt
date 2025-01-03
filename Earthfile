@@ -16,23 +16,3 @@ brultech-serial2mqtt:
 build:
     BUILD --platform linux/amd64 +brultech-serial2mqtt
     BUILD --platform linux/arm64 +brultech-serial2mqtt
-
-python-requirements:
-    ARG PYTHON_VERSION
-    FROM python:$PYTHON_VERSION
-    WORKDIR /usr/src/app
-    COPY requirements.txt .
-    COPY pyproject.toml .
-    RUN pip install --no-cache-dir -r requirements.txt
-
-python-dev-requirements:
-    FROM +python-requirements
-    WORKDIR /usr/src/app
-    COPY requirements-dev.txt .
-    RUN pip install --no-cache-dir -r requirements-dev.txt -r requirements.txt
-
-test:
-    FROM +python-dev-requirements
-    COPY --dir brultech_serial2mqtt .
-    COPY --dir tests .
-    RUN pytest

@@ -76,3 +76,17 @@ jobs:
             just renovate-validate
             just ruff-check
             just yamllint
+
+  pytest:
+    needs: just-check
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Run pytest
+        uses: devcontainers/ci@v0.3.1900000349
+        with:
+          cacheFrom: ghcr.io/${{ github.repository }}-devcontainer
+          push: never
+          runCmd: just pytest

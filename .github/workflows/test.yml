@@ -51,19 +51,3 @@ jobs:
               github.ref == 'refs/heads/main'
             }}"
           tags: ${{ steps.metadata.outputs.tags }}
-
-  earthly-test:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: earthly/actions-setup@v1.0.13
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # renovate: datasource=docker depName=earthly/earthly
-          version: "v0.8.15"
-      - uses: actions/checkout@v4
-      - name: Run Earthly Lint
-        env:
-          EARTHLY_CI: true
-        run: earthly +test

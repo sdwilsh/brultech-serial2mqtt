@@ -42,6 +42,11 @@ hadolint:
 pyright:
     pyright
 
+# Run pytest tests
+[group('test')]
+pytest:
+    @pytest
+
 # Validate `renovate.json` file
 [group('lint')]
 renovate-validate:
