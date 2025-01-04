@@ -19,7 +19,8 @@
       ],
       "matchStrings": [
         "requires-python\\s+=\\s+\">=(?<currentValue>.*?),<4\""
-      ]
+      ],
+      "versioningTemplate": "python"
     },
     {
       "customType": "regex",

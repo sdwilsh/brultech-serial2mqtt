@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.description="This talks to Brultech devices over 
 LABEL org.opencontainers.image.licenses=MIT
 LABEL org.opencontainers.image.source=https://github.com/sdwilsh/brultech-serial2mqtt
 
-# renovate: datasource=docker depName=python
+# renovate: datasource=docker depName=python versioning=python
 ARG PYTHON_VERSION=3.12
 
 ENV PYTHON=python${PYTHON_VERSION}
