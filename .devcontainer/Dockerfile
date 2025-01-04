@@ -1,5 +1,5 @@
 # renovate: datasource=docker depName=python versioning=python
-ARG PYTHON_VERSION=3.12
+ARG PYTHON_VERSION=3.13
 FROM mcr.microsoft.com/devcontainers/python:1-${PYTHON_VERSION}
 
 # Install Python Dependencies
