@@ -1,8 +1,8 @@
 import logging
 import pprint
 
-from asyncio import CancelledError, TaskGroup
-from typing import Awaitable, Callable
+from asyncio import CancelledError, Task, TaskGroup
+from typing import Awaitable, Callable, Optional
 
 from aiomqtt import Client
 from aiomqtt.client import Will
@@ -37,12 +37,12 @@ async def manage_home_assistant_lifecycle(
     mqtt_client: Client,
     device_manager: DeviceManager,
     packet_getter: Callable[[], DevicePacket],
-) -> None:
+) -> Optional[Task[None]]:
     if not config.home_assistant.enable:
         logger.info(
             "Home Assistant dicovery configuration is disabled.  Not publishing configuration."
         )
-        return
+        return None
 
     async def _on_birth() -> None:
         logger.debug(
@@ -64,8 +64,8 @@ async def manage_home_assistant_lifecycle(
     await publish_home_assistant_discovery_config(config, mqtt_client, device_manager)
 
     # Subscribe to birth messages in case Home Assistant goes away and comes back.
-    task_group.create_task(
-        subscribe_to_home_assistant_birth(config, mqtt_client, _on_birth)
+    return await subscribe_to_home_assistant_birth(
+        config, mqtt_client, _on_birth, task_group
     )
 
 
@@ -73,7 +73,8 @@ async def publish_birth_message(
     config: MQTTConfig, mqtt_client: Client, device_serial: int
 ) -> None:
     logger.info(
-        f"Notifying clients that we are online on {config.status_topic(device_serial)}"
+        f"Notifying clients that we are online on {
+            config.status_topic(device_serial)}"
     )
     await mqtt_client.publish(
         payload=config.birth_message.payload,
@@ -96,10 +97,12 @@ async def publish_home_assistant_discovery_config(
                 payload=discovery_config.json_config,
             )
             logger.info(
-                f"Published Home Assistant dicovery configuration for a {discovery_config.component} identified by {discovery_config.object_id} to {topic}"
+                f"Published Home Assistant dicovery configuration for a {
+                    discovery_config.component} identified by {discovery_config.object_id} to {topic}"
             )
             logger.debug(
-                f"Configuration for {discovery_config.component} identified by {discovery_config.object_id}:\n{pprint.pformat(discovery_config.config)}"
+                f"Configuration for {discovery_config.component} identified by {
+                    discovery_config.object_id}:\n{pprint.pformat(discovery_config.config)}"
             )
     except CancelledError as exc:
         raise exc
@@ -130,29 +133,48 @@ async def publish_packet(
 
 
 async def subscribe_to_home_assistant_birth(
-    config: MQTTConfig, mqtt_client: Client, on_birth: Callable[[], Awaitable[None]]
-) -> None:
-    try:
-        async with mqtt_client.messages() as messages:
-            await mqtt_client.subscribe(
-                config.home_assistant.birth_message.topic,
-                qos=config.home_assistant.birth_message.qos,
+    config: MQTTConfig,
+    mqtt_client: Client,
+    on_birth: Callable[[], Awaitable[None]],
+    task_group: TaskGroup,
+) -> Task[None]:
+    async def _process():
+        try:
+            async with mqtt_client.messages() as messages:
+                async for message in messages:
+                    payload = message.payload
+                    if type(payload) is bytes:
+                        payload = payload.decode("utf-8")
+                    if type(payload) is not str:
+                        logger.error(
+                            f"Unexpected payload type '{
+                                     type(payload)}' when processing Home Assistant status message!"
+                        )
+                    if (
+                        message.topic.matches(config.home_assistant.birth_message.topic)
+                        and payload == config.home_assistant.birth_message.payload
+                    ):
+                        logger.debug("Home Assitant has been reborn!")
+                        await on_birth()
+        except CancelledError as exc:
+            raise exc
+        except MqttError as exc:
+            logger.debug(
+                "MqttError while listenting/publishing for Home Assistant birth!",
+                exc_info=exc,
             )
-            async for message in messages:
-                if (
-                    message.topic.matches(config.home_assistant.birth_message.topic)
-                    and message.payload == config.home_assistant.birth_message.payload
-                ):
-                    await on_birth()
-    except CancelledError as exc:
-        raise exc
-    except MqttError as exc:
-        logger.debug(
-            "MqttError while listenting/publishing for Home Assistant birth!",
-            exc_info=exc,
-        )
-    except Exception as exc:
-        logger.exception(
-            "Exception caught while listenting/publishing for Home Assistant birth!",
-            exc_info=exc,
-        )
+        except Exception as exc:
+            logger.exception(
+                "Exception caught while listenting/publishing for Home Assistant birth!",
+                exc_info=exc,
+            )
+
+    await mqtt_client.subscribe(
+        config.home_assistant.birth_message.topic,
+        qos=config.home_assistant.birth_message.qos,
+    )
+    logger.info(
+        f"Subscribed to home assistant birth ({
+        config.home_assistant.birth_message.topic})"
+    )
+    return task_group.create_task(_process())

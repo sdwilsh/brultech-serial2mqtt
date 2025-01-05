@@ -1,0 +1,7 @@
+FROM eclipse-mosquitto:2.0.20
+
+WORKDIR /mosquitto/config
+COPY mosquitto.conf mosquitto.conf
+
+HEALTHCHECK --interval=5s --timeout=2s \
+    CMD /usr/bin/mosquitto_sub --unix /mosquitto/socket -t "#" -E -i healthcheck

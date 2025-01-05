@@ -24,6 +24,9 @@ requires-python = ">=3.13,<4"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+# Change this to `true` to debug tests!
+log_cli = false
+log_cli_level = "DEBUG"
 
 [tool.isort]
 profile = "black"
