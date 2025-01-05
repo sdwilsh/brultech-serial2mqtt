@@ -6,7 +6,7 @@ LABEL org.opencontainers.image.licenses=MIT
 LABEL org.opencontainers.image.source=https://github.com/sdwilsh/brultech-serial2mqtt
 
 # renovate: datasource=docker depName=python versioning=python
-ARG PYTHON_VERSION=3.12
+ARG PYTHON_VERSION=3.13
 
 ENV PYTHON=python${PYTHON_VERSION}
 
