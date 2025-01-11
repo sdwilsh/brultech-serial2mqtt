@@ -40,7 +40,7 @@
 		},
 		"ghcr.io/devcontainers-extra/features/renovate-cli:2": {
 			// renovate: datasource=github-releases depName=renovatebot/renovate
-			"version": "39.103.0"
+			"version": "39.104.3"
 		}
 	},
 	"remoteUser": "vscode"
