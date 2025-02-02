@@ -1,4 +1,4 @@
-pytest-homeassistant-custom-component==0.13.203
+pytest-homeassistant-custom-component==0.13.207
 pyright==1.1.392.post0
 ruff==0.8.6
 yamllint==1.35.1
